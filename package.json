@@ -2,9 +2,12 @@
   "name": "cypress-reporter",
   "version": "1.0.0",
   "main": "index.js",
-   "scripts": {
+    "private": true,
+  "scripts": {
     "report": "node packages/cypress-gh-reporter/index.js"
-  },
+  },  "workspaces": [
+    "packages/*"
+  ],
   "keywords": [],
   "author": "",
   "license": "ISC",
