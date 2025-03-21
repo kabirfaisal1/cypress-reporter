@@ -2,8 +2,8 @@
   "name": "cypress-reporter",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+   "scripts": {
+    "report": "node packages/cypress-gh-reporter/index.js"
   },
   "keywords": [],
   "author": "",

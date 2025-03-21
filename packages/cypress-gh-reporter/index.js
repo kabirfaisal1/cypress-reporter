@@ -4,8 +4,6 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const chalk = require( 'chalk' );
 
-const { reportToTestRail } = require( './reporters/testrail' );
-const { reportToJira } = require( './reporters/jira' );
 const { updateConfluenceDashboard } = require( './reporters/confluence' );
 
 const run = async () =>
@@ -15,10 +13,21 @@ const run = async () =>
     if ( !reportPath )
     {
         console.error( chalk.red( '❌ Please provide path to Cypress JSON report.' ) );
+        console.error( chalk.yellow( '👉 Example: npm run report -- ./cypress/results.json' ) );
         process.exit( 1 );
     }
 
-    const report = JSON.parse( fs.readFileSync( path.resolve( reportPath ), 'utf8' ) );
+    let report;
+    try
+    {
+        const rawData = fs.readFileSync( path.resolve( reportPath ), 'utf8' );
+        report = JSON.parse( rawData );
+    } catch ( err )
+    {
+        console.error( chalk.red( `❌ Failed to read or parse report at ${ reportPath }` ) );
+        console.error( err.message );
+        process.exit( 1 );
+    }
 
     const allTests = report.results.flatMap( suite =>
         suite.suites.flatMap( sub =>
@@ -32,7 +41,7 @@ const run = async () =>
         )
     );
 
-    console.log( chalk.blue( `📋 Found ${ allTests.length } tests` ) );
+    console.log( chalk.blue( `📋 Found ${ allTests.length } total test(s)` ) );
 
     const passedTests = allTests.filter( t => t.state === 'passed' );
     const failedTests = allTests.filter( t => t.state === 'failed' );
@@ -40,13 +49,6 @@ const run = async () =>
     console.log( chalk.green( `✅ Passed: ${ passedTests.length }` ) );
     console.log( chalk.red( `❌ Failed: ${ failedTests.length }` ) );
 
-    // 🔁 Report to TestRail
-    await reportToTestRail( passedTests, failedTests );
-
-    // 🐞 Create Jira tickets for failed
-    await reportToJira( failedTests );
-
-    // 📄 Update Confluence dashboard
     await updateConfluenceDashboard( passedTests, failedTests );
 };
 
