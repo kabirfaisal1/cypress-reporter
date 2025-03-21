@@ -1,0 +1,109 @@
+{
+  "results": [
+    {
+      "file": "cypress/e2e/login.spec.js",
+      "suites": [
+        {
+          "title": "Login Flow",
+          "suites": [
+            {
+              "title": "UI Validation",
+              "tests": [
+                {
+                  "title": ["Login page loads"],
+                  "state": "passed",
+                  "body": "expect(true).to.equal(false)",
+                  "displayError": "AssertionError: expected true to equal false"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "cypress/e2e/login.spec.js",
+      "suites": [
+        {
+          "title": "Switch User Flow",
+          "suites": [
+            {
+              "title": "Switch User Validation",
+              "tests": [
+                {
+                  "title": ["Switch User Validation"],
+                  "state": "failed",
+                  "body": "expect(true).to.equal(false)",
+                  "displayError": "AssertionError: expected true to equal false"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "cypress/e2e/switchStore.spec.js",
+      "suites": [
+        {
+          "title": "user switch store User Flow",
+          "suites": [
+            {
+              "title": "Switch store Validation",
+              "tests": [
+                {
+                  "title": ["user switch store User Flow"],
+                  "state": "failed",
+                  "body": "expect(true).to.equal(false)",
+                  "displayError": "AssertionError: expected true to equal false"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "cypress/e2e/switchbillboards.spec.js",
+      "suites": [
+        {
+          "title": "user switch billboards User Flow",
+          "suites": [
+            {
+              "title": "Switch billboards Validation",
+              "tests": [
+                {
+                  "title": ["Switch billboards Validation"],
+                  "state": "Failed",
+                  "body": "expect(true).to.equal(false)",
+                  "displayError": "AssertionError: expected true to equal false"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "file": "cypress/e2e/switchStore.spec.js",
+      "suites": [
+        {
+          "title": "user create store and switch Store User Flow",
+          "suites": [
+            {
+              "title": "user create store and switch Store User Flow",
+              "tests": [
+                {
+                  "title": ["v loads"],
+                  "state": "failed",
+                  "body": "expect(true).to.equal(false)",
+                  "displayError": "AssertionError: expected true to equal false"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

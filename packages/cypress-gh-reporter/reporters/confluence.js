@@ -1,3 +1,4 @@
+
 const axios = require( 'axios' );
 const fs = require( 'fs' );
 const path = require( 'path' );
@@ -9,6 +10,15 @@ const {
     CONFLUENCE_SPACE_KEY,
     CONFLUENCE_PAGE_ID
 } = process.env;
+
+//TODO: comment this out when not debugging
+// console.log( '🔍 CONFLUENCE Env:', {
+//     CONFLUENCE_BASE_URL,
+//     CONFLUENCE_USERNAME,
+//     CONFLUENCE_API_TOKEN,
+//     CONFLUENCE_SPACE_KEY,
+//     CONFLUENCE_PAGE_ID
+// } );
 
 const AUTH = {
     username: CONFLUENCE_USERNAME,
