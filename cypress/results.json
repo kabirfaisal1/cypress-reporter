@@ -4,13 +4,13 @@
       "file": "cypress/e2e/login.spec.js",
       "suites": [
         {
-          "title": "Login Flow",
+          "title": "Login Flow [C4]",
           "suites": [
             {
               "title": "UI Validation",
               "tests": [
                 {
-                  "title": ["Login page loads"],
+                  "title": ["Login page loads [C4]"],
                   "state": "passed",
                   "body": "expect(true).to.equal(false)",
                   "displayError": "AssertionError: expected true to equal false"
@@ -25,14 +25,14 @@
       "file": "cypress/e2e/login.spec.js",
       "suites": [
         {
-          "title": "Switch User Flow",
+          "title": "Switch User Flow [C7]",
           "suites": [
             {
               "title": "Switch User Validation",
               "tests": [
                 {
-                  "title": ["Switch User Validation"],
-                  "state": "failed",
+                  "title": ["Switch User Validation [C7]"],
+                  "state": "passed",
                   "body": "expect(true).to.equal(false)",
                   "displayError": "AssertionError: expected true to equal false"
                 }
@@ -46,13 +46,13 @@
       "file": "cypress/e2e/switchStore.spec.js",
       "suites": [
         {
-          "title": "user switch store User Flow",
+          "title": "user switch store User Flow [C8]",
           "suites": [
             {
               "title": "Switch store Validation",
               "tests": [
                 {
-                  "title": ["user switch store User Flow"],
+                  "title": ["user switch store User Flow [C8]"],
                   "state": "failed",
                   "body": "expect(true).to.equal(false)",
                   "displayError": "AssertionError: expected true to equal false"

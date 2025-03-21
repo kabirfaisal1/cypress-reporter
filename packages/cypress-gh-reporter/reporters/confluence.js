@@ -11,7 +11,7 @@ const {
     CONFLUENCE_PAGE_ID
 } = process.env;
 
-//TODO: comment this out when not debugging
+// TODO: Use for debugging
 // console.log( '🔍 CONFLUENCE Env:', {
 //     CONFLUENCE_BASE_URL,
 //     CONFLUENCE_USERNAME,

@@ -6,7 +6,7 @@ const chalk = require( 'chalk' );
 
 const { updateConfluenceDashboard } = require( './reporters/confluence' );
 const { reportToJira } = require( './reporters/jira' );
-// const { reportToTestRail } = require('./reporters/testrail'); // For Step 3
+const { reportToTestRail } = require( './reporters/testrail' );
 
 const run = async () =>
 {
@@ -68,7 +68,7 @@ const run = async () =>
     await updateConfluenceDashboard( passedTests, failedTests );
 
     // 🔜 Future: Report to TestRail
-    // await reportToTestRail(passedTests, failedTests);
+    await reportToTestRail( passedTests, failedTests );
 };
 
 run();

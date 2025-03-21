@@ -10,6 +10,14 @@ const {
     JIRA_PROJECT_KEY
 } = process.env;
 
+// TODO: Use for debugging
+// console.log( '🔍 CONFLUENCE Env:', {
+// JIRA_BASE_URL,
+//     JIRA_EMAIL,
+//     JIRA_API_TOKEN,
+//     JIRA_PROJECT_KEY
+// } );
+
 const AUTH = {
     username: JIRA_EMAIL,
     password: JIRA_API_TOKEN
