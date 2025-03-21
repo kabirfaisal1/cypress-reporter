@@ -2,15 +2,19 @@
   "name": "cypress-reporter",
   "version": "1.0.0",
   "main": "index.js",
-    "private": true,
+  "private": true,
   "scripts": {
     "report": "node packages/cypress-gh-reporter/index.js"
-  },  "workspaces": [
+  },
+  "workspaces": [
     "packages/*"
   ],
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "minimist": "^1.2.8"
+  }
 }

@@ -8,22 +8,23 @@ const {
     TESTRAIL_PROJECT_ID
 } = process.env;
 
-// TODO: Use for debugging
-// console.log( '🔍 CONFLUENCE Env:', {
-//     TESTRAIL_DOMAIN,
-//     TESTRAIL_USERNAME,
-//     TESTRAIL_API_KEY,
-//     TESTRAIL_PROJECT_ID;
-// } );
+// Debug log (optional)
+// console.log('🔍 TESTRAIL Env:', {
+//   TESTRAIL_DOMAIN,
+//   TESTRAIL_USERNAME,
+//   TESTRAIL_API_KEY,
+//   TESTRAIL_PROJECT_ID
+// });
 
 const AUTH = {
     username: TESTRAIL_USERNAME,
     password: TESTRAIL_API_KEY
 };
 
+// Supports both "C123" and "[C123]" formats
 function extractCaseId ( testName )
 {
-    const match = testName.match( /C(\d+)/ ); // e.g. "should login successfully C1234"
+    const match = testName.match( /\[?C(\d+)\]?/i );
     return match ? parseInt( match[1], 10 ) : null;
 }
 

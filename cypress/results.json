@@ -4,7 +4,7 @@
       "file": "cypress/e2e/login.spec.js",
       "suites": [
         {
-          "title": "Login Flow [C4]",
+          "title": "Login Flow",
           "suites": [
             {
               "title": "UI Validation",
@@ -25,7 +25,7 @@
       "file": "cypress/e2e/login.spec.js",
       "suites": [
         {
-          "title": "Switch User Flow [C7]",
+          "title": "Switch User Flow",
           "suites": [
             {
               "title": "Switch User Validation",
@@ -46,13 +46,13 @@
       "file": "cypress/e2e/switchStore.spec.js",
       "suites": [
         {
-          "title": "user switch store User Flow [C8]",
+          "title": "User switch store User Flow",
           "suites": [
             {
               "title": "Switch store Validation",
               "tests": [
                 {
-                  "title": ["user switch store User Flow [C8]"],
+                  "title": ["Switch store Validation [C8]"],
                   "state": "failed",
                   "body": "expect(true).to.equal(false)",
                   "displayError": "AssertionError: expected true to equal false"
@@ -67,14 +67,14 @@
       "file": "cypress/e2e/switchbillboards.spec.js",
       "suites": [
         {
-          "title": "user switch billboards User Flow",
+          "title": "User switch billboards User Flow",
           "suites": [
             {
               "title": "Switch billboards Validation",
               "tests": [
                 {
                   "title": ["Switch billboards Validation"],
-                  "state": "Failed",
+                  "state": "failed",
                   "body": "expect(true).to.equal(false)",
                   "displayError": "AssertionError: expected true to equal false"
                 }
@@ -88,10 +88,10 @@
       "file": "cypress/e2e/switchStore.spec.js",
       "suites": [
         {
-          "title": "user create store and switch Store User Flow",
+          "title": "User create store and switch Store User Flow",
           "suites": [
             {
-              "title": "user create store and switch Store User Flow",
+              "title": "User create store and switch Store User Flow",
               "tests": [
                 {
                   "title": ["v loads"],
