@@ -7,7 +7,7 @@ const minimist = require( 'minimist' );
 
 const { reportToJira } = require( './reporters/jira' );
 const { reportToTestRail } = require( './reporters/testrail' );
-const { uploadTestLogToConfluence } = require( './reporters/confluence' ); // ✅ Fixed import
+const { uploadTestLogToConfluence } = require( './reporters/confluence' );
 
 const argv = minimist( process.argv.slice( 2 ) );
 const reportPath = argv._[0] || './cypress/results.json';
@@ -73,7 +73,11 @@ const run = async () =>
     console.log( chalk.green( `✅ Passed: ${ passedTests.length }` ) );
     console.log( chalk.red( `❌ Failed: ${ failedTests.length }` ) );
 
-    if ( useJira ) await reportToJira( failedTests );
+    let updatedFailedTests = failedTests;
+    if ( useJira )
+    {
+        updatedFailedTests = await reportToJira( failedTests );
+    }
 
     let testRailSummary = null;
     if ( useTestRail )
@@ -83,7 +87,7 @@ const run = async () =>
 
     if ( useConfluence )
     {
-        await uploadTestLogToConfluence( passedTests, failedTests, testRailSummary );
+        await uploadTestLogToConfluence( passedTests, updatedFailedTests, testRailSummary );
     }
 };
 

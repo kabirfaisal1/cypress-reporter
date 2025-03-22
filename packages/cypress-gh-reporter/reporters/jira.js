@@ -10,14 +10,6 @@ const {
     JIRA_PROJECT_KEY
 } = process.env;
 
-// TODO: Use for debugging
-// console.log( '🔍 CONFLUENCE Env:', {
-// JIRA_BASE_URL,
-//     JIRA_EMAIL,
-//     JIRA_API_TOKEN,
-//     JIRA_PROJECT_KEY
-// } );
-
 const AUTH = {
     username: JIRA_EMAIL,
     password: JIRA_API_TOKEN
@@ -58,7 +50,6 @@ function createADFDescription ( test )
 
 async function issueAlreadyExists ( summary )
 {
-    // Remove problematic characters for Jira JQL (quotes, backslashes)
     const escapedSummary = summary.replace( /["\\]/g, '' );
     const jql = `project = ${ JIRA_PROJECT_KEY } AND summary ~ "${ escapedSummary }"`;
 
@@ -73,9 +64,7 @@ async function issueAlreadyExists ( summary )
         return res.data.issues?.length > 0;
     } catch ( err )
     {
-        console.warn(
-            `⚠️ Failed to check for existing Jira issues: ${ err.response?.status } ${ err.response?.statusText }`
-        );
+        console.warn( `⚠️ Failed to check for existing Jira issues: ${ err.response?.status } ${ err.response?.statusText }` );
         return false;
     }
 }
@@ -112,70 +101,77 @@ async function attachLogsToIssue ( issueKey, logString )
     }
 }
 
+async function createJiraBug ( test )
+{
+    const summary = `❌ [Cypress] ${ test.name }`;
+    const descriptionADF = createADFDescription( test );
+
+    const exists = await issueAlreadyExists( summary );
+    if ( exists )
+    {
+        console.log( `⚠️ Skipping duplicate Jira bug for: ${ test.name }` );
+        return null;
+    }
+
+    try
+    {
+        const res = await axios.post(
+            `${ JIRA_BASE_URL }/rest/api/3/issue`,
+            {
+                fields: {
+                    project: { key: JIRA_PROJECT_KEY },
+                    summary,
+                    description: descriptionADF,
+                    issuetype: { name: 'Bug' },
+                    labels: ['automated-test', 'cypress']
+                }
+            },
+            {
+                auth: AUTH,
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+
+        const issueKey = res.data.key;
+        console.log( `✅ Created Jira issue: ${ issueKey }` );
+
+        await attachLogsToIssue( issueKey, test.error || test.body || 'No log data.' );
+        return issueKey;
+    } catch ( err )
+    {
+        console.error( `❌ Failed to create Jira issue for test: ${ test.name }` );
+        console.error( err.response?.data || err.message );
+        return null;
+    }
+}
+
 exports.reportToJira = async ( failedTests = [] ) =>
 {
     if ( !JIRA_BASE_URL || !JIRA_API_TOKEN || !JIRA_PROJECT_KEY || !JIRA_EMAIL )
     {
-        console.log( '🔍 Jira Env:', {
-            JIRA_BASE_URL,
-            JIRA_EMAIL,
-            JIRA_API_TOKEN,
-            JIRA_PROJECT_KEY
-        } );
         console.log( '⚠️ Jira not fully configured in .env' );
-        return;
+        return failedTests;
     }
 
     if ( !failedTests.length )
     {
         console.log( '✅ No failed tests to report to Jira.' );
-        return;
+        return failedTests;
     }
 
     console.log( `🐞 Creating Jira issues for ${ failedTests.length } failed test(s)...` );
 
+    const updatedTests = [];
+
     for ( const test of failedTests )
     {
-        const summary = `❌ [Cypress] ${ test.name }`;
-        const descriptionADF = createADFDescription( test );
-
-        const exists = await issueAlreadyExists( summary );
-        if ( exists )
-        {
-            console.log( `⚠️ Skipping duplicate Jira bug for: ${ test.name }` );
-            continue;
-        }
-
-        try
-        {
-            const res = await axios.post(
-                `${ JIRA_BASE_URL }/rest/api/3/issue`,
-                {
-                    fields: {
-                        project: { key: JIRA_PROJECT_KEY },
-                        summary,
-                        description: descriptionADF,
-                        issuetype: { name: 'Bug' },
-                        labels: ['automated-test', 'cypress'],
-                    }
-                },
-                {
-                    auth: AUTH,
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
-
-            const issueKey = res.data.key;
-            console.log( `✅ Created Jira issue: ${ issueKey }` );
-
-            await attachLogsToIssue( issueKey, test.error || test.body || 'No log data.' );
-        } catch ( err )
-        {
-            console.error( `❌ Failed to create Jira issue for test: ${ test.name }` );
-            console.error( err.response?.data || err.message );
-        }
+        const issueKey = await createJiraBug( test );
+        test.jira = issueKey || 'N/A';
+        updatedTests.push( test );
     }
+
+    return updatedTests;
 };
