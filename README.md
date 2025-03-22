@@ -3,6 +3,22 @@
 
 A powerful CLI tool for parsing Cypress JSON test results and automatically reporting them to Confluence, Jira, and TestRail. Ideal for QA teams using modern CI/CD pipelines and test reporting systems.
 
+<p align="center">
+  <a href="https://www.cypress.io/">
+    <img src="https://img.shields.io/badge/Cypress-Testing%20Framework-brightgreen" alt="Cypress Badge" />
+  </a>
+  <a href="https://www.atlassian.com/software/jira">
+    <img src="https://img.shields.io/badge/Jira-Issue%20Tracking-blue" alt="Jira Badge" />
+  </a>
+  <a href="https://www.atlassian.com/software/confluence">
+    <img src="https://img.shields.io/badge/Confluence-Documentation-orange" alt="Confluence Badge" />
+  </a>
+  <a href="https://www.testrail.com/">
+    <img src="https://img.shields.io/badge/TestRail-Test%20Management-yellow" alt="TestRail Badge" />
+  </a>
+</p>
+</p>
+
 ---
 
 ## Table of Contents
