@@ -1,5 +1,5 @@
 {
-  "name": "cypress-gh-reporter",
+  "name": "cypress-linker-monorepo",
   "version": "1.0.0",
   "description": "CLI to report Cypress test results to Jira, TestRail, and Confluence",
   "main": "index.js",

@@ -1,5 +1,5 @@
 {
-   "name": "cypress-gh-reporter",
+  "name": "cypress-linker",
   "version": "1.0.0",
   "private": false,
   "bin": {

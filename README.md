@@ -1,5 +1,5 @@
 
-# Cypress Test Reporter CLI
+# Cypress Linker CLI
 
 A powerful CLI tool for parsing Cypress JSON test results and automatically reporting them to Confluence, Jira, and TestRail. Ideal for QA teams using modern CI/CD pipelines and test reporting systems.
 
