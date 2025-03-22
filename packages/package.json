@@ -1,5 +1,5 @@
 {
-   "name": "@kabirfaisal/cypress-gh-reporter",
+   "name": "cypress-gh-reporter",
   "version": "1.0.0",
   "private": false,
   "bin": {
