@@ -2,15 +2,25 @@
   "name": "cypress-reporter",
   "version": "1.0.0",
   "private": true,
+  "bin": {
+  "cypress-gh-reporter": "./index.js"
+},
   "scripts": {
     "report": "node packages/cypress-gh-reporter/index.js"
   },
   "workspaces": [
     "packages/*"
   ],
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "cypress",
+    "testrail",
+    "jira",
+    "confluence",
+    "reporter",
+    "cli"
+  ],
+   "author": "Kabir Faisal",
+  "license": "MIT",
   "type": "commonjs",
   "description": "",
   "dependencies": {
