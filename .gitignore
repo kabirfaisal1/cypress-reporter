@@ -41,4 +41,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-cypress
+# Ignore Cypress test folder
+cypress/
+
+
+# Also common ignores
+node_modules/
+dist/
+.env
+CypressTest/
