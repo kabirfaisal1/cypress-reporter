@@ -1,4 +1,3 @@
-
 const axios = require( 'axios' );
 const fs = require( 'fs' );
 const path = require( 'path' );
@@ -9,26 +8,28 @@ const {
     CONFLUENCE_USERNAME,
     CONFLUENCE_API_TOKEN,
     CONFLUENCE_SPACE_KEY,
-    CONFLUENCE_PAGE_ID
+    CONFLUENCE_PARENT_ID
 } = process.env;
 
-// TODO: Use for debugging
-// console.log( '🔍 CONFLUENCE Env:', {
-//     CONFLUENCE_BASE_URL,
-//     CONFLUENCE_USERNAME,
-//     CONFLUENCE_API_TOKEN,
-//     CONFLUENCE_SPACE_KEY,
-//     CONFLUENCE_PAGE_ID
-// } );
 
 const AUTH = {
     username: CONFLUENCE_USERNAME,
     password: CONFLUENCE_API_TOKEN
 };
 
+function generateTimestampTitle ()
+{
+    const now = new Date();
+    const mm = String( now.getMonth() + 1 ).padStart( 2, '0' );
+    const dd = String( now.getDate() ).padStart( 2, '0' );
+    const yyyy = now.getFullYear();
+    const ms = now.getMilliseconds();
+    return `${ mm }_${ dd }_${ yyyy }_${ ms }_Cypress Test Log`;
+}
+
 function generateDashboardHTML ( passed, failed )
 {
-    const htmlTemplatePath = path.join( __dirname, 'templates', 'dashboard.html' );
+    const htmlTemplatePath = path.join( __dirname, '..', 'templates', 'dashboard.html' );
 
     if ( !fs.existsSync( htmlTemplatePath ) )
     {
@@ -36,34 +37,35 @@ function generateDashboardHTML ( passed, failed )
         process.exit( 1 );
     }
 
-    const htmlTemplate = fs.readFileSync( htmlTemplatePath, 'utf-8' );
+    let html = fs.readFileSync( htmlTemplatePath, 'utf-8' );
     const total = passed.length + failed.length;
 
-    return htmlTemplate
-        .replace( /{{TOTAL_TESTS}}/g, total )
-        .replace( /{{PASSED_TESTS}}/g, passed.length )
-        .replace( /{{FAILED_TESTS}}/g, failed.length );
-}
-
-async function getPageInfo ( pageId )
-{
-    const res = await axios.get(
-        `${ CONFLUENCE_BASE_URL }/rest/api/content/${ pageId }?expand=version`,
-        { auth: AUTH }
+    html = html.replace( /{{TOTAL_TESTS}}/g, total );
+    html = html.replace( /{{PASSED_TESTS}}/g, passed.length );
+    html = html.replace( /{{FAILED_TESTS}}/g, failed.length );
+    html = html.replace(
+        '{{TEST_LOG}}',
+        failed.map( t => `❌ ${ t.name }<br/><pre>${ t.error || '' }</pre>` ).join( '<br/><br/>' )
     );
-    return res.data;
+
+    // TestRail placeholders
+    html = html.replace( '{{TESTRAIL_RUN_ID}}', 'N/A' );
+    html = html.replace( '{{TESTRAIL_TOTAL}}', 'N/A' );
+    html = html.replace( '{{TESTRAIL_PASSED}}', 'N/A' );
+    html = html.replace( '{{TESTRAIL_FAILED}}', 'N/A' );
+    html = html.replace( '{{TESTRAIL_CHART}}', '' );
+
+    return html;
 }
 
-async function updatePage ( page, htmlBody )
+async function createNewPage ( title, htmlBody )
 {
-    const newVersion = page.version.number + 1;
-
-    const res = await axios.put(
-        `${ CONFLUENCE_BASE_URL }/rest/api/content/${ CONFLUENCE_PAGE_ID }`,
+    const res = await axios.post(
+        `${ CONFLUENCE_BASE_URL }/rest/api/content`,
         {
-            version: { number: newVersion },
-            title: page.title,
+            title,
             type: 'page',
+            ancestors: [{ id: CONFLUENCE_PARENT_ID }],
             space: { key: CONFLUENCE_SPACE_KEY },
             body: {
                 storage: {
@@ -78,9 +80,9 @@ async function updatePage ( page, htmlBody )
     return res.data;
 }
 
-exports.updateConfluenceDashboard = async ( passed, failed ) =>
+exports.uploadTestLogToConfluence = async ( passed, failed ) =>
 {
-    if ( !CONFLUENCE_BASE_URL || !CONFLUENCE_PAGE_ID || !CONFLUENCE_USERNAME )
+    if ( !CONFLUENCE_BASE_URL || !CONFLUENCE_USERNAME || !CONFLUENCE_API_TOKEN || !CONFLUENCE_SPACE_KEY )
     {
         console.log( '⚠️ Missing Confluence config in .env' );
         return;
@@ -89,11 +91,22 @@ exports.updateConfluenceDashboard = async ( passed, failed ) =>
     try
     {
         const html = generateDashboardHTML( passed, failed );
-        const page = await getPageInfo( CONFLUENCE_PAGE_ID );
-        await updatePage( page, html );
-        console.log( '✅ Confluence dashboard updated successfully!' );
+        const title = generateTimestampTitle();
+
+        // Save to local "CypressTest" folder
+        const outputDir = path.join( __dirname, '..', 'CypressTest' );
+        if ( !fs.existsSync( outputDir ) )
+        {
+            fs.mkdirSync( outputDir, { recursive: true } );
+        }
+        const outputFile = path.join( outputDir, `${ title }.html` );
+        fs.writeFileSync( outputFile, html );
+        console.log( `🗂️ Saved report locally at: ${ outputFile }` );
+
+        await createNewPage( title, html );
+        console.log( `✅ Confluence page "${ title }" created successfully!` );
     } catch ( err )
     {
-        console.error( '❌ Failed to update Confluence:', err.response?.data || err.message );
+        console.error( '❌ Failed to create Confluence page:', err.response?.data || err.message );
     }
 };

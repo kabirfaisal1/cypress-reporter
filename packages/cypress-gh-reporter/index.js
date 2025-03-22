@@ -5,23 +5,50 @@ const path = require( 'path' );
 const chalk = require( 'chalk' );
 const minimist = require( 'minimist' );
 
-const { updateConfluenceDashboard } = require( './reporters/confluence' );
 const { reportToJira } = require( './reporters/jira' );
 const { reportToTestRail } = require( './reporters/testrail' );
+const { uploadTestLogToConfluence } = require( './reporters/confluence' ); // ✅ Fixed import
 
 const argv = minimist( process.argv.slice( 2 ) );
-const reportPath = argv._[0];
+const reportPath = argv._[0] || './cypress/results.json';
 
 const useJira = argv.jira || false;
 const useConfluence = argv.confluence || false;
 const useTestRail = argv.testrail || false;
 
+function extractTests ( suite, filePath )
+{
+    const tests = [];
+
+    if ( suite.tests )
+    {
+        tests.push(
+            ...suite.tests.map( test => ( {
+                name: test.title.join( ' > ' ),
+                state: test.state.toLowerCase?.() || 'unknown',
+                file: filePath,
+                body: test.body,
+                error: test.displayError || null
+            } ) )
+        );
+    }
+
+    if ( suite.suites )
+    {
+        suite.suites.forEach( subSuite =>
+        {
+            tests.push( ...extractTests( subSuite, filePath ) );
+        } );
+    }
+
+    return tests;
+}
+
 const run = async () =>
 {
-    if ( !reportPath )
+    if ( !fs.existsSync( reportPath ) )
     {
-        console.error( chalk.red( '❌ Please provide path to Cypress JSON report.' ) );
-        console.error( chalk.yellow( '👉 Example: npm run report -- ./cypress/results.json --jira --testrail --confluence' ) );
+        console.error( chalk.red( `❌ Cypress JSON report not found at: ${ reportPath }` ) );
         process.exit( 1 );
     }
 
@@ -37,29 +64,27 @@ const run = async () =>
         process.exit( 1 );
     }
 
-    const allTests = report.results.flatMap( ( suite ) =>
-        ( suite.suites || [] ).flatMap( ( sub ) =>
-            ( sub.tests || [] ).map( ( test ) => ( {
-                name: test.title.join( ' > ' ),
-                state: ( test.state || '' ).toLowerCase(),
-                file: suite.file,
-                body: test.body,
-                error: test.displayError || null,
-            } ) )
-        )
-    );
-
+    const allTests = report.results.flatMap( suite => extractTests( suite, suite.file ) );
     console.log( chalk.blue( `📋 Found ${ allTests.length } total test(s)` ) );
 
-    const passedTests = allTests.filter( ( t ) => t.state === 'passed' );
-    const failedTests = allTests.filter( ( t ) => t.state === 'failed' );
+    const passedTests = allTests.filter( t => t.state === 'passed' );
+    const failedTests = allTests.filter( t => t.state === 'failed' );
 
     console.log( chalk.green( `✅ Passed: ${ passedTests.length }` ) );
     console.log( chalk.red( `❌ Failed: ${ failedTests.length }` ) );
 
     if ( useJira ) await reportToJira( failedTests );
-    if ( useTestRail ) await reportToTestRail( passedTests, failedTests );
-    if ( useConfluence ) await updateConfluenceDashboard( passedTests, failedTests );
+
+    let testRailSummary = null;
+    if ( useTestRail )
+    {
+        testRailSummary = await reportToTestRail( passedTests, failedTests );
+    }
+
+    if ( useConfluence )
+    {
+        await uploadTestLogToConfluence( passedTests, failedTests, testRailSummary );
+    }
 };
 
 run();
