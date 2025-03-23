@@ -1,6 +1,6 @@
 {
   "name": "cypress-xporter",
-  "version": "1.2.2",
+  "version": "1.2.4",
   "description": "CLI tool to sync Cypress test results with Jira, TestRail, and Confluence.",
   "main": "index.js",
   "bin": {

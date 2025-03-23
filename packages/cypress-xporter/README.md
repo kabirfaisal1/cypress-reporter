@@ -36,7 +36,7 @@
 
 ## 📦 Installation
 
-### Global installation (after publishing to npm):
+### Global installation:
 
 ```bash
 npm install cypress-xporter
@@ -44,11 +44,6 @@ or
 npm install cypress-xporter --save-dev
 ```
 
-### Or use locally:
-
-```bash
-npx ./packages/cypress-xporter/index.js --jira --testrail --confluence
-```
 
 ---
 
