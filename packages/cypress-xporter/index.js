@@ -15,6 +15,7 @@ const useJira = argv.jira || false;
 const useConfluence = argv.confluence || false;
 const useTestRail = argv.testrail || false;
 
+// 🔍 Find all mochawesome*.json files
 async function findReportFiles ()
 {
     const pattern = '**/mochawesome*.json';
@@ -35,10 +36,10 @@ async function findReportFiles ()
 
     console.log( `🔍 Found ${ files.length } mochawesome report file(s):` );
     files.forEach( file => console.log( `  - ${ file }` ) );
-
     return files;
 }
 
+// 🔁 Merge JSON files
 function mergeAllReports ( reportFiles )
 {
     const reports = [];
@@ -94,6 +95,7 @@ function mergeAllReports ( reportFiles )
     return merged;
 }
 
+// 🧪 Extract tests recursively
 function extractTests ( suite, filePath )
 {
     const tests = [];
@@ -111,20 +113,20 @@ function extractTests ( suite, filePath )
 
     if ( suite.suites )
     {
-        suite.suites.forEach( sub =>
+        suite.suites.forEach( subSuite =>
         {
-            tests.push( ...extractTests( sub, filePath ) );
+            tests.push( ...extractTests( subSuite, filePath ) );
         } );
     }
 
     return tests;
 }
 
+// 🚀 Main runner
 const run = async () =>
 {
-    let mergedReportPath = path.join( process.cwd(), 'cypress', 'reports', 'merged-mochawesome.json' );
-
     let reportFiles;
+
     try
     {
         console.log( chalk.yellow( '🔄 Searching for mochawesome reports...' ) );
@@ -135,11 +137,13 @@ const run = async () =>
         process.exit( 1 );
     }
 
+    const outputDir = path.dirname( reportFiles[0] );
+    const mergedReportPath = path.join( outputDir, 'merged-mochawesome.json' );
+
     try
     {
         console.log( chalk.yellow( '📦 Merging all mochawesome reports...' ) );
         const mergedReport = mergeAllReports( reportFiles );
-        fs.mkdirSync( path.dirname( mergedReportPath ), { recursive: true } );
         fs.writeFileSync( mergedReportPath, JSON.stringify( mergedReport, null, 2 ) );
         console.log( chalk.green( `✅ Merged report saved to: ${ mergedReportPath }` ) );
     } catch ( err )
