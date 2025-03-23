@@ -39,7 +39,9 @@
 ### Global installation (after publishing to npm):
 
 ```bash
-npm install -g cypress-xporter
+npm install cypress-xporter
+or 
+npm install cypress-xporter --save-dev
 ```
 
 ### Or use locally:
