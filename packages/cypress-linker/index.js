@@ -5,12 +5,15 @@ const path = require( 'path' );
 const chalk = require( 'chalk' );
 const minimist = require( 'minimist' );
 
+// Merge mochawesome reports before running anything else
+const mergeReports = require( './jsonMerge' );
+
 const { reportToJira } = require( './reporters/jira' );
 const { reportToTestRail } = require( './reporters/testrail' );
 const { uploadTestLogToConfluence } = require( './reporters/confluence' );
 
 const argv = minimist( process.argv.slice( 2 ) );
-const reportPath = argv._[0] || './cypress/results.json';
+const reportPath = argv._[0] || './cypress/results/.jsons/merged-mochawesome.json';
 
 const useJira = argv.jira || false;
 const useConfluence = argv.confluence || false;
@@ -46,6 +49,18 @@ function extractTests ( suite, filePath )
 
 const run = async () =>
 {
+    // 🛠️ Step 1: Merge reports first
+    try
+    {
+        await mergeReports(); // This runs your jsonMerge logic
+    } catch ( err )
+    {
+        console.error( chalk.red( `❌ Failed to merge mochawesome reports` ) );
+        console.error( err.message );
+        process.exit( 1 );
+    }
+
+    // 🧪 Step 2: Parse merged report
     if ( !fs.existsSync( reportPath ) )
     {
         console.error( chalk.red( `❌ Cypress JSON report not found at: ${ reportPath }` ) );
