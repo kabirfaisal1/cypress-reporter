@@ -39,13 +39,13 @@
 ### Global installation (after publishing to npm):
 
 ```bash
-npm install -g cypress-linker
+npm install -g cypress-xporter
 ```
 
 ### Or use locally:
 
 ```bash
-npx ./packages/cypress-linker/index.js --jira --testrail --confluence
+npx ./packages/cypress-xporter/index.js --jira --testrail --confluence
 ```
 
 ---
@@ -82,7 +82,7 @@ CONFLUENCE_PARENT_PAGE_ID=131282
 After running Cypress tests (with Mochawesome reporter):
 
 ```bash
-npx cypress-linker --jira --testrail --confluence
+npx cypress-xporter --jira --testrail --confluence
 ```
 
 Cypress Xporter will:
@@ -99,13 +99,13 @@ Cypress Xporter will:
 
 ```bash
 # Run everything
-npx cypress-linker --jira --testrail --confluence
+npx cypress-xporter --jira --testrail --confluence
 
 # Only push to Jira and TestRail
-npx cypress-linker --jira --testrail
+npx cypress-xporter --jira --testrail
 
 # Only push to Confluence
-npx cypress-linker --confluence
+npx cypress-xporter --confluence
 ```
 
 Or via npm script (defined in root `package.json`):
@@ -127,7 +127,7 @@ npm run run-testrail
   run: npm run cy:run
 
 - name: Report with Cypress Xporter
-  run: npx cypress-linker --jira --testrail --confluence
+  run: npx cypress-xporter --jira --testrail --confluence
   env:
     JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
     JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
@@ -142,7 +142,7 @@ In your pipeline script:
 ```bash
 npm install
 npx cypress run
-npx cypress-linker --jira --testrail --confluence
+npx cypress-xporter --jira --testrail --confluence
 ```
 
 ---
