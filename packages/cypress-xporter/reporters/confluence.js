@@ -35,29 +35,29 @@ function buildFailedTestsTable ( failed )
         const error = ( test.error || '' ).replace( /\n/g, '<br/>' );
         const jira = test.jira || 'N/A';
         return `
-            <tr>
-                <td>${ test.file }</td>
-                <td>${ test.name }</td>
-                <td><pre>${ error }</pre></td>
-                <td>${ jira }</td>
-            </tr>`;
+      <tr>
+        <td>${ test.file }</td>
+        <td>${ test.name }</td>
+        <td><pre>${ error }</pre></td>
+        <td>${ jira }</td>
+      </tr>`;
     } ).join( '' );
 
     return `
-        <h2>❌ Cypress Test Failures</h2>
-        <table>
-            <colgroup><col /><col /><col /><col /></colgroup>
-            <tbody>
-                <tr>
-                    <th>📄 Spec File</th>
-                    <th>🧪 Test Name</th>
-                    <th>💥 Error</th>
-                    <th>🐞 Jira ID</th>
-                </tr>
-                ${ rows }
-            </tbody>
-        </table>
-    `;
+    <h2>❌ Cypress Test Failures</h2>
+    <table>
+      <colgroup><col /><col /><col /><col /></colgroup>
+      <tbody>
+        <tr>
+          <th>📄 Spec File</th>
+          <th>🧪 Test Name</th>
+          <th>💥 Error</th>
+          <th>🐞 Jira ID</th>
+        </tr>
+        ${ rows }
+      </tbody>
+    </table>
+  `;
 }
 
 function generateDashboardHTML ( passed, failed, testRail = null, chartPath = null )
@@ -149,11 +149,11 @@ exports.uploadTestLogToConfluence = async ( passed, failed, testRail = null, cha
         await createNewPage( title, html );
         console.log( `✅ Confluence test log page "${ title }" created successfully!` );
 
-        // 🔥 Remove the local file after upload
-        if ( fs.existsSync( outputFile ) )
+        // 🔥 Remove the entire CypressTest folder after upload
+        if ( fs.existsSync( outputDir ) )
         {
-            fs.unlinkSync( outputFile );
-            console.log( `🧹 Cleaned up local report: ${ outputFile }` );
+            fs.rmSync( outputDir, { recursive: true, force: true } );
+            console.log( `🧹 Cleaned up local report directory: ${ outputDir }` );
         }
 
     } catch ( err )
