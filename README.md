@@ -1,11 +1,11 @@
-# 🚀 Cypress Linker
+# 🚀 Cypress Xporter
 
 [![Cypress](https://img.shields.io/badge/Tested%20With-Cypress-6ad7e5?logo=cypress&logoColor=white)](https://www.cypress.io/)
 [![Jira](https://img.shields.io/badge/Integrated%20With-Jira-0052cc?logo=jira&logoColor=white)](https://www.atlassian.com/software/jira)
 [![Confluence](https://img.shields.io/badge/Logs%20to-Confluence-172B4D?logo=confluence&logoColor=white)](https://www.atlassian.com/software/confluence)
 [![TestRail](https://img.shields.io/badge/Syncs%20With-TestRail-3f51b5)](https://www.testrail.com/)
 
-**Cypress Linker** is a CLI tool that syncs your Cypress test results with **Jira**, **TestRail**, and **Confluence**. It automates the process of merging test reports, creating bug tickets, updating test plans, and documenting test summaries — all from your terminal.
+**Cypress Xporter** is a CLI tool that syncs your Cypress test results with **Jira**, **TestRail**, and **Confluence**. It automates the process of merging test reports, creating bug tickets, updating test plans, and documenting test summaries — all from your terminal.
 
 ---
 
@@ -85,7 +85,7 @@ After running Cypress tests (with Mochawesome reporter):
 npx cypress-linker --jira --testrail --confluence
 ```
 
-Cypress Linker will:
+Cypress Xporter will:
 
 1. Search for all `mochawesome*.json` reports across the project
 2. Merge them into a single report
@@ -126,7 +126,7 @@ npm run run-testrail
 - name: Run Cypress Tests
   run: npm run cy:run
 
-- name: Report with Cypress Linker
+- name: Report with Cypress Xporter
   run: npx cypress-linker --jira --testrail --confluence
   env:
     JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
