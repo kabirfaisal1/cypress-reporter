@@ -4,6 +4,7 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const chalk = require( 'chalk' );
 const minimist = require( 'minimist' );
+const fg = require( 'fast-glob' );
 
 const { reportToJira } = require( './reporters/jira' );
 const { reportToTestRail } = require( './reporters/testrail' );
@@ -14,38 +15,39 @@ const useJira = argv.jira || false;
 const useConfluence = argv.confluence || false;
 const useTestRail = argv.testrail || false;
 
-// 🔍 Search for a folder that looks like a mochawesome report dir
-function findReportDir ()
+async function findReportFiles ()
 {
-    const possiblePaths = [
-        path.join( process.cwd(), 'cypress', 'reports', '.jsons' ),
-        path.join( process.cwd(), 'cypress', 'report', '.jsons' ),
-        path.join( process.cwd(), 'cypress', '.jsons' ),
-    ];
+    const pattern = '**/mochawesome*.json';
+    const ignore = ['**/node_modules/**', '**/dist/**', '**/CypressTest/**'];
 
-    for ( const p of possiblePaths )
+    const files = await fg( pattern, {
+        cwd: process.cwd(),
+        onlyFiles: true,
+        absolute: true,
+        dot: true, // ✅ enables matching inside dot directories like `.jsons`
+        ignore,
+    } );
+
+    if ( !files.length )
     {
-        if ( fs.existsSync( p ) && fs.statSync( p ).isDirectory() )
-        {
-            return p;
-        }
+        throw new Error( '❌ No mochawesome JSON report files found.' );
     }
 
-    throw new Error( '❌ Could not find a valid mochawesome report directory.' );
+    console.log( `🔍 Found ${ files.length } mochawesome report file(s):` );
+    files.forEach( file => console.log( `  - ${ file }` ) );
+
+    return files;
 }
 
-function mergeAllReports ( directory )
+function mergeAllReports ( reportFiles )
 {
-    const reportFiles = fs.readdirSync( directory ).filter( file => file.endsWith( '.json' ) );
-    if ( !reportFiles.length ) throw new Error( 'No mochawesome reports found to merge.' );
-
     const reports = [];
+
     for ( const file of reportFiles )
     {
-        const fullPath = path.join( directory, file );
         try
         {
-            const content = fs.readFileSync( fullPath, 'utf8' );
+            const content = fs.readFileSync( file, 'utf8' );
             reports.push( JSON.parse( content ) );
         } catch ( err )
         {
@@ -80,7 +82,7 @@ function mergeAllReports ( directory )
             hasSkipped: false,
         },
         results: [],
-        meta: reports[0].meta
+        meta: reports[0].meta,
     } );
 
     if ( merged.stats.tests > 0 )
@@ -98,22 +100,20 @@ function extractTests ( suite, filePath )
 
     if ( suite.tests )
     {
-        tests.push(
-            ...suite.tests.map( test => ( {
-                name: test.fullTitle || test.title || 'Untitled Test',
-                state: test.state?.toLowerCase() || 'unknown',
-                file: filePath,
-                body: test.code || '',
-                error: test.err?.message || '',
-            } ) )
-        );
+        tests.push( ...suite.tests.map( test => ( {
+            name: test.fullTitle || test.title || 'Untitled Test',
+            state: test.state?.toLowerCase() || 'unknown',
+            file: filePath,
+            body: test.code || '',
+            error: test.err?.message || '',
+        } ) ) );
     }
 
     if ( suite.suites )
     {
-        suite.suites.forEach( subSuite =>
+        suite.suites.forEach( sub =>
         {
-            tests.push( ...extractTests( subSuite, filePath ) );
+            tests.push( ...extractTests( sub, filePath ) );
         } );
     }
 
@@ -122,30 +122,30 @@ function extractTests ( suite, filePath )
 
 const run = async () =>
 {
-    let reportDir;
-    let mergedReportPath;
+    let mergedReportPath = path.join( process.cwd(), 'cypress', 'reports', 'merged-mochawesome.json' );
+
+    let reportFiles;
+    try
+    {
+        console.log( chalk.yellow( '🔄 Searching for mochawesome reports...' ) );
+        reportFiles = await findReportFiles();
+    } catch ( err )
+    {
+        console.error( chalk.red( err.message ) );
+        process.exit( 1 );
+    }
 
     try
     {
-        console.log( chalk.yellow( '🔄 Merging all mochawesome reports...' ) );
-
-        reportDir = findReportDir();
-        mergedReportPath = path.join( reportDir, 'merged-mochawesome.json' );
-
-        const mergedReport = mergeAllReports( reportDir );
+        console.log( chalk.yellow( '📦 Merging all mochawesome reports...' ) );
+        const mergedReport = mergeAllReports( reportFiles );
+        fs.mkdirSync( path.dirname( mergedReportPath ), { recursive: true } );
         fs.writeFileSync( mergedReportPath, JSON.stringify( mergedReport, null, 2 ) );
-
         console.log( chalk.green( `✅ Merged report saved to: ${ mergedReportPath }` ) );
     } catch ( err )
     {
         console.error( chalk.red( '❌ Failed to merge mochawesome reports.' ) );
         console.error( err.message );
-        process.exit( 1 );
-    }
-
-    if ( !fs.existsSync( mergedReportPath ) )
-    {
-        console.error( chalk.red( `❌ Merged report not found: ${ mergedReportPath }` ) );
         process.exit( 1 );
     }
 
@@ -156,7 +156,7 @@ const run = async () =>
         report = JSON.parse( raw );
     } catch ( err )
     {
-        console.error( chalk.red( `❌ Failed to parse merged report.` ) );
+        console.error( chalk.red( '❌ Failed to parse merged report.' ) );
         console.error( err.message );
         process.exit( 1 );
     }

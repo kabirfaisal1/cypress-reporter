@@ -1,12 +1,16 @@
 {
   "name": "cypress-linker",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "private": false,
   "bin": {
     "cypress-linker": "./index.js"
   },
   "scripts": {
-    "report": "node ./index.js"
+    "report": "node ./index.js",
+    "run-all-tools": "node ./index.js --jira --testrail --confluence",
+    "run-jira-testrail": "node ./index.js  --jira --testrail",
+    "run-confluence-testrail": "node ./index.js  --testrail --confluence",
+    "run-testrail": "node ./index.js  --testrail"
   },
   "keywords": [
     "cypress",
@@ -24,7 +28,8 @@
     "axios": "^1.8.4",
     "chalk": "^4.1.2",
     "dotenv": "^16.4.7",
-    "minimist": "^1.2.8",
-    "form-data": "^4.0.0"
+    "fast-glob": "^3.3.3",
+    "form-data": "^4.0.0",
+    "minimist": "^1.2.8"
   }
 }
