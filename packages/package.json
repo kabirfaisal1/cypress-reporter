@@ -3,14 +3,11 @@
   "version": "1.0.0",
   "private": false,
   "bin": {
-  "cypress-gh-reporter": "./index.js"
-},
-  "scripts": {
-    "report": "node packages/cypress-gh-reporter/index.js"
+    "cypress-linker": "./index.js"
   },
-  "workspaces": [
-    "packages/*"
-  ],
+  "scripts": {
+    "report": "node ./index.js"
+  },
   "keywords": [
     "cypress",
     "testrail",
@@ -19,13 +16,15 @@
     "reporter",
     "cli"
   ],
-   "author": "Kabir Faisal",
+  "author": "Kabir Faisal",
   "license": "MIT",
   "type": "commonjs",
-  "description": "",
+  "description": "CLI to report Cypress test results to Jira, TestRail, and Confluence",
   "dependencies": {
     "axios": "^1.8.4",
     "chalk": "^4.1.2",
-    "dotenv": "^16.4.7"
+    "dotenv": "^16.4.7",
+    "minimist": "^1.2.8",
+    "form-data": "^4.0.0"
   }
 }

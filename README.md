@@ -1,164 +1,140 @@
+# Cypress Linker
 
-# Cypress Linker CLI
+**Version:** 1.0.0  
+**Last Updated:** March 23, 2025  
 
-A powerful CLI tool for parsing Cypress JSON test results and automatically reporting them to Confluence, Jira, and TestRail. Ideal for QA teams using modern CI/CD pipelines and test reporting systems.
-
-<p align="center">
-  <a href="https://www.cypress.io/">
-    <img src="https://img.shields.io/badge/Cypress-Testing%20Framework-brightgreen" alt="Cypress Badge" />
-  </a>
-  <a href="https://www.atlassian.com/software/jira">
-    <img src="https://img.shields.io/badge/Jira-Issue%20Tracking-blue" alt="Jira Badge" />
-  </a>
-  <a href="https://www.atlassian.com/software/confluence">
-    <img src="https://img.shields.io/badge/Confluence-Documentation-orange" alt="Confluence Badge" />
-  </a>
-  <a href="https://www.testrail.com/">
-    <img src="https://img.shields.io/badge/TestRail-Test%20Management-yellow" alt="TestRail Badge" />
-  </a>
-</p>
-</p>
+A cross-platform CLI tool that links Cypress test results with Jira, TestRail, and Confluence.
 
 ---
 
 ## Table of Contents
 
-1. [Summary](#summary)
-2. [Key Features](#key-features)
-3. [Installation](#installation)
-4. [Environment Setup](#environment-setup)
-5. [Usage Instructions](#usage-instructions)
-6. [CI/CD Integration](#cicd-integration)
-7. [API Token Setup & Configuration](#api-token-setup--configuration)
+- [Summary](#summary)
+- [Key Features](#key-features)
+- [Installation](#installation)
+- [Environment Setup](#environment-setup)
+- [Usage](#usage)
+- [CI/CD Integration](#cicd-integration)
+- [Token & ID Configuration Guide](#token--id-configuration-guide)
 
 ---
 
 ## Summary
 
-This package takes Cypress JSON test reports and generates:
-
-- Confluence test dashboards with rich logs and charts
-- Jira bug tickets for failed tests
-- TestRail run updates and result syncing
+**Cypress Linker** is an automation tool that reads Cypress Mochawesome JSON reports, merges multiple test runs, and synchronizes the test outcomes across:
+- **Jira** (bug tracking)
+- **TestRail** (test case status updates)
+- **Confluence** (dashboard reporting)
 
 ---
 
 ## Key Features
 
-- Parse nested Cypress test suites
-- Upload test logs and failure tables to Confluence
-- Automatically create Jira issues (with duplicate protection)
-- Report pass/fail statuses to TestRail
-- Embed charts using ChartJS
+- Auto-merges multiple Mochawesome JSON files
+- Creates Jira bugs for failed tests
+- Reports test run status to TestRail
+- Generates and uploads a detailed Confluence page with test logs and summary
+- Outputs HTML logs locally under `CypressTest/`
 
 ---
 
 ## Installation
 
 ```bash
-npm install -g cypress-gh-reporter
+npm install -g cypress-linker
 ```
 
-Or as a dev dependency in your Cypress project:
+Or for local use in a Cypress project:
 
 ```bash
-npm install --save-dev cypress-gh-reporter
+npm install --save-dev cypress-linker
 ```
 
 ---
 
 ## Environment Setup
 
-Create a `.env` file in your root directory and configure:
+Create a `.env` file in your project root:
 
 ```env
-# Jira
+# JIRA
 JIRA_BASE_URL=https://your-domain.atlassian.net
 JIRA_EMAIL=your-email@example.com
 JIRA_API_TOKEN=your-jira-api-token
 JIRA_PROJECT_KEY=PROJECTKEY
 
-# TestRail
+# TESTRAIL
 TESTRAIL_DOMAIN=https://yourcompany.testrail.io
 TESTRAIL_USERNAME=testrail@example.com
 TESTRAIL_API_KEY=your-testrail-api-key
-TESTRAIL_PROJECT_ID=1
+TESTRAIL_PROJECT_ID=PROJECT_ID
 
-# Confluence
+# CONFLUENCE
 CONFLUENCE_BASE_URL=https://your-domain.atlassian.net
 CONFLUENCE_USERNAME=your-email@example.com
 CONFLUENCE_API_TOKEN=your-confluence-token
 CONFLUENCE_SPACE_KEY=SPACEKEY
-CONFLUENCE_PARENT_PAGE_ID=131282
+CONFLUENCE_PARENT_PAGE_ID=PAGE_ID
 ```
 
 ---
 
-## Usage Instructions
-
-After running your Cypress test and saving the JSON output (e.g., using mocha reporter):
+## Usage
 
 ```bash
-npx cypress run --reporter json --reporter-options output=cypress/results.json
+npx cypress-linker ./cypress/report/.jsons/merged-mochawesome.json --jira --testrail --confluence
 ```
 
-Run the CLI:
+### CLI Options
 
-```bash
-npx cypress-gh-reporter ./cypress/results.json --jira --testrail --confluence
-```
+| Option          | Description                               |
+|-----------------|-------------------------------------------|
+| `--jira`        | Enables Jira bug creation for failures    |
+| `--testrail`    | Sends pass/fail status to TestRail        |
+| `--confluence`  | Creates a Confluence dashboard            |
 
 ---
 
 ## CI/CD Integration
 
-### GitHub Actions
+### GitHub Actions Example
 
 ```yaml
-- name: Run Cypress tests
-  run: npx cypress run --reporter json --reporter-options output=cypress/results.json
+- name: Run Cypress Tests
+  run: npx cypress run
 
-- name: Upload Cypress Test Report
-  run: npx cypress-gh-reporter ./cypress/results.json --jira --testrail --confluence
-  env:
-    JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-    JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
-    JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-    # ...other env variables
+- name: Report with Cypress Linker
+  run: npx cypress-linker ./cypress/report/.jsons/merged-mochawesome.json --jira --testrail --confluence
 ```
 
-### Jenkins / Legacy CI
+### Jenkins
 
-Just call the CLI like this in a build step:
+Add a shell step in your Jenkins pipeline:
 
 ```bash
-npx cypress-gh-reporter ./cypress/results.json --jira --testrail --confluence
+npx cypress-linker ./cypress/report/.jsons/merged-mochawesome.json --jira --testrail --confluence
 ```
 
 ---
 
-## API Token Setup & Configuration
+## Token & ID Configuration Guide
 
-### Jira Setup
+### Jira
+- **API Token:** https://id.atlassian.com/manage-profile/security/api-tokens
+- **Project Key:** Found in Jira project settings under "Key"
 
-- **JIRA_BASE_URL**: Your Jira domain, e.g., `https://your-domain.atlassian.net`
-- **JIRA_EMAIL**: Your Atlassian email address.
-- **JIRA_API_TOKEN**: [Generate a Jira API token](https://id.atlassian.com/manage-profile/security/api-tokens)
-- **JIRA_PROJECT_KEY**: Found in your Jira project URL or project settings.
+### TestRail
+- **API Key:** Generated in TestRail under your user profile > API keys
+- **Project ID:** Found in the TestRail project URL: `/index.php?/projects/overview/{project_id}`
 
-### TestRail Setup
-
-- **TESTRAIL_DOMAIN**: Your TestRail domain, e.g., `https://yourcompany.testrail.io`
-- **TESTRAIL_USERNAME**: Your TestRail login email.
-- **TESTRAIL_API_KEY**: [Generate TestRail API key](https://www.gurock.com/testrail/docs/api/introduction/)
-- **TESTRAIL_PROJECT_ID**: Found in the project URL or via TestRail API.
-
-### Confluence Setup
-
-- **CONFLUENCE_BASE_URL**: Your Confluence domain.
-- **CONFLUENCE_USERNAME**: Your Atlassian email.
-- **CONFLUENCE_API_TOKEN**: [Generate a Confluence API token](https://id.atlassian.com/manage-profile/security/api-tokens)
-- **CONFLUENCE_SPACE_KEY**: Found in space URL or settings.
-- **CONFLUENCE_PARENT_PAGE_ID**: The numeric ID in the Confluence page URL.
+### Confluence
+- **API Token:** https://id.atlassian.com/manage-profile/security/api-tokens
+- **Space Key:** Found in the Confluence URL as `/spaces/{SPACEKEY}/`
+- **Parent Page ID:** Open the parent page > URL contains `pageId=123456`
 
 ---
+
+## Output
+
+- Local test log: `./CypressTest/{timestamp}_Cypress Test Log.html`
+- Uploaded Confluence page with test chart and log

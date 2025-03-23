@@ -4,8 +4,11 @@
   "description": "CLI to report Cypress test results to Jira, TestRail, and Confluence",
   "main": "index.js",
   "bin": {
-    "cypress-gh-reporter": "./index.js"
+    "cypress-linker": "./index.js"
   },
+  "scripts": {
+  "report": "node packages/cypress-linker/index.js"
+},
   "keywords": [
     "cypress",
     "testrail",
