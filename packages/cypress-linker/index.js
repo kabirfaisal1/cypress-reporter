@@ -24,7 +24,7 @@ async function findReportFiles ()
         cwd: process.cwd(),
         onlyFiles: true,
         absolute: true,
-        dot: true, // ✅ enables matching inside dot directories like `.jsons`
+        dot: true,
         ignore,
     } );
 
