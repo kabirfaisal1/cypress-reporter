@@ -76,7 +76,18 @@ CONFLUENCE_PARENT_PAGE_ID=Folder/PageID
 
 ## 🚀 Usage
 
-After running Cypress tests (with Mochawesome reporter):
+> **ℹ️ Note:**  
+> When writing your Cypress tests, you can include the TestRail ID in the test name using the following format:  
+> ```javascript
+> it('<Test Name> [<TRID>]', () => {
+>   // Your test code here
+> });
+> ```  
+> Replace `<Test Name>` with the name of your test and `<TRID>` with the corresponding TestRail ID. This helps Cypress Xporter map the test results to the correct TestRail test cases.
+
+
+### After running Cypress tests (with Mochawesome reporter):
+
 
 ```bash
 npx cypress-xporter --jira --testrail --confluence
