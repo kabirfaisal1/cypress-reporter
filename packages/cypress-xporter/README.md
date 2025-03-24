@@ -20,6 +20,7 @@
   - [GitHub Actions](#github-actions)
   - [Jenkins](#jenkins)
 - [🔐 Token & ID Setup Help](#-token--id-setup-help)
+- [📷 Screenshots](#-screenshots)
 - [📄 License](#-license)
 
 ---
@@ -88,7 +89,6 @@ CONFLUENCE_PARENT_PAGE_ID=Folder/PageID
 
 ### After running Cypress tests (with Mochawesome reporter):
 
-
 ```bash
 npx cypress-xporter --jira --testrail --confluence
 ```
@@ -100,6 +100,8 @@ Cypress Xporter will:
 3. Create Jira tickets for failed tests (if `--jira` is passed)
 4. Log results to TestRail (if `--testrail` is passed)
 5. Generate a dashboard and upload to Confluence (if `--confluence` is passed)
+
+
 
 ---
 
@@ -166,6 +168,28 @@ npx cypress-xporter --jira --testrail --confluence
 - 📌 **CONFLUENCE_PARENT_PAGE_ID** → ID of the parent page/folder where test logs go (check Confluence URL or API)
 
 ---
+## 🎥 Playable Demo
+
+Check out this quick demo of **Cypress Xporter** in action:
+
+<video controls width="100%" poster="https://res.cloudinary.com/dzsguot60/image/upload/v1742835324/cypress-Xporter/Screenshot_2025-03-24_at_12.54.22_PM_zdl24c.png">
+  <source src="https://res.cloudinary.com/dzsguot60/video/upload/v1742834918/cypress-Xporter/Screen_Recording_2025-03-24_at_12.35.58_PM_dxht8g.mov" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+> **🎥 Playable Demo:**  
+> Click the image above to watch a quick demo of **Cypress Xporter** in action.
+
+## 📷 Screenshots
+
+### Test Results Dashboard
+![Test Results Dashboard](https://res.cloudinary.com/dzsguot60/image/upload/v1742834937/cypress-Xporter/Screenshot_2025-03-24_at_12.44.25_PM_kdvrt1.png)
+
+### Jira Bug Ticket Example
+![Jira Bug Ticket Example](https://res.cloudinary.com/dzsguot60/image/upload/v1742834927/cypress-Xporter/Screenshot_2025-03-24_at_12.42.50_PM_w9fpw0.png)
+
+### Confluence Test Summary
+![Confluence Test Summary](https://res.cloudinary.com/dzsguot60/image/upload/v1742834928/cypress-Xporter/Screenshot_2025-03-24_at_12.38.38_PM_qirzek.png)
 
 ## 📄 License
 
