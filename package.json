@@ -1,6 +1,6 @@
 {
   "name": "cypress-xporter-monorepo",
-  "version": "1.2.0",
+  "version": "1.2.7",
   "description": "CLI to report Cypress test results to Jira, TestRail, and Confluence",
   "main": "index.js",
   "bin": {

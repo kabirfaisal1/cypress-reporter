@@ -20,6 +20,7 @@
   - [GitHub Actions](#github-actions)
   - [Jenkins](#jenkins)
 - [🔐 Token & ID Setup Help](#-token--id-setup-help)
+- [📷 Screenshots](#-screenshots)
 - [📄 License](#-license)
 
 ---
@@ -74,7 +75,7 @@ CONFLUENCE_BASE_URL=https://your-domain.atlassian.net
 CONFLUENCE_USERNAME=your-email@example.com
 CONFLUENCE_API_TOKEN=your-confluence-token
 CONFLUENCE_SPACE_KEY=SPACEKEY
-CONFLUENCE_PARENT_PAGE_ID=Folder/PageID
+CONFLUENCE_PARENT_PAGE_ID=Folder |OR| PageID
 ```
 
 ---
@@ -170,6 +171,19 @@ npx cypress-xporter --jira --testrail --confluence
 - 📌 **CONFLUENCE_PARENT_PAGE_ID** → ID of the parent page/folder where test logs go (check Confluence URL or API)
 
 ---
+
+## 📷 Screenshots
+### CLI Execution
+![CLI TestExecution](https://res.cloudinary.com/dzsguot60/image/upload/v1742835324/cypress-Xporter/Screenshot_2025-03-24_at_12.54.22_PM_zdl24c.png)
+
+### Test Results Dashboard
+![Test Results Dashboard](https://res.cloudinary.com/dzsguot60/image/upload/v1742834937/cypress-Xporter/Screenshot_2025-03-24_at_12.44.25_PM_kdvrt1.png)
+
+### Jira Bug Ticket Example
+![Jira Bug Ticket Example](https://res.cloudinary.com/dzsguot60/image/upload/v1742834927/cypress-Xporter/Screenshot_2025-03-24_at_12.42.50_PM_w9fpw0.png)
+
+### Confluence Test Summary
+![Confluence Test Summary](https://res.cloudinary.com/dzsguot60/image/upload/v1742834928/cypress-Xporter/Screenshot_2025-03-24_at_12.38.38_PM_qirzek.png)
 
 ## 📄 License
 

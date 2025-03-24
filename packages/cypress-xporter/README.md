@@ -70,7 +70,7 @@ CONFLUENCE_BASE_URL=https://your-domain.atlassian.net
 CONFLUENCE_USERNAME=your-email@example.com
 CONFLUENCE_API_TOKEN=your-confluence-token
 CONFLUENCE_SPACE_KEY=SPACEKEY
-CONFLUENCE_PARENT_PAGE_ID=Folder/PageID
+CONFLUENCE_PARENT_PAGE_ID=Folder |OR| PageID
 ```
 
 ---
