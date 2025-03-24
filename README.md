@@ -67,14 +67,14 @@ JIRA_PROJECT_KEY=PROJECTKEY
 TESTRAIL_DOMAIN=https://yourcompany.testrail.io
 TESTRAIL_USERNAME=testrail@example.com
 TESTRAIL_API_KEY=your-testrail-api-key
-TESTRAIL_PROJECT_ID=1
+TESTRAIL_PROJECT_ID=ProjectID
 
 # CONFLUENCE
 CONFLUENCE_BASE_URL=https://your-domain.atlassian.net
 CONFLUENCE_USERNAME=your-email@example.com
 CONFLUENCE_API_TOKEN=your-confluence-token
 CONFLUENCE_SPACE_KEY=SPACEKEY
-CONFLUENCE_PARENT_PAGE_ID=131282
+CONFLUENCE_PARENT_PAGE_ID=Folder/PageID
 ```
 
 ---
@@ -151,13 +151,13 @@ npx cypress-xporter --jira --testrail --confluence
 
 ## 🔐 Token & ID Setup Help
 
-- 🔑 [Get a Jira API token](https://id.atlassian.com/manage/api-tokens)
-- 🔑 [Get a Confluence API token](https://id.atlassian.com/manage/api-tokens)
-- 🔑 [Get a TestRail API key](https://support.testrail.com/hc/en-us/articles/7075526355095)
+- 🔑 [Get a Jira API token](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/)
+- 🔑 [Get a Confluence API token](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/)
+- 🔑 [Get a TestRail API key](https://support.testrail.com/hc/en-us/articles/7077039051284-Accessing-the-TestRail-API#h_01J53NS43210J0AN0TV6JPHVYY)
 - 📌 **JIRA_PROJECT_KEY** → Can be found in the project settings (e.g., `ABC`)
 - 📌 **TESTRAIL_PROJECT_ID** → Use TestRail API or UI to identify
 - 📌 **CONFLUENCE_SPACE_KEY** → Space key shown in your space URL (e.g., `TEST`)
-- 📌 **CONFLUENCE_PARENT_PAGE_ID** → ID of the parent page where test logs go (check Confluence URL or API)
+- 📌 **CONFLUENCE_PARENT_PAGE_ID** → ID of the parent page/folder where test logs go (check Confluence URL or API)
 
 ---
 
