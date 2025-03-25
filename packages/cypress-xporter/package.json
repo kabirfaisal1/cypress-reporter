@@ -7,7 +7,7 @@
     "cypress-xporter": "./index.js"
   },
   "bugs": {
-    "url": "https://github.com/kabirfaisal1/cypress-reporter/tree/main/packages/cypress-xporter",
+    "url": "https://github.com/kabirfaisal1/cypress-reporter/issues",
     "email": "md.kabirfaisal@outlook.com"
   },
   "scripts": {
