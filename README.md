@@ -37,6 +37,17 @@
 
 ## 📦 Installation
 
+### Dependency:
+- ✅  `"NODE": "^22.12.0"`
+- ✅  `"npm": "^11.0.0"`
+- ✅  `"cypress": "^13.5.1" OR higher`
+- ✅  `"axios": "^1.8.4"`
+- ✅  `dotenv": "^16.4.7"`
+- ✅  `"fast-glob": "^3.3.3"`
+- ✅  `"chalk": "^4.1.2"`
+- ✅  `"form-data": "^4.0.0"`
+- ✅  `"minimist": "^1.2.8"`
+
 ### Global installation (after publishing to npm):
 
 ```bash
