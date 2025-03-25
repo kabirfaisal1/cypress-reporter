@@ -27,9 +27,10 @@ function createADFDescription ( test )
         `💥 Error:`,
         test.error || 'No error message provided',
         ``,
-        `🧬 Test Body:`,
-        test.body?.slice( 0, 1000 ) || 'No body available'
+        `🧬 Test Body:`
     ];
+
+    const testBody = test.body?.slice( 0, 1000 ) || 'No body available';
 
     return {
         type: 'doc',
@@ -43,25 +44,60 @@ function createADFDescription ( test )
                         text: lines.join( '\n' )
                     }
                 ]
+            },
+            {
+                type: 'codeBlock',
+                attrs: { language: 'javascript' },
+                content: [
+                    {
+                        type: 'text',
+                        text: testBody
+                    }
+                ]
             }
         ]
     };
 }
 
+function sanitizeForJQL ( text )
+{
+    return text
+        .replace( /[^\w\s\-:()]/g, '' ) // Remove emojis & special characters like []{}!
+        .replace( /\s+/g, ' ' )         // Normalize spaces
+        .trim();
+}
+
 async function issueAlreadyExists ( summary )
 {
-    const escapedSummary = summary.replace( /["\\]/g, '' );
-    const jql = `project = ${ JIRA_PROJECT_KEY } AND summary ~ "${ escapedSummary }"`;
+    const cleanSummary = sanitizeForJQL( summary );
+    const jql = `project = "${ JIRA_PROJECT_KEY }" AND summary ~ "${ cleanSummary }"`;
 
     try
     {
+        console.info( `🔍 Checking for existing Jira issues with JQL: ${ jql }` );
         const res = await axios.get( `${ JIRA_BASE_URL }/rest/api/3/search`, {
-            params: { jql },
+            params: {
+                jql,
+                fields: 'summary,status'
+            },
             auth: AUTH,
             headers: { Accept: 'application/json' }
         } );
 
-        return res.data.issues?.length > 0;
+        const openIssue = res.data.issues?.find( issue =>
+        {
+            const status = issue.fields?.status?.name?.toLowerCase() || '';
+            return !['done', 'closed', "won't fix", 'wontfix'].includes( status );
+        } );
+
+        if ( openIssue )
+        {
+            console.log( `⚠️ Skipping duplicate: found existing open issue ${ openIssue.key } with status "${ openIssue.fields.status.name }"` );
+            return true;
+        }
+
+        return false;
+
     } catch ( err )
     {
         console.warn( `⚠️ Failed to check for existing Jira issues: ${ err.response?.status } ${ err.response?.statusText }` );
