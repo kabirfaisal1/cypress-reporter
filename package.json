@@ -6,6 +6,10 @@
   "bin": {
     "cypress-xporter": "./index.js"
   },
+    "bugs": {
+    "url": "https://github.com/kabirfaisal1/cypress-reporter/tree/main/packages/cypress-xporter",
+    "email": "md.kabirfaisal@outlook.com"
+  },
   "scripts": {
     "run-reporter": "node packages/cypress-xporter/index.js",
     "run-all-tools": "node packages/cypress-xporter/index.js --jira --testrail --confluence",
