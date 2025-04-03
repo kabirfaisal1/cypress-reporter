@@ -6,6 +6,10 @@
   "bin": {
     "cypress-xporter": "./index.js"
   },
+    "repository": {
+    "type": "git",
+    "url": "https://github.com/kabirfaisal1/cypress-reporter"
+  },
     "bugs": {
     "url": "https://github.com/kabirfaisal1/cypress-reporter/issues",
     "email": "md.kabirfaisal@outlook.com"
