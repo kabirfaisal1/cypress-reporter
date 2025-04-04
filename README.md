@@ -40,7 +40,7 @@
 ### Dependency:
 - ✅  `"NODE": "^22.12.0"`
 - ✅  `"npm": "^11.0.0"`
-- ✅  `"cypress": "^13.5.1" OR higher`
+- ✅  `"cypress": "12.x.x,13.x.x, and 14.x.x" OR higher`
 - ✅  `"axios": "^1.8.4"`
 - ✅  `dotenv": "^16.4.7"`
 - ✅  `"fast-glob": "^3.3.3"`
