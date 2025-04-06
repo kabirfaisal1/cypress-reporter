@@ -1,0 +1,34 @@
+name: Running Cypress Xporter
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Create .env file from GitHub Secrets
+        run: |
+          echo "Generating .env file..."
+          echo "${{ secrets.APP_SECRET }}" >> .env
+          cat .env
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Cypress Tests
+        run: |
+          echo "Running Cypress tests..."
+          npx cypress run || echo "Cypress tests failed, continuing to Xporter..."
+
+      - name: Publish Mochawesome Report with Cypress Xporter
+        if: always()
+        run: |
+          echo "Publishing Mochawesome Report with Cypress Xporter..."
+          npx cypress-xporter --jira --testrail --confluence

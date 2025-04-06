@@ -6,12 +6,12 @@
   "bin": {
     "cypress-xporter": "./index.js"
   },
-    "homepage": "https://github.com/kabirfaisal1/cypress-reporter/blob/main/packages/cypress-xporter/README.md",
-    "repository": {
+  "homepage": "https://github.com/kabirfaisal1/cypress-reporter/blob/main/packages/cypress-xporter/README.md",
+  "repository": {
     "type": "git",
     "url": "https://github.com/kabirfaisal1/cypress-reporter"
   },
-    "bugs": {
+  "bugs": {
     "url": "https://github.com/kabirfaisal1/cypress-reporter/issues",
     "email": "md.kabirfaisal@outlook.com"
   },
@@ -35,9 +35,14 @@
   "dependencies": {
     "axios": "^1.6.7",
     "chalk": "^5.3.0",
+    "cypress-mochawesome-reporter": "^3.8.2",
+    "cypress-xporter": "^1.2.13",
     "dotenv": "^16.3.1",
     "fast-glob": "^3.3.3",
     "form-data": "^4.0.0",
     "minimist": "^1.2.8"
+  },
+  "devDependencies": {
+    "cypress": "^14.2.1"
   }
 }
