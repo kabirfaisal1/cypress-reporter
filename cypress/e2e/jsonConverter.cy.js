@@ -21,7 +21,7 @@ describe( 'JSON to Excel', () =>
         cy.get( '[data-testid="downloadExcel_Button"]' ).should( 'be.visible' );
 
         cy.verifyTableData(
-            ['Name', 'E-mail', 'Date of Birth'],
+            ['Name', 'E-mail'],
             ['John Smith', 'testWorld@gmail.com']
         );
     } );

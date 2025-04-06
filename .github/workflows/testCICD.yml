@@ -1,4 +1,4 @@
-name: Docker Stage Build, Push, Stop, and Cleanup
+name: Running Cypress Xporter
 
 on:
   workflow_dispatch:
@@ -12,16 +12,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Create .env file from GitHub Secrets
       - name: Create .env file from GitHub Secrets
         run: |
           echo "Generating .env file..."
           echo "${{ secrets.APP_SECRET }}" >> .env
-          cat .env
 
-    # Cypress Test
+      # Cypress Test
       - name: Cypress Test
         run: |
           echo "Running Cypress tests..."
           npm install
           npx cypress run
+
+      # ✅ Always run this step, even if Cypress tests fail
+      - name: Cypress Xporter
+        if: always()
+        run: |
+          echo "Publish Mochawesome Report with Cypress Xporter..."
+          npx cypress-xporter --jira --testrail --confluence
