@@ -1,8 +1,10 @@
-name: Running Cypress Xporter
+name: Run plugin tests
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches: [main]
+  workflow_dispatch:
+    # manually triggered
 
 jobs:
   build-and-test:
