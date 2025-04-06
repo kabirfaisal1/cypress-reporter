@@ -17,90 +17,11 @@ jobs:
         run: |
           echo "Generating .env file..."
           echo "${{ secrets.APP_SECRET }}" >> .env
-          echo "DOCKER_IMAGE_NAME=mdkabirfaisal1/next15-ecommerce" >> .env
           cat .env
 
-      # Load Environment Variables and Validate
-      - name: Load and Export Environment Variables
+    # Cypress Test
+      - name: Cypress Test
         run: |
-          set -a
-          source .env
-          set +a
-          
-          # Debugging: Ensure DOCKER_IMAGE_NAME is set correctly
-          echo "DOCKER_IMAGE_NAME is set to: '$DOCKER_IMAGE_NAME'"
-
-          if [[ -z "$DOCKER_IMAGE_NAME" ]]; then
-            echo "ERROR: DOCKER_IMAGE_NAME is empty! Check your .env file."
-            exit 1
-          fi
-        env:
-          DOCKER_IMAGE_NAME: ${{ secrets.DOCKER_IMAGE_NAME }}
-
-      # Log in to Docker Hub
-      - name: Log in to Docker Hub
-        run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-          echo "Logged in to Docker Hub as ${{ secrets.DOCKER_USERNAME }}"
-
-      # Build Docker Image
-      - name: Build Docker Image
-        run: |
-          echo "Building Docker image: $DOCKER_IMAGE_NAME:stage"
-          docker build -f docker/Dockerfile.stage -t "$DOCKER_IMAGE_NAME:stage" .
-        env:
-          DOCKER_IMAGE_NAME: mdkabirfaisal1/next15-ecommerce
-
-      # Push Docker Image to Docker Hub
-      - name: Push Docker Image
-        run: |
-          echo "Pushing image to Docker Hub..."
-          docker push "$DOCKER_IMAGE_NAME:stage"
-        env:
-          DOCKER_IMAGE_NAME: mdkabirfaisal1/next15-ecommerce
-
-      # Print Deployment Instructions
-      - name: Print Deployment Instructions
-        run: |
-          echo "================ Deployment Instructions ================"
-          echo "To pull and run the image anywhere, use the following commands:"
-          echo ""
-          echo "1. Pull the latest image:"
-          echo "   docker pull $DOCKER_IMAGE_NAME:stage"
-          echo "2. Run the container:"
-          echo "   docker run -p 8000:3000 --name appStage-container $DOCKER_IMAGE_NAME:stage"
-          echo "========================================================="
-        env:
-          DOCKER_IMAGE_NAME: mdkabirfaisal1/next15-ecommerce
-          
-    # Sleep for 120 minutes to allow the container to run
-      - name: Let the container run for 120 minutes
-        run: sleep 7200
-
-      # Stop and remove the container
-      - name: Check and Stop/Remove Container
-        run: |
-          CONTAINER_NAME="appStage-container"
-          if [ "$(docker ps -a -q -f name=$CONTAINER_NAME)" ]; then
-            echo "Stopping container..."
-            docker stop $CONTAINER_NAME
-            echo "Removing container..."
-            docker rm $CONTAINER_NAME
-          else
-            echo "No container found with name $CONTAINER_NAME. Skipping stop and remove."
-          fi
-
-      # Remove the Docker image
-      - name: Remove Docker Image
-        run: |
-          echo "Checking if the Docker image exists..."
-          if docker images | grep -q "$DOCKER_IMAGE_NAME:stage"; then
-            echo "Removing the Docker image..."
-            docker rmi "$DOCKER_IMAGE_NAME:stage"
-          else
-            echo "Docker image $DOCKER_IMAGE_NAME:stage not found. Skipping removal."
-          fi
-        env:
-          DOCKER_IMAGE_NAME: mdkabirfaisal1/next15-ecommerce
-
-
+          echo "Running Cypress tests..."
+          npm install
+          npx cypress run
