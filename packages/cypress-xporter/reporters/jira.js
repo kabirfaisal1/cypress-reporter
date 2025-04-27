@@ -16,58 +16,146 @@ const AUTH = {
     password: JIRA_API_TOKEN
 };
 
-function createADFDescription ( test )
+// 🔥 Upload screenshot and return { id, content }
+async function uploadScreenshotAndGetUrl ( issueKey, filePath )
 {
-    const lines = [
-        `❌ Cypress Test Failed`,
-        ``,
-        `📄 Spec File: ${ test.file }`,
-        ``,
-        `🧪 Test Name: ${ test.name }`,
-        ``,
-        `💥 Error:`,
-        test.error || 'No error message provided',
-        ``,
-        `🧬 Test Body:`
-    ];
+    if ( !filePath || !fs.existsSync( filePath ) ) return null;
 
-    const testBody = test.body?.slice( 0, 1000 ) || 'No body available';
+    const form = new FormData();
+    form.append( 'file', fs.createReadStream( filePath ) );
+
+    try
+    {
+        const res = await axios.post(
+            `${ JIRA_BASE_URL }/rest/api/3/issue/${ issueKey }/attachments`,
+            form,
+            {
+                auth: AUTH,
+                headers: {
+                    ...form.getHeaders(),
+                    'X-Atlassian-Token': 'no-check'
+                }
+            }
+        );
+
+        const attachment = res.data?.[0];
+        if ( attachment )
+        {
+            console.log( `📎 Uploaded screenshot: ${ attachment.content }` );
+            return {
+                id: attachment.id,
+                content: attachment.content
+            };
+        }
+
+        return null;
+    } catch ( err )
+    {
+        console.error( '❌ Failed to upload screenshot:', err.response?.data || err.message );
+        return null;
+    }
+}
+
+// ✍️ Create ADF Description with Screenshot Link
+function createADFDescription ( test, screenshotUrl )
+{
+    const adfContent = [];
+
+    adfContent.push( {
+        type: 'paragraph',
+        content: [
+            { type: 'text', text: '❌ Cypress Test Failed' }
+        ]
+    } );
+
+    if ( test.file )
+    {
+        adfContent.push( {
+            type: 'paragraph',
+            content: [
+                { type: 'text', text: `📄 Spec File: ${ test.file }` }
+            ]
+        } );
+    }
+
+    if ( test.name )
+    {
+        adfContent.push( {
+            type: 'paragraph',
+            content: [
+                { type: 'text', text: `🧪 Test Name: ${ test.name }` }
+            ]
+        } );
+    }
+
+    adfContent.push( {
+        type: 'paragraph',
+        content: [
+            { type: 'text', text: '💥 Error:' }
+        ]
+    } );
+
+    adfContent.push( {
+        type: 'paragraph',
+        content: [
+            { type: 'text', text: test.error || 'No error message provided' }
+        ]
+    } );
+
+    adfContent.push( {
+        type: 'paragraph',
+        content: [
+            { type: 'text', text: '🧬 Test Body:' }
+        ]
+    } );
+
+    adfContent.push( {
+        type: 'codeBlock',
+        attrs: { language: 'javascript' },
+        content: [
+            { type: 'text', text: test.body?.slice( 0, 1000 ) || 'No body available' }
+        ]
+    } );
+
+    if ( screenshotUrl?.content )
+    {
+        adfContent.push( {
+            type: 'paragraph',
+            content: [
+                { type: 'text', text: '🖼️ View Screenshot: ' },
+                {
+                    type: 'text',
+                    text: 'Click Here',
+                    marks: [
+                        {
+                            type: 'link',
+                            attrs: {
+                                href: screenshotUrl.content
+                            }
+                        }
+                    ]
+                }
+            ]
+        } );
+    }
 
     return {
-        type: 'doc',
         version: 1,
-        content: [
-            {
-                type: 'paragraph',
-                content: [
-                    {
-                        type: 'text',
-                        text: lines.join( '\n' )
-                    }
-                ]
-            },
-            {
-                type: 'codeBlock',
-                attrs: { language: 'javascript' },
-                content: [
-                    {
-                        type: 'text',
-                        text: testBody
-                    }
-                ]
-            }
-        ]
+        type: 'doc',
+        content: adfContent
     };
 }
 
+// 🧹 Sanitize Summary for JQL Search
 function sanitizeForJQL ( text )
 {
     return text
-        .replace( /[^\w\s\-:()]/g, '' ) // Remove emojis & special characters like []{}!
-        .replace( /\s+/g, ' ' )         // Normalize spaces
+        .replace( /[^\w\s\-:()]/g, '' )
+        .replace( /\s+/g, ' ' )
         .trim();
 }
 
+// 🔍 Check if an Issue Already Exists
 async function issueAlreadyExists ( summary )
 {
     const cleanSummary = sanitizeForJQL( summary );
@@ -77,10 +165,7 @@ async function issueAlreadyExists ( summary )
     {
         console.info( `🔍 Checking for existing Jira issues with JQL: ${ jql }` );
         const res = await axios.get( `${ JIRA_BASE_URL }/rest/api/3/search`, {
-            params: {
-                jql,
-                fields: 'summary,status'
-            },
+            params: { jql, fields: 'summary,status' },
             auth: AUTH,
             headers: { Accept: 'application/json' }
         } );
@@ -98,7 +183,6 @@ async function issueAlreadyExists ( summary )
         }
 
         return false;
-
     } catch ( err )
     {
         console.warn( `⚠️ Failed to check for existing Jira issues: ${ err.response?.status } ${ err.response?.statusText }` );
@@ -106,12 +190,13 @@ async function issueAlreadyExists ( summary )
     }
 }
 
+// 📎 Attach Log File
 async function attachLogsToIssue ( issueKey, logString )
 {
-    const form = new FormData();
     const tempFile = `.tmp-cypress-log-${ Date.now() }.txt`;
     fs.writeFileSync( tempFile, logString );
 
+    const form = new FormData();
     form.append( 'file', fs.createReadStream( tempFile ) );
 
     try
@@ -127,10 +212,10 @@ async function attachLogsToIssue ( issueKey, logString )
                 }
             }
         );
-        console.log( `📎 Attached log to Jira issue: ${ issueKey }` );
+        console.log( `📎 Attached log file to Jira issue: ${ issueKey }` );
     } catch ( err )
     {
-        console.error( `❌ Failed to attach log to ${ issueKey }` );
+        console.error( `❌ Failed to attach log file to ${ issueKey }` );
         console.error( err.response?.data || err.message );
     } finally
     {
@@ -138,10 +223,10 @@ async function attachLogsToIssue ( issueKey, logString )
     }
 }
 
+// 🐞 Create Jira Bug
 async function createJiraBug ( test )
 {
     const summary = `❌ [Cypress] ${ test.name }`;
-    const descriptionADF = createADFDescription( test );
 
     const exists = await issueAlreadyExists( summary );
     if ( exists )
@@ -152,13 +237,13 @@ async function createJiraBug ( test )
 
     try
     {
-        const res = await axios.post(
+        // 1️⃣ Create an Empty Jira Ticket
+        const issueRes = await axios.post(
             `${ JIRA_BASE_URL }/rest/api/3/issue`,
             {
                 fields: {
                     project: { key: JIRA_PROJECT_KEY },
                     summary,
-                    description: descriptionADF,
                     issuetype: { name: 'Bug' },
                     labels: ['automated-test', 'cypress']
                 }
@@ -172,38 +257,37 @@ async function createJiraBug ( test )
             }
         );
 
-        const issueKey = res.data.key;
+        const issueKey = issueRes.data.key;
         console.log( `✅ Created Jira issue: ${ issueKey }` );
 
-        await attachLogsToIssue( issueKey, test.error || test.body || 'No log data.' );
-
-        // Try to attach screenshot if available
+        // 2️⃣ Upload Screenshot if available
         const screenshotPath = findScreenshotForTest( test );
+        let screenshotUrl = null;
         if ( screenshotPath )
         {
-            const form = new FormData();
-            form.append( 'file', fs.createReadStream( screenshotPath ) );
-
-            try
-            {
-                await axios.post(
-                    `${ JIRA_BASE_URL }/rest/api/3/issue/${ issueKey }/attachments`,
-                    form,
-                    {
-                        auth: AUTH,
-                        headers: {
-                            ...form.getHeaders(),
-                            'X-Atlassian-Token': 'no-check'
-                        }
-                    }
-                );
-                console.log( `📎 Attached screenshot to Jira issue: ${ issueKey }` );
-            } catch ( err )
-            {
-                console.error( `❌ Failed to attach screenshot to ${ issueKey }` );
-                console.error( err.response?.data || err.message );
-            }
+            screenshotUrl = await uploadScreenshotAndGetUrl( issueKey, screenshotPath );
         }
+
+        // 3️⃣ Upload Logs
+        await attachLogsToIssue( issueKey, test.error || test.body || 'No log data.' );
+
+        // 4️⃣ Update Description
+        const updatedDescription = createADFDescription( test, screenshotUrl );
+        await axios.put(
+            `${ JIRA_BASE_URL }/rest/api/3/issue/${ issueKey }`,
+            {
+                fields: { description: updatedDescription }
+            },
+            {
+                auth: AUTH,
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+
+        console.log( `📝 Updated Jira description for: ${ issueKey }` );
 
         return issueKey;
     } catch ( err )
@@ -214,6 +298,7 @@ async function createJiraBug ( test )
     }
 }
 
+// 🚀 Main Export
 exports.reportToJira = async ( failedTests = [] ) =>
 {
     if ( !JIRA_BASE_URL || !JIRA_API_TOKEN || !JIRA_PROJECT_KEY || !JIRA_EMAIL )
