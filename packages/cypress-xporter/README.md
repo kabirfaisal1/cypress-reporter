@@ -13,7 +13,7 @@
 
 - [✨ Features](#-features)
 - [📦 Installation](#-installation)
-- [⚙️ Environment Setup](#️-environment-setup)
+- [⚙️ Environment Setup](#-environment-setup)
 - [🚀 Usage](#-usage)
 - [📘 Example CLI Commands](#-example-cli-commands)
 - [🔧 CI/CD Integration](#-cicd-integration)
@@ -21,7 +21,7 @@
   - [Jenkins](#jenkins)
 - [🔐 Token & ID Setup Help](#-token--id-setup-help)
 - [📷 Screenshots](#-screenshots)
-- [📷 Version](#-version)
+- [🛠️ Version](#-version)
 - [📄 License](#-license)
 
 ---
