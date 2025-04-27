@@ -4,17 +4,8 @@ const axios = require( 'axios' );
 const {
     TESTRAIL_DOMAIN,
     TESTRAIL_USERNAME,
-    TESTRAIL_API_KEY,
-    TESTRAIL_PROJECT_ID
+    TESTRAIL_API_KEY
 } = process.env;
-
-// Debug log (optional)
-// console.log('🔍 TESTRAIL Env:', {
-//   TESTRAIL_DOMAIN,
-//   TESTRAIL_USERNAME,
-//   TESTRAIL_API_KEY,
-//   TESTRAIL_PROJECT_ID
-// });
 
 const AUTH = {
     username: TESTRAIL_USERNAME,
@@ -28,12 +19,12 @@ function extractCaseId ( testName )
     return match ? parseInt( match[1], 10 ) : null;
 }
 
-async function createTestRun ()
+async function createTestRun ( projectId )
 {
     const runName = `Automated Cypress Run - ${ new Date().toLocaleString() }`;
 
     const res = await axios.post(
-        `${ TESTRAIL_DOMAIN }/index.php?/api/v2/add_run/${ TESTRAIL_PROJECT_ID }`,
+        `${ TESTRAIL_DOMAIN }/index.php?/api/v2/add_run/${ projectId }`,
         {
             name: runName,
             include_all: true
@@ -44,15 +35,15 @@ async function createTestRun ()
     return res.data.id;
 }
 
-exports.reportToTestRail = async ( passed = [], failed = [] ) =>
+exports.reportToTestRail = async ( passed = [], failed = [], projectId ) =>
 {
-    if ( !TESTRAIL_DOMAIN || !TESTRAIL_USERNAME || !TESTRAIL_API_KEY || !TESTRAIL_PROJECT_ID )
+    if ( !TESTRAIL_DOMAIN || !TESTRAIL_USERNAME || !TESTRAIL_API_KEY || !projectId )
     {
-        console.log( '⚠️ TestRail not fully configured in .env' );
+        console.log( '⚠️ TestRail not fully configured or missing Project ID.' );
         return;
     }
 
-    const runId = await createTestRun();
+    const runId = await createTestRun( projectId );
     console.log( `🚀 Reporting to TestRail Run: ${ runId }` );
 
     const results = [];

@@ -183,7 +183,37 @@ const run = async () =>
     let testRailSummary = null;
     if ( useTestRail )
     {
-        testRailSummary = await reportToTestRail( passedTests, updatedFailedTests );
+        console.log( chalk.yellow( '🔍 Checking for dynamic Project ID in report...' ) );
+        let dynamicProjectId = null;
+
+        if ( report?.results?.length )
+        {
+            for ( const result of report.results )
+            {
+                if ( result.suites && result.suites.length )
+                {
+                    for ( const suite of result.suites )
+                    {
+                        const match = suite.title?.match( /\[ProjectID-(\d+)\]/i ) || suite.title?.match( /\[TRP-(\d+)\]/i );
+                        if ( match && match[1] )
+                        {
+                            dynamicProjectId = match[1];
+                            console.log( chalk.green( `✅ Found dynamic ProjectID: ${ dynamicProjectId }` ) );
+                            break;
+                        }
+                    }
+                }
+                if ( dynamicProjectId ) break;
+            }
+        }
+
+        if ( !dynamicProjectId )
+        {
+            dynamicProjectId = process.env.TESTRAIL_PROJECT_ID;
+            console.log( chalk.yellow( `⚠️ No ProjectID or TRP tag found. Using .env ProjectID: ${ dynamicProjectId }` ) );
+        }
+
+        testRailSummary = await reportToTestRail( passedTests, updatedFailedTests, dynamicProjectId );
     }
 
     if ( useConfluence )
