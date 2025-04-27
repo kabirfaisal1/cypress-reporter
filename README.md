@@ -94,13 +94,34 @@ CONFLUENCE_PARENT_PAGE_ID=Folder |OR| PageID
 ## 🚀 Usage
 
 > **ℹ️ Note:**  
-> When writing your Cypress tests, you can include the TestRail ID in the test name using the following format:  
+> When writing your Cypress tests, you can include the TestRail ProjectID or Test Case ID in the test name using the following format:  
+
+> ### Handle ProjectID dynamically
 > ```javascript
-> it('<Test Name> [<TRID>]', () => {
+>  describe( '[TR_PID-<ProjectID>] Multi Project and Handle ProjectID dynamically', () =>
+> {
+> it( '<Enter Test CaseID> [<TRID>]', () =>
+>  {
 >   // Your test code here
-> });
+> } );
+>  } );
 > ```  
-> Replace `<Test Name>` with the name of your test and `<TRID>` with the corresponding TestRail ID. This helps Cypress Xporter map the test results to the correct TestRail test cases.
+> To Dynamically handle ProjectID replace `<ProjectID>` with the corresponding TestRail ProjectID (in the url). This helps Cypress Xporter map the test results to the correct TestRail test cases.
+> Replace `<Test Name>` with the name of your test and `<TRID>` with the corresponding TestRail Case ID. This helps Cypress Xporter map the test results to the correct TestRail test cases.
+
+> ### Handle ProjectID from .ENV
+> ```javascript
+>  describe( 'Make sure .env has the projectID', () =>
+> {
+> it( '<Enter Test CaseID> [<TRID>]', () =>
+>  {
+>   // Your test code here
+> } );
+>  } );
+> ```  
+> To Dynamically handle ProjectID replace `<ProjectID>` with the corresponding TestRail ProjectID (in the url). This helps Cypress Xporter map the test results to the correct TestRail test cases.
+> Replace `<Test Name>` with the name of your test and `<TRID>` with the corresponding TestRail Case ID. This helps Cypress Xporter map the test results to the correct TestRail test cases.
+
 
 
 ### After running Cypress tests (with Mochawesome reporter):
