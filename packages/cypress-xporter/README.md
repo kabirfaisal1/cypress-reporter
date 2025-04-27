@@ -21,6 +21,7 @@
   - [Jenkins](#jenkins)
 - [🔐 Token & ID Setup Help](#-token--id-setup-help)
 - [📷 Screenshots](#-screenshots)
+- [📷 Version](#-version)
 - [📄 License](#-license)
 
 ---
@@ -88,13 +89,33 @@ CONFLUENCE_PARENT_PAGE_ID=Folder |OR| PageID
 ## 🚀 Usage
 
 > **ℹ️ Note:**  
-> When writing your Cypress tests, you can include the TestRail ID in the test name using the following format:  
+> When writing your Cypress tests, you can include the TestRail ProjectID or Test Case ID in the test name using the following format:  
+
+> ### Handle ProjectID dynamically
 > ```javascript
-> it('<Test Name> [<TRID>]', () => {
+>  describe( '[TR_PID-<ProjectID>] Multi Project and Handle ProjectID dynamically', () =>
+> {
+> it( '<Enter Test CaseID> [<TRID>]', () =>
+>  {
 >   // Your test code here
-> });
+> } );
+>  } );
 > ```  
-> Replace `<Test Name>` with the name of your test and `<TRID>` with the corresponding TestRail ID. This helps Cypress Xporter map the test results to the correct TestRail test cases.
+> To Dynamically handle ProjectID replace `<ProjectID>` with the corresponding TestRail ProjectID (in the url). This helps Cypress Xporter map the test results to the correct TestRail test cases.
+> Replace `<Test Name>` with the name of your test and `<TRID>` with the corresponding TestRail Case ID. This helps Cypress Xporter map the test results to the correct TestRail test cases.
+
+> ### Handle ProjectID from .ENV
+> ```javascript
+>  describe( 'Make sure .env has the projectID', () =>
+> {
+> it( '<Enter Test CaseID> [<TRID>]', () =>
+>  {
+>   // Your test code here
+> } );
+>  } );
+> ```  
+> To Dynamically handle ProjectID replace `<ProjectID>` with the corresponding TestRail ProjectID (in the url). This helps Cypress Xporter map the test results to the correct TestRail test cases.
+> Replace `<Test Name>` with the name of your test and `<TRID>` with the corresponding TestRail Case ID. This helps Cypress Xporter map the test results to the correct TestRail test cases.
 
 
 ### After running Cypress tests (with Mochawesome reporter):
@@ -187,10 +208,31 @@ npx cypress-xporter --jira --testrail --confluence
 ![Test Results Dashboard](https://res.cloudinary.com/dzsguot60/image/upload/v1742834937/cypress-Xporter/Screenshot_2025-03-24_at_12.44.25_PM_kdvrt1.png)
 
 ### Jira Bug Ticket Example
-![Jira Bug Ticket Example](https://res.cloudinary.com/dzsguot60/image/upload/v1742834927/cypress-Xporter/Screenshot_2025-03-24_at_12.42.50_PM_w9fpw0.png)
+![Jira Bug Ticket Example](https://res.cloudinary.com/dzsguot60/image/upload/v1745765732/Screenshot_2025-04-27_at_10.52.59_AM_auzmpl.png) 
 
 ### Confluence Test Summary
-![Confluence Test Summary](https://res.cloudinary.com/dzsguot60/image/upload/v1742834928/cypress-Xporter/Screenshot_2025-03-24_at_12.38.38_PM_qirzek.png)
+![Confluence Test Summary](https://res.cloudinary.com/dzsguot60/image/upload/v1745765750/Screenshot_2025-04-27_at_10.51.14_AM_qj4fvd.png)
+
+
+## 🛠️ Version
+
+### 2.0.0
+
+1. Parses Cypress mochawesome reports.
+2. Extracts ProjectID and Case IDs from test titles.
+3. For each unique ProjectID:
+  - Queries all Suites.
+  - Finds the matching Suite containing all Case IDs.
+4. Creates a TestRail Run with the correct Suite and Case IDs.
+5. Posts test results to the newly created Test Run.
+
+| **Before**                              | **After**                                   |
+|-----------------------------------------|---------------------------------------------|
+| ❌ Could only work with static `.env` ProjectID | ✅ Dynamic ProjectID works from `[TR_PID-2]` |
+| ❌ 400 Error: `case_ids` unrecognized if wrong suite used | ✅ Dynamically finds the correct `suite_id` |
+| ❌ Poor debug logs when things fail      | ✅ Clean, visible logs for ProjectID, SuiteID, CaseIDs |
+| ❌ Unscalable for multiple projects      | ✅ Now supports multiple Projects and Suites automatically |
+| ❌ Needed manual hardcoding             | ✅ 100% automatic detection                 |
 
 ## 📄 License
 
