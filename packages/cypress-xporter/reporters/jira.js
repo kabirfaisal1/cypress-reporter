@@ -2,6 +2,7 @@ require( 'dotenv' ).config();
 const axios = require( 'axios' );
 const fs = require( 'fs' );
 const FormData = require( 'form-data' );
+const { findScreenshotForTest } = require( '../utils/screenshotUtils' );
 
 const {
     JIRA_BASE_URL,
@@ -175,6 +176,35 @@ async function createJiraBug ( test )
         console.log( `✅ Created Jira issue: ${ issueKey }` );
 
         await attachLogsToIssue( issueKey, test.error || test.body || 'No log data.' );
+
+        // Try to attach screenshot if available
+        const screenshotPath = findScreenshotForTest( test );
+        if ( screenshotPath )
+        {
+            const form = new FormData();
+            form.append( 'file', fs.createReadStream( screenshotPath ) );
+
+            try
+            {
+                await axios.post(
+                    `${ JIRA_BASE_URL }/rest/api/3/issue/${ issueKey }/attachments`,
+                    form,
+                    {
+                        auth: AUTH,
+                        headers: {
+                            ...form.getHeaders(),
+                            'X-Atlassian-Token': 'no-check'
+                        }
+                    }
+                );
+                console.log( `📎 Attached screenshot to Jira issue: ${ issueKey }` );
+            } catch ( err )
+            {
+                console.error( `❌ Failed to attach screenshot to ${ issueKey }` );
+                console.error( err.response?.data || err.message );
+            }
+        }
+
         return issueKey;
     } catch ( err )
     {

@@ -3,8 +3,9 @@ const { defineConfig } = require( "cypress" );
 module.exports = defineConfig( {
 
   defaultCommandTimeout: 10000,
-  video: false,
+  video: true,
   reporter: 'cypress-mochawesome-reporter',
+  screenshotOnRunFailure: true,
   reporterOptions: {
     reportDir: 'cypress/reports',
     overwrite: true,
