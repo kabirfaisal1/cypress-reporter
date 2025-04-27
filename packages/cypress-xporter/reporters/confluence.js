@@ -22,8 +22,11 @@ function generateTimestampTitle ()
     const mm = String( now.getMonth() + 1 ).padStart( 2, '0' );
     const dd = String( now.getDate() ).padStart( 2, '0' );
     const yyyy = now.getFullYear();
-    const ms = now.getMilliseconds();
-    return `${ mm }_${ dd }_${ yyyy }_${ ms }_Cypress Test Log`;
+    const hh = String( now.getHours() ).padStart( 2, '0' );
+    const min = String( now.getMinutes() ).padStart( 2, '0' );
+    const ss = String( now.getSeconds() ).padStart( 2, '0' );
+    const ms = String( now.getMilliseconds() ).padStart( 3, '0' );
+    return `${ mm }-${ dd }-${ yyyy }-${ hh }:${ min }:${ ss }_${ ms }_Cypress_Test_Log`;
 }
 
 function buildFailedTestsTable ( failed )
@@ -60,6 +63,93 @@ function buildFailedTestsTable ( failed )
   `;
 }
 
+function buildSpecSummaryTable ( passedTests, failedTests )
+{
+    const specs = {};
+    const allTests = [...passedTests, ...failedTests];
+
+    for ( const test of allTests )
+    {
+        const specFile = path.basename( test.file || 'Unknown Spec' );
+
+        if ( !specs[specFile] )
+        {
+            specs[specFile] = {
+                total: 0,
+                passed: 0,
+                failed: 0,
+                pending: 0,
+                skipped: 0,
+                duration: 0
+            };
+        }
+
+        specs[specFile].total += 1;
+        specs[specFile][test.state] += 1;
+        specs[specFile].duration += 1; // assume 1 sec per test for now
+    }
+
+    const rows = Object.entries( specs ).map( ( [specName, data] ) =>
+    {
+        const formattedTime = formatDuration( data.duration );
+        return `
+            <tr>
+                <td>${ specName }</td>
+                <td>${ formattedTime }</td>
+                <td>${ data.total }</td>
+                <td>${ data.passed }</td>
+                <td>${ data.failed }</td>
+                <td>${ data.pending || '-' }</td>
+                <td>${ data.skipped || '-' }</td>
+            </tr>`;
+    } ).join( '' );
+
+    const totalTests = allTests.length;
+    const totalPassed = passedTests.length;
+    const totalFailed = failedTests.length;
+    const totalPending = 0;
+    const totalSkipped = 0;
+    const totalDuration = formatDuration( allTests.length );
+
+    const totalRow = `
+        <tr>
+            <td><b>Total</b></td>
+            <td><b>${ totalDuration }</b></td>
+            <td><b>${ totalTests }</b></td>
+            <td><b>${ totalPassed }</b></td>
+            <td><b>${ totalFailed }</b></td>
+            <td><b>${ totalPending }</b></td>
+            <td><b>${ totalSkipped }</b></td>
+        </tr>`;
+
+    return `
+    <h2>🧪 Cypress Spec Summary</h2>
+    <table>
+      <colgroup><col /><col /><col /><col /><col /><col /><col /></colgroup>
+      <tbody>
+        <tr>
+          <th>📄 Spec</th>
+          <th>⏱ Time</th>
+          <th>Total</th>
+          <th>Passing</th>
+          <th>Failing</th>
+          <th>Pending</th>
+          <th>Skipped</th>
+        </tr>
+        ${ rows }
+        ${ totalRow }
+      </tbody>
+    </table>
+    `;
+}
+
+function formatDuration ( seconds )
+{
+    const mins = Math.floor( seconds / 60 );
+    const secs = seconds % 60;
+    return `${ String( mins ).padStart( 2, '0' ) }:${ String( secs ).padStart( 2, '0' ) }`;
+}
+
 function generateDashboardHTML ( passed, failed, testRail = null, chartPath = null )
 {
     const htmlTemplatePath = path.join( __dirname, '..', 'templates', 'dashboard.html' );
@@ -74,7 +164,8 @@ function generateDashboardHTML ( passed, failed, testRail = null, chartPath = nu
     html = html.replace( /{{TOTAL_TESTS}}/g, passed.length + failed.length );
     html = html.replace( /{{PASSED_TESTS}}/g, passed.length );
     html = html.replace( /{{FAILED_TESTS}}/g, failed.length );
-    html = html.replace( '{{TEST_LOG}}', buildFailedTestsTable( failed ) );
+    html = html.replace( '{{SPEC_SUMMARY}}', buildSpecSummaryTable( passed, failed ) );
+    html = html.replace( '{{FAILED_TEST_LOG}}', buildFailedTestsTable( failed ) );
 
     if ( testRail )
     {
@@ -149,7 +240,6 @@ exports.uploadTestLogToConfluence = async ( passed, failed, testRail = null, cha
         await createNewPage( title, html );
         console.log( `✅ Confluence test log page "${ title }" created successfully!` );
 
-        // 🔥 Remove the entire CypressTest folder after upload
         if ( fs.existsSync( outputDir ) )
         {
             fs.rmSync( outputDir, { recursive: true, force: true } );
