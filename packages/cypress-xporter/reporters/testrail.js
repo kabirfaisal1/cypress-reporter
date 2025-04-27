@@ -7,28 +7,31 @@ const {
     TESTRAIL_API_KEY
 } = process.env;
 
+
 const AUTH = {
     username: TESTRAIL_USERNAME,
     password: TESTRAIL_API_KEY
 };
-
-// Supports both "C123" and "[C123]" formats
 function extractCaseId ( testName )
 {
     const match = testName.match( /\[?C(\d+)\]?/i );
     return match ? parseInt( match[1], 10 ) : null;
 }
 
-async function createTestRun ( projectId )
+async function createTestRun ( projectId, caseIds = [], suiteId = 1 )
 {
     const runName = `Automated Cypress Run - ${ new Date().toLocaleString() }`;
 
+    const payload = {
+        name: runName,
+        suite_id: suiteId,  // <<<<<<<<<< ADD this
+        include_all: false,
+        case_ids: caseIds
+    };
+
     const res = await axios.post(
         `${ TESTRAIL_DOMAIN }/index.php?/api/v2/add_run/${ projectId }`,
-        {
-            name: runName,
-            include_all: true
-        },
+        payload,
         { auth: AUTH }
     );
 
@@ -43,32 +46,35 @@ exports.reportToTestRail = async ( passed = [], failed = [], projectId ) =>
         return;
     }
 
-    const runId = await createTestRun( projectId );
+    const allTests = [...passed, ...failed];
+
+    const caseIds = Array.from(
+        new Set(
+            allTests.map( test => extractCaseId( test.name ) ).filter( Boolean )
+        )
+    );
+
+    if ( caseIds.length === 0 )
+    {
+        console.log( '⚠️ No valid case IDs found.' );
+        return;
+    }
+
+    console.log( `🧩 Creating TestRail Run for Project ${ projectId } with case IDs: ${ caseIds.join( ', ' ) }` );
+
+    const runId = await createTestRun( projectId, caseIds, 1 ); // <<<<<< Pass 1 as suiteId
+
     console.log( `🚀 Reporting to TestRail Run: ${ runId }` );
 
-    const results = [];
-
-    for ( const test of [...passed, ...failed] )
+    const results = allTests.map( test =>
     {
         const caseId = extractCaseId( test.name );
-        if ( !caseId )
-        {
-            console.warn( `⚠️ Skipping test without TestRail Case ID: ${ test.name }` );
-            continue;
-        }
-
-        results.push( {
+        return {
             case_id: caseId,
             status_id: test.state === 'passed' ? 1 : 5,
             comment: test.error || 'Test passed ✅'
-        } );
-    }
-
-    if ( results.length === 0 )
-    {
-        console.log( '⚠️ No TestRail test cases matched.' );
-        return;
-    }
+        };
+    } ).filter( Boolean );
 
     await axios.post(
         `${ TESTRAIL_DOMAIN }/index.php?/api/v2/add_results_for_cases/${ runId }`,
@@ -76,5 +82,5 @@ exports.reportToTestRail = async ( passed = [], failed = [], projectId ) =>
         { auth: AUTH }
     );
 
-    console.log( `✅ Reported ${ results.length } results to TestRail` );
+    console.log( `✅ Reported ${ results.length } results to TestRail for ProjectID ${ projectId }` );
 };

@@ -9,13 +9,13 @@ const fg = require( 'fast-glob' );
 const { reportToJira } = require( './reporters/jira' );
 const { reportToTestRail } = require( './reporters/testrail' );
 const { uploadTestLogToConfluence } = require( './reporters/confluence' );
+const { extractTests } = require( './utils/extractTests' );
 
 const argv = minimist( process.argv.slice( 2 ) );
 const useJira = argv.jira || false;
 const useConfluence = argv.confluence || false;
 const useTestRail = argv.testrail || false;
 
-// 🔍 Find all mochawesome*.json files
 async function findReportFiles ()
 {
     const pattern = '**/mochawesome*.json';
@@ -39,7 +39,6 @@ async function findReportFiles ()
     return files;
 }
 
-// 🔁 Merge JSON files
 function mergeAllReports ( reportFiles )
 {
     const reports = [];
@@ -95,34 +94,6 @@ function mergeAllReports ( reportFiles )
     return merged;
 }
 
-// 🧪 Extract tests recursively
-function extractTests ( suite, filePath )
-{
-    const tests = [];
-
-    if ( suite.tests )
-    {
-        tests.push( ...suite.tests.map( test => ( {
-            name: test.fullTitle || test.title || 'Untitled Test',
-            state: test.state?.toLowerCase() || 'unknown',
-            file: filePath,
-            body: test.code || '',
-            error: test.err?.message || '',
-        } ) ) );
-    }
-
-    if ( suite.suites )
-    {
-        suite.suites.forEach( subSuite =>
-        {
-            tests.push( ...extractTests( subSuite, filePath ) );
-        } );
-    }
-
-    return tests;
-}
-
-// 🚀 Main runner
 const run = async () =>
 {
     let reportFiles;
@@ -180,45 +151,42 @@ const run = async () =>
         updatedFailedTests = await reportToJira( failedTests );
     }
 
-    let testRailSummary = null;
     if ( useTestRail )
     {
-        console.log( chalk.yellow( '🔍 Checking for dynamic Project ID in report...' ) );
-        let dynamicProjectId = null;
+        const testsByProjectId = {};
 
-        if ( report?.results?.length )
+        [...passedTests, ...updatedFailedTests].forEach( test =>
         {
-            for ( const result of report.results )
+            const projectId = test.projectId || process.env.TESTRAIL_PROJECT_ID;
+
+            if ( !testsByProjectId[projectId] )
             {
-                if ( result.suites && result.suites.length )
-                {
-                    for ( const suite of result.suites )
-                    {
-                        const match = suite.title?.match( /\[ProjectID-(\d+)\]/i ) || suite.title?.match( /\[TRP-(\d+)\]/i );
-                        if ( match && match[1] )
-                        {
-                            dynamicProjectId = match[1];
-                            console.log( chalk.green( `✅ Found dynamic ProjectID: ${ dynamicProjectId }` ) );
-                            break;
-                        }
-                    }
-                }
-                if ( dynamicProjectId ) break;
+                testsByProjectId[projectId] = {
+                    passed: [],
+                    failed: []
+                };
             }
-        }
 
-        if ( !dynamicProjectId )
+            if ( test.state === 'passed' )
+            {
+                testsByProjectId[projectId].passed.push( test );
+            } else if ( test.state === 'failed' )
+            {
+                testsByProjectId[projectId].failed.push( test );
+            }
+        } );
+
+        for ( const projectId of Object.keys( testsByProjectId ) )
         {
-            dynamicProjectId = process.env.TESTRAIL_PROJECT_ID;
-            console.log( chalk.yellow( `⚠️ No ProjectID or TRP tag found. Using .env ProjectID: ${ dynamicProjectId }` ) );
+            const { passed, failed } = testsByProjectId[projectId];
+            console.log( chalk.yellow( `🚀 Reporting ${ passed.length } passed and ${ failed.length } failed test(s) for ProjectID: ${ projectId }` ) );
+            await reportToTestRail( passed, failed, projectId );
         }
-
-        testRailSummary = await reportToTestRail( passedTests, updatedFailedTests, dynamicProjectId );
     }
 
     if ( useConfluence )
     {
-        await uploadTestLogToConfluence( passedTests, updatedFailedTests, testRailSummary );
+        await uploadTestLogToConfluence( passedTests, updatedFailedTests );
     }
 };
 
