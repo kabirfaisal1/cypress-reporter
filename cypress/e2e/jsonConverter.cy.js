@@ -42,7 +42,7 @@ describe( '[TR_PID-2] JSON to Excel', () =>
 
         cy.verifyTableData(
             ['Name', 'E-mail'],
-            ['John Smith', 'testWorld@gmal.com']
+            ['John Smith', 'testWorld@gmil.com']
         );
     } );
 
