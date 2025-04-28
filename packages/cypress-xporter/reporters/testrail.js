@@ -7,28 +7,27 @@ const {
     TESTRAIL_API_KEY
 } = process.env;
 
+
 const AUTH = {
     username: TESTRAIL_USERNAME,
     password: TESTRAIL_API_KEY
 };
-
 function extractCaseId ( testName )
 {
     const match = testName.match( /\[?C(\d+)\]?/i );
     return match ? parseInt( match[1], 10 ) : null;
 }
 
-async function createTestRun ( projectId, caseIds = [] )
+async function createTestRun ( projectId, caseIds = [], suiteId = 1 )
 {
     const runName = `Automated Cypress Run - ${ new Date().toLocaleString() }`;
 
     const payload = {
         name: runName,
-        include_all: true,
+        suite_id: suiteId,
+        include_all: false,
         case_ids: caseIds
     };
-
-    console.log( `🧩 Creating Test Run with payload:`, payload );
 
     const res = await axios.post(
         `${ TESTRAIL_DOMAIN }/index.php?/api/v2/add_run/${ projectId }`,
@@ -63,15 +62,13 @@ exports.reportToTestRail = async ( passed = [], failed = [], projectId ) =>
 
     console.log( `🧩 Creating TestRail Run for Project ${ projectId } with case IDs: ${ caseIds.join( ', ' ) }` );
 
-    const runId = await createTestRun( projectId, caseIds );
+    const runId = await createTestRun( projectId, caseIds, 1 );
 
-    console.log( `🚀 Created TestRail Run ID: ${ runId }` );
+    console.log( `🚀 Reporting to TestRail Run: ${ runId }` );
 
     const results = allTests.map( test =>
     {
         const caseId = extractCaseId( test.name );
-        if ( !caseId ) return null;
-
         return {
             case_id: caseId,
             status_id: test.state === 'passed' ? 1 : 5,
@@ -85,5 +82,5 @@ exports.reportToTestRail = async ( passed = [], failed = [], projectId ) =>
         { auth: AUTH }
     );
 
-    console.log( `✅ Reported ${ results.length } results to TestRail for Project ID ${ projectId }` );
+    console.log( `✅ Reported ${ results.length } results to TestRail for ProjectID ${ projectId }` );
 };
