@@ -1,4 +1,4 @@
-describe( '[TR_PID-2] JSON to Excel', () =>
+describe( '[P2] JSON to Excel', () =>
 {
     beforeEach( () =>
     {
@@ -43,6 +43,27 @@ describe( '[TR_PID-2] JSON to Excel', () =>
         cy.verifyTableData(
             ['Name', 'E-mail'],
             ['John Smith', 'testWorld@gmil.com']
+        );
+    } );
+
+
+    it( 'should convert simple JSON to a table and show download button [C12]', () =>
+    {
+        cy.get( 'div[role="code"]' )
+            .should( 'be.visible' )
+            .type(
+                '{"Name": "John Smith", "E-mail": "testWorld@gmail.com"}',
+                { parseSpecialCharSequences: false }
+            );
+
+        cy.get( 'button[data-testid="convertTable_Button"]' ).click();
+
+        // Check that the Excel download button appears
+        cy.get( '[data-testi="downloadExcel_Button"]' ).should( 'be.visible' );
+
+        cy.verifyTableData(
+            ['Name', 'E-mail'],
+            ['John Smith', 'testWorld@gmail.com']
         );
     } );
 

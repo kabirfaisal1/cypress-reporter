@@ -73,7 +73,8 @@ JIRA_PROJECT_KEY=PROJECTKEY
 # TESTRAIL
 TESTRAIL_DOMAIN=https://yourcompany.testrail.io
 TESTRAIL_USERNAME=testrail@example.com
-TESTRAIL_API_KEY=your-testrail-api-key
+(opt) TESTRAIL_API_KEY=your-testrail-api-key
+TESTRAIL_PASSWORD=your-testrail-password
 TESTRAIL_PROJECT_ID=ProjectID
 
 # CONFLUENCE
@@ -93,29 +94,28 @@ CONFLUENCE_PARENT_PAGE_ID=Folder |OR| PageID
 
 > ### Handle ProjectID dynamically
 > ```javascript
->  describe( '[TR_PID-<ProjectID>] Multi Project and Handle ProjectID dynamically', () =>
+>  describe( '[P<ProjectID>] Multi Project and Handle ProjectID dynamically', () =>
 > {
-> it( '<Enter Test CaseID> [<TRID>]', () =>
+> it( '<Test Name> [C<Number>]', () =>
 >  {
 >   // Your test code here
 > } );
 >  } );
 > ```  
 > To Dynamically handle ProjectID replace `<ProjectID>` with the corresponding TestRail ProjectID (in the url). This helps Cypress Xporter map the test results to the correct TestRail test cases.
-> Replace `<Test Name>` with the name of your test and `<TRID>` with the corresponding TestRail Case ID. This helps Cypress Xporter map the test results to the correct TestRail test cases.
+> Replace `<Test Name>` with the name of your test and `<Number>` with the corresponding TestRail Case ID. This helps Cypress Xporter map the test results to the correct TestRail test cases.
 
 > ### Handle ProjectID from .ENV
 > ```javascript
 >  describe( 'Make sure .env has the projectID', () =>
 > {
-> it( '<Enter Test CaseID> [<TRID>]', () =>
+> it( '<Test Name> [C<Number>]', () =>
 >  {
 >   // Your test code here
 > } );
 >  } );
 > ```  
-> To Dynamically handle ProjectID replace `<ProjectID>` with the corresponding TestRail ProjectID (in the url). This helps Cypress Xporter map the test results to the correct TestRail test cases.
-> Replace `<Test Name>` with the name of your test and `<TRID>` with the corresponding TestRail Case ID. This helps Cypress Xporter map the test results to the correct TestRail test cases.
+> Replace `<Test Name>` with the name of your test and `<Number>` with the corresponding TestRail Case ID. This helps Cypress Xporter map the test results to the correct TestRail test cases.
 
 
 ### After running Cypress tests (with Mochawesome reporter):
@@ -228,7 +228,7 @@ npx cypress-xporter --jira --testrail --confluence
 
 | **Before**                              | **After**                                   |
 |-----------------------------------------|---------------------------------------------|
-| ❌ Could only work with static `.env` ProjectID | ✅ Dynamic ProjectID works from `[TR_PID-2]` |
+| ❌ Could only work with static `.env` ProjectID | ✅ Dynamic ProjectID works from `[P2]` |
 | ❌ 400 Error: `case_ids` unrecognized if wrong suite used | ✅ Dynamically finds the correct `suite_id` |
 | ❌ Poor debug logs when things fail      | ✅ Clean, visible logs for ProjectID, SuiteID, CaseIDs |
 | ❌ Unscalable for multiple projects      | ✅ Now supports multiple Projects and Suites automatically |

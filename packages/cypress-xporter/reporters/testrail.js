@@ -4,12 +4,13 @@ const axios = require( 'axios' );
 const {
     TESTRAIL_DOMAIN,
     TESTRAIL_USERNAME,
+    TESTRAIL_PASSWORD,
     TESTRAIL_API_KEY
 } = process.env;
 
 const AUTH = {
     username: TESTRAIL_USERNAME,
-    password: TESTRAIL_API_KEY
+    password: TESTRAIL_PASSWORD
 };
 
 function extractCaseId ( testName )

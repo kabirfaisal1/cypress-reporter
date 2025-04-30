@@ -158,13 +158,11 @@ const run = async () =>
         [...passedTests, ...updatedFailedTests].forEach( test =>
         {
             const projectId = test.projectId || process.env.TESTRAIL_PROJECT_ID;
+            if ( !projectId ) return;
 
             if ( !testsByProjectId[projectId] )
             {
-                testsByProjectId[projectId] = {
-                    passed: [],
-                    failed: []
-                };
+                testsByProjectId[projectId] = { passed: [], failed: [] };
             }
 
             if ( test.state === 'passed' )
@@ -178,9 +176,11 @@ const run = async () =>
 
         for ( const projectId of Object.keys( testsByProjectId ) )
         {
+            const numericProjectId = projectId.replace( /^P/i, '' ); // Strip "P"
             const { passed, failed } = testsByProjectId[projectId];
-            console.log( chalk.yellow( `🚀 Reporting ${ passed.length } passed and ${ failed.length } failed test(s) for ProjectID: ${ projectId }` ) );
-            await reportToTestRail( passed, failed, projectId );
+
+            console.log( chalk.cyan( `🚀 Reporting ${ passed.length } passed and ${ failed.length } failed test(s) for ProjectID: ${ projectId }` ) );
+            await reportToTestRail( passed, failed, numericProjectId );
         }
     }
 
