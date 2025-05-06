@@ -5,7 +5,6 @@ const {
     TESTRAIL_DOMAIN,
     TESTRAIL_USERNAME,
     TESTRAIL_PASSWORD,
-    TESTRAIL_API_KEY
 } = process.env;
 
 const AUTH = {
@@ -13,21 +12,41 @@ const AUTH = {
     password: TESTRAIL_PASSWORD
 };
 
+// Extracts TestRail Case ID from test title
 function extractCaseId ( testName )
 {
     const match = testName.match( /\[?C(\d+)\]?/i );
     return match ? parseInt( match[1], 10 ) : null;
 }
 
-async function createTestRun ( projectId, caseIds = [] )
+// Extracts TestRail Suite ID from any test name (e.g., [S269])
+function extractSuiteId ( tests )
+{
+    for ( const test of tests )
+    {
+        const match = test.name?.match( /\[S(\d+)\]/i );
+        if ( match && match[1] )
+        {
+            return parseInt( match[1], 10 );
+        }
+    }
+    return null;
+}
+
+async function createTestRun ( projectId, caseIds = [], suiteId = null )
 {
     const runName = `Automated Cypress Run - ${ new Date().toLocaleString() }`;
 
     const payload = {
         name: runName,
-        include_all: true,
+        include_all: false,
         case_ids: caseIds
     };
+
+    if ( suiteId )
+    {
+        payload.suite_id = suiteId; // ✅ Only include if detected
+    }
 
     console.log( `🧩 Creating Test Run with payload:`, payload );
 
@@ -42,7 +61,7 @@ async function createTestRun ( projectId, caseIds = [] )
 
 exports.reportToTestRail = async ( passed = [], failed = [], projectId ) =>
 {
-    if ( !TESTRAIL_DOMAIN || !TESTRAIL_USERNAME || !TESTRAIL_API_KEY || !projectId )
+    if ( !TESTRAIL_DOMAIN || !TESTRAIL_USERNAME || !TESTRAIL_PASSWORD || !projectId )
     {
         console.log( '⚠️ TestRail not fully configured or missing Project ID.' );
         return;
@@ -62,9 +81,11 @@ exports.reportToTestRail = async ( passed = [], failed = [], projectId ) =>
         return;
     }
 
-    console.log( `🧩 Creating TestRail Run for Project ${ projectId } with case IDs: ${ caseIds.join( ', ' ) }` );
+    const suiteId = extractSuiteId( allTests ); // ⛏️ Dynamically detect [S###]
 
-    const runId = await createTestRun( projectId, caseIds );
+    console.log( `🧩 Creating TestRail Run for Project ${ projectId } with case IDs: ${ caseIds.join( ', ' ) }${ suiteId ? ` and Suite ID: ${ suiteId }` : '' }` );
+
+    const runId = await createTestRun( projectId, caseIds, suiteId );
 
     console.log( `🚀 Created TestRail Run ID: ${ runId }` );
 
