@@ -39,7 +39,7 @@ async function createTestRun ( projectId, caseIds = [], suiteId = null )
 
     const payload = {
         name: runName,
-        include_all: false,
+        include_all: true,
         case_ids: caseIds
     };
 
