@@ -225,6 +225,13 @@ npx cypress-xporter --jira --testrail --confluence
   - Finds the matching Suite containing all Case IDs.
 4. Creates a TestRail Run with the correct Suite and Case IDs.
 5. Posts test results to the newly created Test Run.
+6. Dynamic Run Name Based on File Path
+    - Now accepts runName as a parameter.
+      - If 2+ folders: Folder1-Folder2 Automated Run with `<date>` :: `i.g: cypress/e2e/Shopping/Smoke`
+      - If 1 folder: Folder1 Automated Run with `<date>` :: `i.g: cypress/e2e/Smoke`
+      - If none: Automated Cypress Run - `<date>`
+
+
 
 | **Before**                              | **After**                                   |
 |-----------------------------------------|---------------------------------------------|
