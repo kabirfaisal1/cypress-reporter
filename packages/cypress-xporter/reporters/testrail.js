@@ -36,13 +36,13 @@ function extractRunNameFromTests(tests) {
     const parts = match?.split("/");
 
     if (parts?.length >= 2) {
-      return `${parts[0]}-${parts[1]} Automated Run with ${now}`;
+      return `${parts[0].toUpperCase()}-${parts[1].toUpperCase()} Automated Run (${now})`;
     } else if (parts?.length === 1) {
-      return `${parts[0]} Automated Run with ${now}`;
+      return `${parts[0].toUpperCase()} Automated Run (${now})`;
     }
   }
 
-  return `Automated Cypress Run - ${now}`;
+  return `Automated Cypress Run - (${now})`;
 }
 
 // Creates a TestRail run with dynamic run name
