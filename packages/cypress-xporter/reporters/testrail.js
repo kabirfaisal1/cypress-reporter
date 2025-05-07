@@ -54,7 +54,7 @@ async function createTestRun(
 ) {
   const payload = {
     name: runName || `Automated Cypress Run - ${new Date().toLocaleString()}`,
-    include_all: true,
+    include_all: false,
     case_ids: caseIds,
   };
 
