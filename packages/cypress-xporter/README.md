@@ -239,7 +239,8 @@ npx cypress-xporter --jira --testrail --confluence
 | ❌ 400 Error: `case_ids` unrecognized if wrong suite used | ✅ Dynamically finds the correct `suite_id` `[SID]` |
 | ❌ Poor debug logs when things fail      | ✅ Clean, visible logs for ProjectID, SuiteID, CaseIDs |
 | ❌ Unscalable for multiple projects      | ✅ Now supports multiple Projects and Suites automatically |
-| ❌ Needed manual hardcoding             | ✅ 100% automatic detection                 |
+| ❌ Needed manual hardcoding             | ✅ 100% automatic detection          
+       |
 
 ## 📄 License
 
