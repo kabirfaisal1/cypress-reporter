@@ -8,17 +8,19 @@ const AUTH = {
   password: TESTRAIL_PASSWORD,
 };
 
+// Extracts TestRail Case ID from test title
 function extractCaseId ( testName )
 {
-  const match = testName?.match( /\[?C(\d+)\]?/i );
+  const match = testName.match( /\[?C(\d+)\]?/i );
   return match ? parseInt( match[1], 10 ) : null;
 }
 
+// Extracts TestRail Suite ID from any test name (e.g., [S269])
 function extractSuiteId ( tests )
 {
   for ( const test of tests )
   {
-    const match = test.title?.match( /\[S(\d+)\]/i );
+    const match = test.name?.match( /\[S(\d+)\]/i );
     if ( match && match[1] )
     {
       return parseInt( match[1], 10 );
@@ -51,6 +53,7 @@ function extractRunNameFromTests ( tests )
   return `Automated Cypress Run - (${ now })`;
 }
 
+// Creates a TestRail run with dynamic run name
 async function createTestRun (
   projectId,
   caseIds = [],
@@ -80,6 +83,7 @@ async function createTestRun (
   return res.data.id;
 }
 
+// Main export
 exports.reportToTestRail = async ( passed = [], failed = [], projectId ) =>
 {
   if (
@@ -96,19 +100,7 @@ exports.reportToTestRail = async ( passed = [], failed = [], projectId ) =>
   const allTests = [...passed, ...failed];
 
   const caseIds = Array.from(
-    new Set(
-      allTests
-        .map( ( test ) =>
-        {
-          if ( !test.title )
-          {
-            console.warn( "⚠️ Missing test.title:", test );
-            return null;
-          }
-          return extractCaseId( test.title );
-        } )
-        .filter( Boolean )
-    )
+    new Set( allTests.map( ( test ) => extractCaseId( test.name ) ).filter( Boolean ) )
   );
 
   if ( caseIds.length === 0 )
@@ -127,12 +119,13 @@ exports.reportToTestRail = async ( passed = [], failed = [], projectId ) =>
   );
 
   const runId = await createTestRun( projectId, caseIds, suiteId, runName );
+
   console.log( `🚀 Created TestRail Run ID: ${ runId }` );
 
   const results = allTests
     .map( ( test ) =>
     {
-      const caseId = extractCaseId( test.title );
+      const caseId = extractCaseId( test.name );
       if ( !caseId ) return null;
 
       return {
