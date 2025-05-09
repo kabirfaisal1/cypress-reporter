@@ -8,27 +8,32 @@ const AUTH = {
   password: TESTRAIL_PASSWORD,
 };
 
-// Extracts TestRail Case ID from test title
+// ✅ Extracts TestRail Case ID from test title safely
 function extractCaseId ( testName )
 {
+  if ( typeof testName !== "string" ) return null;
   const match = testName.match( /\[?C(\d+)\]?/i );
   return match ? parseInt( match[1], 10 ) : null;
 }
 
-// Extracts TestRail Suite ID from any test name (e.g., [S269])
+// ✅ Extracts TestRail Suite ID from any test name (e.g., [S269]) safely
 function extractSuiteId ( tests )
 {
   for ( const test of tests )
   {
-    const match = test.name?.match( /\[S(\d+)\]/i );
-    if ( match && match[1] )
+    if ( typeof test.name === "string" )
     {
-      return parseInt( match[1], 10 );
+      const match = test.name.match( /\[S(\d+)\]/i );
+      if ( match && match[1] )
+      {
+        return parseInt( match[1], 10 );
+      }
     }
   }
   return null;
 }
 
+// ✅ Generates run name based on test file path
 function extractRunNameFromTests ( tests )
 {
   const now = new Date().toLocaleString();
@@ -53,13 +58,8 @@ function extractRunNameFromTests ( tests )
   return `Automated Cypress Run - (${ now })`;
 }
 
-// Creates a TestRail run with dynamic run name
-async function createTestRun (
-  projectId,
-  caseIds = [],
-  suiteId = null,
-  runName = null
-)
+// ✅ Creates a TestRail run with dynamic run name
+async function createTestRun ( projectId, caseIds = [], suiteId = null, runName = null )
 {
   const payload = {
     name: runName || `Automated Cypress Run - ${ new Date().toLocaleString() }`,
@@ -83,15 +83,10 @@ async function createTestRun (
   return res.data.id;
 }
 
-// Main export
+// ✅ Main export
 exports.reportToTestRail = async ( passed = [], failed = [], projectId ) =>
 {
-  if (
-    !TESTRAIL_DOMAIN ||
-    !TESTRAIL_USERNAME ||
-    !TESTRAIL_PASSWORD ||
-    !projectId
-  )
+  if ( !TESTRAIL_DOMAIN || !TESTRAIL_USERNAME || !TESTRAIL_PASSWORD || !projectId )
   {
     console.log( "⚠️ TestRail not fully configured or missing Project ID." );
     return;
@@ -100,7 +95,19 @@ exports.reportToTestRail = async ( passed = [], failed = [], projectId ) =>
   const allTests = [...passed, ...failed];
 
   const caseIds = Array.from(
-    new Set( allTests.map( ( test ) => extractCaseId( test.name ) ).filter( Boolean ) )
+    new Set(
+      allTests
+        .map( ( test ) =>
+        {
+          if ( !test.name )
+          {
+            console.warn( "⚠️ Skipping test with missing name:", test );
+            return null;
+          }
+          return extractCaseId( test.name );
+        } )
+        .filter( Boolean )
+    )
   );
 
   if ( caseIds.length === 0 )
@@ -113,9 +120,8 @@ exports.reportToTestRail = async ( passed = [], failed = [], projectId ) =>
   const runName = extractRunNameFromTests( allTests );
 
   console.log(
-    `🧩 Creating TestRail Run for Project ${ projectId } with case IDs: ${ caseIds.join(
-      ", "
-    ) }${ suiteId ? ` and Suite ID: ${ suiteId }` : "" }`
+    `🧩 Creating TestRail Run for Project ${ projectId } with case IDs: ${ caseIds.join( ", " ) }${ suiteId ? ` and Suite ID: ${ suiteId }` : ""
+    }`
   );
 
   const runId = await createTestRun( projectId, caseIds, suiteId, runName );
