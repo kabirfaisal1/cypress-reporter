@@ -16,13 +16,13 @@ function extractCaseId ( testName )
   return match ? parseInt( match[1], 10 ) : null;
 }
 
-// ✅ Extracts TestRail Suite ID from title (e.g., [S269]) or returns default
+// ✅ Extracts TestRail Suite ID from fullTitle (e.g., [S269]) or returns default
 function extractSuiteId ( tests, defaultSuiteId = 1 )
 {
   for ( const test of tests )
   {
-    const title = test.name || test.fullTitle || '';
-    const match = title.match( /\[S(\d+)\]/i );
+    const fullTitle = test.fullTitle || '';
+    const match = fullTitle.match( /\[S(\d+)\]/i );
     if ( match && match[1] )
     {
       return parseInt( match[1], 10 );

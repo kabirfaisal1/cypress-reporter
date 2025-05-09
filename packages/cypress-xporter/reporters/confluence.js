@@ -231,7 +231,7 @@ exports.uploadTestLogToConfluence = async ( passed, failed, testRail = null, cha
         const html = generateDashboardHTML( passed, failed, testRail, chartPath );
         const title = generateTimestampTitle();
 
-        const outputDir = path.join( process.cwd(), 'CypressTest' );
+        const outputDir = path.join( __dirname, '..', 'CypressTest' );
         if ( !fs.existsSync( outputDir ) ) fs.mkdirSync( outputDir, { recursive: true } );
 
         const outputFile = path.join( outputDir, `${ title }.html` );
