@@ -1,0 +1,243 @@
+{
+  "stats": {
+    "suites": 2,
+    "tests": 7,
+    "passes": 6,
+    "pending": 0,
+    "failures": 1,
+    "start": "2025-05-09T12:11:27.952Z",
+    "end": "2025-05-09T12:11:28.799Z",
+    "duration": 847,
+    "testsRegistered": 7,
+    "passPercent": 85.71428571428571,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "7a175503-60eb-4524-861b-c5ed1b141b9d",
+      "title": "",
+      "fullFile": "cypress\\E2E\\SERVICES\\PatientServiceAPI\\SMOKE\\patient\\patientsSearchQueryBodypayload.cy.ts",
+      "file": "cypress\\E2E\\SERVICES\\PatientServiceAPI\\SMOKE\\patient\\patientsSearchQueryBodypayload.cy.ts",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "99a75f3b-8094-42b8-900c-664208ff1fcd",
+          "title": "[P31][S269] Patients API Test Suite",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [],
+          "suites": [
+            {
+              "uuid": "21523863-826f-483c-b8d7-5649feb8e9e9",
+              "title": "Patients Search resource Endpoint",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "[C5460] Search PhoneNumber and limit",
+                  "fullTitle": "[P31][S269] Patients API Test Suite Patients Search resource Endpoint [C5460] Search PhoneNumber and limit",
+                  "timedOut": null,
+                  "duration": 71,
+                  "state": "passed",
+                  "speed": "fast",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.performPatientAPIRequest(_support_utilities_index__WEBPACK_IMPORTED_MODULE_1__.PatientAPIURIResource.PATIENTS_SEARCH, _support_utilities_index__WEBPACK_IMPORTED_MODULE_1__.ApiVersion.v1, test, token).then(({ body }) => {\n    cy.validatePatientsBody(body, test);\n});",
+                  "err": {},
+                  "uuid": "3d76be74-946f-45c9-995e-c1fba2f6ae40",
+                  "parentUUID": "21523863-826f-483c-b8d7-5649feb8e9e9",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[C5461] Search PhoneNumber and without limit",
+                  "fullTitle": "[P31][S269] Patients API Test Suite Patients Search resource Endpoint [C5461] Search PhoneNumber and without limit",
+                  "timedOut": null,
+                  "duration": 50,
+                  "state": "passed",
+                  "speed": "fast",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.performPatientAPIRequest(_support_utilities_index__WEBPACK_IMPORTED_MODULE_1__.PatientAPIURIResource.PATIENTS_SEARCH, _support_utilities_index__WEBPACK_IMPORTED_MODULE_1__.ApiVersion.v1, test, token).then(({ body }) => {\n    cy.validatePatientsBody(body, test);\n});",
+                  "err": {},
+                  "uuid": "57727a4f-6ed3-4890-a013-1ad12efd3e3a",
+                  "parentUUID": "21523863-826f-483c-b8d7-5649feb8e9e9",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[C5462] Search LastName, limit and LOCATION_ID",
+                  "fullTitle": "[P31][S269] Patients API Test Suite Patients Search resource Endpoint [C5462] Search LastName, limit and LOCATION_ID",
+                  "timedOut": null,
+                  "duration": 55,
+                  "state": "passed",
+                  "speed": "fast",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.performPatientAPIRequest(_support_utilities_index__WEBPACK_IMPORTED_MODULE_1__.PatientAPIURIResource.PATIENTS_SEARCH, _support_utilities_index__WEBPACK_IMPORTED_MODULE_1__.ApiVersion.v1, test, token).then(({ body }) => {\n    cy.validatePatientsBody(body, test);\n});",
+                  "err": {},
+                  "uuid": "726ea0f7-d299-43a4-b739-debf89ca1185",
+                  "parentUUID": "21523863-826f-483c-b8d7-5649feb8e9e9",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[C5463] Search DOB, limit and location",
+                  "fullTitle": "[P31][S269] Patients API Test Suite Patients Search resource Endpoint [C5463] Search DOB, limit and location",
+                  "timedOut": null,
+                  "duration": 162,
+                  "state": "passed",
+                  "speed": "fast",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.performPatientAPIRequest(_support_utilities_index__WEBPACK_IMPORTED_MODULE_1__.PatientAPIURIResource.PATIENTS_SEARCH, _support_utilities_index__WEBPACK_IMPORTED_MODULE_1__.ApiVersion.v1, test, token).then(({ body }) => {\n    cy.validatePatientsBody(body, test);\n});",
+                  "err": {},
+                  "uuid": "3f01428d-8b96-4984-a78d-b3fb347231a8",
+                  "parentUUID": "21523863-826f-483c-b8d7-5649feb8e9e9",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[C5464] Search externalIdentifiers and limit",
+                  "fullTitle": "[P31][S269] Patients API Test Suite Patients Search resource Endpoint [C5464] Search externalIdentifiers and limit",
+                  "timedOut": null,
+                  "duration": 52,
+                  "state": "passed",
+                  "speed": "fast",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.performPatientAPIRequest(_support_utilities_index__WEBPACK_IMPORTED_MODULE_1__.PatientAPIURIResource.PATIENTS_SEARCH, _support_utilities_index__WEBPACK_IMPORTED_MODULE_1__.ApiVersion.v1, test, token).then(({ body }) => {\n    cy.validatePatientsBody(body, test);\n});",
+                  "err": {},
+                  "uuid": "b215845d-a89e-4bd3-b4ee-55e25d5eb71c",
+                  "parentUUID": "21523863-826f-483c-b8d7-5649feb8e9e9",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[C5465] Search Only Inactive Patients and limit",
+                  "fullTitle": "[P31][S269] Patients API Test Suite Patients Search resource Endpoint [C5465] Search Only Inactive Patients and limit",
+                  "timedOut": null,
+                  "duration": 196,
+                  "state": "failed",
+                  "speed": null,
+                  "pass": false,
+                  "fail": true,
+                  "pending": false,
+                  "context": "{\n  \"title\": \"cypress-mochawesome-reporter-screenshots\",\n  \"value\": [\n    [\n      \"\\\\patient\\\\patientsSearchQueryBodypayload.cy.ts\\\\[P31][S269] Patients API Test Suite -- Patients Search resource Endpoint -- [C5465] Search Only Inactive Patients and limit (failed).png\"\n    ]\n  ]\n}",
+                  "code": "cy.performPatientAPIRequest(_support_utilities_index__WEBPACK_IMPORTED_MODULE_1__.PatientAPIURIResource.PATIENTS_SEARCH, _support_utilities_index__WEBPACK_IMPORTED_MODULE_1__.ApiVersion.v1, test, token).then(({ body }) => {\n    cy.validatePatientsBody(body, test);\n});",
+                  "err": {
+                    "message": "AssertionError: expected 400 to equal 200\n\nTest steps were:\n\n1. Resolved Endpoint: /fusion-services-patient/api/v1/patients/search\n2. ⚙️ Creating Request body\n3. ✅ Created Request body:: {\"includeInactive\":false,\"limit\":5}",
+                    "estack": "AssertionError: expected 400 to equal 200\n    at Context.eval (webpack:///./cypress/support/commands/servicesCommands.ts:111:31)\n    at getRet (https://fh-qa-app01.fusionmgt.com/__cypress/runner/cypress_runner.js:119616:20)\n    at tryCatcher (https://fh-qa-app01.fusionmgt.com/__cypress/runner/cypress_runner.js:1777:23)\n    at Promise.attempt.Promise.try (https://fh-qa-app01.fusionmgt.com/__cypress/runner/cypress_runner.js:4285:29)\n    at Context.thenFn (https://fh-qa-app01.fusionmgt.com/__cypress/runner/cypress_runner.js:119627:66)\n    at Context.then (https://fh-qa-app01.fusionmgt.com/__cypress/runner/cypress_runner.js:119878:21)",
+                    "diff": "- 400\n+ 200\n"
+                  },
+                  "uuid": "04dc780b-6dd1-443c-8e00-803637638249",
+                  "parentUUID": "21523863-826f-483c-b8d7-5649feb8e9e9",
+                  "isHook": false,
+                  "skipped": false
+                },
+                {
+                  "title": "[C5467] Search Patients MEDICAL RECORD NUMBER and limit",
+                  "fullTitle": "[P31][S269] Patients API Test Suite Patients Search resource Endpoint [C5467] Search Patients MEDICAL RECORD NUMBER and limit",
+                  "timedOut": null,
+                  "duration": 54,
+                  "state": "passed",
+                  "speed": "fast",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.performPatientAPIRequest(_support_utilities_index__WEBPACK_IMPORTED_MODULE_1__.PatientAPIURIResource.PATIENTS_SEARCH, _support_utilities_index__WEBPACK_IMPORTED_MODULE_1__.ApiVersion.v1, test, token).then(({ body }) => {\n    cy.validatePatientsBody(body, test);\n});",
+                  "err": {},
+                  "uuid": "bd424464-c36c-43e9-a8df-e4c2c4a5b3e1",
+                  "parentUUID": "21523863-826f-483c-b8d7-5649feb8e9e9",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [
+                "3d76be74-946f-45c9-995e-c1fba2f6ae40",
+                "57727a4f-6ed3-4890-a013-1ad12efd3e3a",
+                "726ea0f7-d299-43a4-b739-debf89ca1185",
+                "3f01428d-8b96-4984-a78d-b3fb347231a8",
+                "b215845d-a89e-4bd3-b4ee-55e25d5eb71c",
+                "bd424464-c36c-43e9-a8df-e4c2c4a5b3e1"
+              ],
+              "failures": [
+                "04dc780b-6dd1-443c-8e00-803637638249"
+              ],
+              "pending": [],
+              "skipped": [],
+              "duration": 640,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            }
+          ],
+          "passes": [],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 0,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress\\reports\\.jsons",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.2.0"
+    }
+  }
+}

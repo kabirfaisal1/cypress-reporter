@@ -1,0 +1,124 @@
+{
+  "stats": {
+    "suites": 2,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2025-05-09T12:11:20.136Z",
+    "end": "2025-05-09T12:11:20.325Z",
+    "duration": 189,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "19738bdb-0ad1-4b15-9311-53bd210f440c",
+      "title": "",
+      "fullFile": "cypress\\E2E\\SERVICES\\PatientServiceAPI\\SMOKE\\patiEntAttribute\\patientsAttributeURIParams.cy.ts",
+      "file": "cypress\\E2E\\SERVICES\\PatientServiceAPI\\SMOKE\\patiEntAttribute\\patientsAttributeURIParams.cy.ts",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "3f3b4ac3-34cf-42ac-8444-f932a4360800",
+          "title": "[P31][S269] Patients API Test Suite",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [],
+          "suites": [
+            {
+              "uuid": "6f6bb440-dcc7-49f7-af00-51af58e96346",
+              "title": "Patients URI  ID resource Endpoint Tests",
+              "fullFile": "",
+              "file": "",
+              "beforeHooks": [],
+              "afterHooks": [],
+              "tests": [
+                {
+                  "title": "[C5628] Full list of patient-attributes",
+                  "fullTitle": "[P31][S269] Patients API Test Suite Patients URI  ID resource Endpoint Tests [C5628] Full list of patient-attributes",
+                  "timedOut": null,
+                  "duration": 95,
+                  "state": "passed",
+                  "speed": "fast",
+                  "pass": true,
+                  "fail": false,
+                  "pending": false,
+                  "context": null,
+                  "code": "cy.performPatientAPIRequest(_support_utilities_index__WEBPACK_IMPORTED_MODULE_1__.PatientAPIURIResource.PATIENTS_ATTRIBUTE, _support_utilities_index__WEBPACK_IMPORTED_MODULE_1__.ApiVersion.v1, test, token).then(({ body }) => {\n    cy.validatePatientsAttribute(body, test);\n});",
+                  "err": {},
+                  "uuid": "dc889044-c1d0-492f-968a-bbab9141bf07",
+                  "parentUUID": "6f6bb440-dcc7-49f7-af00-51af58e96346",
+                  "isHook": false,
+                  "skipped": false
+                }
+              ],
+              "suites": [],
+              "passes": [
+                "dc889044-c1d0-492f-968a-bbab9141bf07"
+              ],
+              "failures": [],
+              "pending": [],
+              "skipped": [],
+              "duration": 95,
+              "root": false,
+              "rootEmpty": false,
+              "_timeout": 2000
+            }
+          ],
+          "passes": [],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 0,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress\\reports\\.jsons",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.2.0"
+    }
+  }
+}
