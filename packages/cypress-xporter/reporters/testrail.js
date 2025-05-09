@@ -15,7 +15,7 @@ const AUTH = {
   password: TESTRAIL_PASSWORD
 };
 
-// ✅ Extract TestRail Case ID from test name (e.g., [C1234])
+// ✅ Extract TestRail Case ID from [C####]
 function extractCaseId ( testName )
 {
   if ( !testName ) return null;
@@ -23,7 +23,7 @@ function extractCaseId ( testName )
   return match ? parseInt( match[1], 10 ) : null;
 }
 
-// ✅ Extract Suite ID from test titles
+// ✅ Extract Suite ID from [S####]
 function extractSuiteIdFromTestNames ( tests = [] )
 {
   for ( const test of tests )
@@ -36,10 +36,10 @@ function extractSuiteIdFromTestNames ( tests = [] )
       return parseInt( match[1], 10 );
     }
   }
-  return 1; // fallback
+  return 1;
 }
 
-// ✅ Extract Project ID from test titles
+// ✅ Extract Project ID from [P####] or .env fallback
 function extractProjectIdFromTestNames ( tests = [] )
 {
   for ( const test of tests )
@@ -55,7 +55,7 @@ function extractProjectIdFromTestNames ( tests = [] )
   return TESTRAIL_PROJECT_ID || null;
 }
 
-// ✅ Extract Run Name from file path (e.g., "SERVICES-PatientServiceAPI Automated Run")
+// ✅ Build a readable Run Name using cypress/e2e/<group>/<subgroup>
 function extractRunNameFromTests ( tests = [] )
 {
   const now = new Date().toLocaleString();
@@ -68,7 +68,6 @@ function extractRunNameFromTests ( tests = [] )
     if ( match )
     {
       const parts = match.split( "/" );
-
       if ( parts.length >= 2 )
       {
         return `${ parts[0].toUpperCase() }-${ parts[1].toUpperCase() } Automated Run (${ now })`;
@@ -82,7 +81,7 @@ function extractRunNameFromTests ( tests = [] )
   return `Automated Cypress Run (${ now })`;
 }
 
-// ✅ Create TestRail Run
+// ✅ Create the TestRail run
 async function createTestRun ( projectId, caseIds = [], suiteId = 1, runName = null )
 {
   const payload = {
@@ -95,10 +94,8 @@ async function createTestRun ( projectId, caseIds = [], suiteId = 1, runName = n
   console.log( `📤 Creating TestRail Run` );
   console.log( `   ➤ Project ID: ${ projectId }` );
   console.log( `   ➤ Suite ID: ${ suiteId }` );
-  console.log( `   ➤ Case IDs: ${ caseIds.join( ', ' ) }` );
   console.log( `   ➤ Run Name: ${ payload.name }` );
-  console.log( `   ➤ Run payload suite_id: ${ payload.suite_id }` );
-  console.log( `   ➤ Run case_ids case_ids: ${ payload.case_ids }` );
+  console.log( `   ➤ Case IDs: ${ caseIds.join( ', ' ) }` );
 
   if ( !projectId || !suiteId || caseIds.length === 0 )
   {
@@ -121,7 +118,7 @@ async function createTestRun ( projectId, caseIds = [], suiteId = 1, runName = n
   }
 }
 
-// ✅ Main Exported Entry
+// ✅ Main Reporter
 exports.reportToTestRail = async ( passed = [], failed = [] ) =>
 {
   if ( !TESTRAIL_DOMAIN || !TESTRAIL_USERNAME || !TESTRAIL_PASSWORD )
@@ -135,7 +132,7 @@ exports.reportToTestRail = async ( passed = [], failed = [] ) =>
   const caseIds = Array.from(
     new Set(
       allTests
-        .map( test => extractCaseId( test?.name ) )
+        .map( test => extractCaseId( test?.name || test?.fullTitle ) )
         .filter( Boolean )
     )
   );
@@ -150,14 +147,13 @@ exports.reportToTestRail = async ( passed = [], failed = [] ) =>
 
   const suiteId = extractSuiteIdFromTestNames( allTests );
   const projectId = extractProjectIdFromTestNames( allTests );
+  const runName = extractRunNameFromTests( allTests );
 
   if ( !projectId )
   {
     console.log( '❌ Project ID could not be determined from test titles or .env' );
     return;
   }
-
-  const runName = extractRunNameFromTests( allTests );
 
   const runId = await createTestRun( projectId, caseIds, suiteId, runName );
 
@@ -167,11 +163,17 @@ exports.reportToTestRail = async ( passed = [], failed = [] ) =>
     return;
   }
 
+  console.log( `📦 Preparing to report ${ passed.length } passed and ${ failed.length } failed test(s).` );
+
   const results = allTests
     .map( test =>
     {
-      const caseId = extractCaseId( test.name );
-      if ( !caseId ) return null;
+      const caseId = extractCaseId( test.name || test.fullTitle );
+      if ( !caseId )
+      {
+        console.warn( `⚠ Skipping test without valid case ID: ${ test.name || test.fullTitle }` );
+        return null;
+      }
       return {
         case_id: caseId,
         status_id: test.state === 'passed' ? 1 : 5,

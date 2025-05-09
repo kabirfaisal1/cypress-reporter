@@ -150,8 +150,13 @@ const run = async () =>
 
         [...passedTests, ...updatedFailedTests].forEach( ( test ) =>
         {
-            const projectId = test.projectId || process.env.TESTRAIL_PROJECT_ID;
+            const title = test.fullTitle || test.name || '';
+            const match = title.match( /\[P(\d+)\]/i );
+            const projectId = match?.[1] || process.env.TESTRAIL_PROJECT_ID;
+
             if ( !projectId ) return;
+
+            test.projectId = projectId;
 
             if ( !testsByProjectId[projectId] )
             {
@@ -166,7 +171,7 @@ const run = async () =>
                 testsByProjectId[projectId].failed.push( test );
             }
         } );
-
+        
         for ( const projectId of Object.keys( testsByProjectId ) )
         {
             const numericProjectId = projectId.replace( /^P/i, "" ); // Strip "P"
@@ -177,7 +182,7 @@ const run = async () =>
                     `🚀 Reporting ${ passed.length } passed and ${ failed.length } failed test(s) for ProjectID: ${ projectId }`
                 )
             );
-            await reportToTestRail( passed, failed, numericProjectId );
+            await reportToTestRail( passed, failed );
         }
     }
 
