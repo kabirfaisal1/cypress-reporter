@@ -16,25 +16,18 @@ function extractCaseId ( testName )
   return match ? parseInt( match[1], 10 ) : null;
 }
 
-// ✅ Extracts TestRail Suite ID from fullTitle (e.g., [S269]) or returns default
-function extractSuiteId ( tests, currentProjectId, defaultSuiteId = null )
+// ✅ Extracts TestRail Suite ID from [Sxxx] in fullTitle or returns default
+function extractSuiteId ( tests, defaultSuiteId = 1 )
 {
   for ( const test of tests )
   {
     const fullTitle = test.fullTitle || '';
     const suiteMatch = fullTitle.match( /\[S(\d+)\]/i );
-    const projectMatch = fullTitle.match( /\[P(\d+)\]/i );
-
-    if (
-      suiteMatch &&
-      projectMatch &&
-      parseInt( projectMatch[1], 10 ) === parseInt( currentProjectId, 10 )
-    )
+    if ( suiteMatch && suiteMatch[1] )
     {
       return parseInt( suiteMatch[1], 10 );
     }
   }
-
   return defaultSuiteId;
 }
 
@@ -117,7 +110,7 @@ exports.reportToTestRail = async ( passed = [], failed = [], projectId ) =>
     return;
   }
 
-  const suiteId = extractSuiteId( allTests, projectId );
+  const suiteId = extractSuiteId( allTests, 1 ); // default suiteId = 1
   const runName = extractRunNameFromTests( allTests );
 
   console.log(
