@@ -152,7 +152,7 @@ function formatDuration ( seconds )
 
 function generateDashboardHTML ( passed, failed, testRail = null, chartPath = null )
 {
-    const htmlTemplatePath = path.join( __dirname, '..', 'templates', 'dashboard.html' );
+    const htmlTemplatePath = path.join( process.cwd(), 'templates', 'dashboard.html' );
 
     if ( !fs.existsSync( htmlTemplatePath ) )
     {
@@ -231,7 +231,7 @@ exports.uploadTestLogToConfluence = async ( passed, failed, testRail = null, cha
         const html = generateDashboardHTML( passed, failed, testRail, chartPath );
         const title = generateTimestampTitle();
 
-        const outputDir = path.join( __dirname, '..', 'CypressTest' );
+        const outputDir = path.join( process.cwd(), 'CypressTest' );
         if ( !fs.existsSync( outputDir ) ) fs.mkdirSync( outputDir, { recursive: true } );
 
         const outputFile = path.join( outputDir, `${ title }.html` );

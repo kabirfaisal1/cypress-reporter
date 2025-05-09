@@ -1,34 +1,34 @@
-function extractTests ( suite, filePath, inheritedProjectId = null )
+const { extractProjectId } = require( './extractProjectId' ); // If needed
+
+function extractTests ( suite, filePath )
 {
     const tests = [];
 
-    let dynamicProjectId = inheritedProjectId;
-    const match = suite.title?.match( /\[(P\d+)\]/i ); // Captures P12, P99, etc.
-    if ( match && match[1] )
-    {
-        dynamicProjectId = match[1]; // "P12"
-    }
-
     if ( suite.tests )
     {
-        tests.push(
-            ...suite.tests.map( test => ( {
-                name: test.fullTitle || test.title || 'Untitled Test',
-                state: test.state?.toLowerCase() || 'unknown',
-                file: filePath,
-                body: test.code || '',
+        for ( const test of suite.tests )
+        {
+            const testName = test.title || test.fullTitle || null;
+
+            tests.push( {
+                name: testName,
+                fullTitle: test.fullTitle || '',
+                title: test.title || '',
                 error: test.err?.message || '',
-                projectId: dynamicProjectId || process.env.TESTRAIL_PROJECT_ID
-            } ) )
-        );
+                file: filePath || suite.file || '',
+                state: test.state,
+                jira: test.jira || 'N/A',
+                projectId: extractProjectId( test.fullTitle || test.title || '' ),
+            } );
+        }
     }
 
     if ( suite.suites )
     {
-        suite.suites.forEach( subSuite =>
+        for ( const child of suite.suites )
         {
-            tests.push( ...extractTests( subSuite, filePath, dynamicProjectId ) );
-        } );
+            tests.push( ...extractTests( child, filePath ) );
+        }
     }
 
     return tests;
