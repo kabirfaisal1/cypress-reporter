@@ -216,7 +216,7 @@ npx cypress-xporter --jira --testrail --confluence
 
 ## 🛠️ Version
 
-### 2.0.5
+### 2.1.8
 
 1. Parses Cypress mochawesome reports.
 2. Extracts ProjectID and Case IDs from test titles.
