@@ -1,15 +1,16 @@
 #!/usr/bin/env node
-require( 'dotenv' ).config();
-const fs = require( 'fs' );
-const path = require( 'path' );
-const chalk = require( 'chalk' );
-const minimist = require( 'minimist' );
-const fg = require( 'fast-glob' );
+require( "dotenv" ).config();
+const fs = require( "fs" );
+const path = require( "path" );
+const chalk = require( "chalk" );
+const minimist = require( "minimist" );
+const fg = require( "fast-glob" );
 
-const { reportToJira } = require( './reporters/jira' );
-const { reportToTestRail } = require( './reporters/testrail' );
-const { uploadTestLogToConfluence } = require( './reporters/confluence' );
-const { extractTests } = require( './utils/extractTests' );
+const { reportToJira } = require( "./reporters/jira" );
+const { reportToTestRail } = require( "./reporters/testrail" );
+const { uploadTestLogToConfluence } = require( "./reporters/confluence" );
+const { extractUniqueFailedTests } = require( "./utils/extractFailedTests" );
+const { extractTests } = require( "./utils/extractTests" );
 
 const argv = minimist( process.argv.slice( 2 ) );
 const useJira = argv.jira || false;
@@ -18,8 +19,8 @@ const useTestRail = argv.testrail || false;
 
 async function findReportFiles ()
 {
-    const pattern = '**/mochawesome*.json';
-    const ignore = ['**/node_modules/**', '**/dist/**', '**/CypressTest/**'];
+    const pattern = "**/mochawesome*.json";
+    const ignore = ["**/node_modules/**", "**/dist/**", "**/CypressTest/**"];
 
     const files = await fg( pattern, {
         cwd: process.cwd(),
@@ -31,11 +32,11 @@ async function findReportFiles ()
 
     if ( !files.length )
     {
-        throw new Error( '❌ No mochawesome JSON report files found.' );
+        throw new Error( "❌ No mochawesome JSON report files found." );
     }
 
     console.log( `🔍 Found ${ files.length } mochawesome report file(s):` );
-    files.forEach( file => console.log( `  - ${ file }` ) );
+    files.forEach( ( file ) => console.log( `  - ${ file }` ) );
     return files;
 }
 
@@ -47,7 +48,7 @@ function mergeAllReports ( reportFiles )
     {
         try
         {
-            const content = fs.readFileSync( file, 'utf8' );
+            const content = fs.readFileSync( file, "utf8" );
             reports.push( JSON.parse( content ) );
         } catch ( err )
         {
@@ -56,34 +57,37 @@ function mergeAllReports ( reportFiles )
         }
     }
 
-    const merged = reports.reduce( ( acc, curr ) =>
-    {
-        acc.stats.tests += curr.stats.tests;
-        acc.stats.passes += curr.stats.passes;
-        acc.stats.failures += curr.stats.failures;
-        acc.stats.pending += curr.stats.pending;
-        acc.stats.suites += curr.stats.suites;
-        acc.stats.duration += curr.stats.duration;
-        acc.stats.testsRegistered += curr.stats.testsRegistered;
-        acc.stats.skipped = ( acc.stats.skipped || 0 ) + ( curr.stats.skipped || 0 );
-        acc.stats.hasSkipped = acc.stats.hasSkipped || curr.stats.hasSkipped;
-        acc.results.push( ...curr.results );
-        return acc;
-    }, {
-        stats: {
-            tests: 0,
-            passes: 0,
-            failures: 0,
-            pending: 0,
-            suites: 0,
-            duration: 0,
-            testsRegistered: 0,
-            skipped: 0,
-            hasSkipped: false,
+    const merged = reports.reduce(
+        ( acc, curr ) =>
+        {
+            acc.stats.tests += curr.stats.tests;
+            acc.stats.passes += curr.stats.passes;
+            acc.stats.failures += curr.stats.failures;
+            acc.stats.pending += curr.stats.pending;
+            acc.stats.suites += curr.stats.suites;
+            acc.stats.duration += curr.stats.duration;
+            acc.stats.testsRegistered += curr.stats.testsRegistered;
+            acc.stats.skipped = ( acc.stats.skipped || 0 ) + ( curr.stats.skipped || 0 );
+            acc.stats.hasSkipped = acc.stats.hasSkipped || curr.stats.hasSkipped;
+            acc.results.push( ...curr.results );
+            return acc;
         },
-        results: [],
-        meta: reports[0].meta,
-    } );
+        {
+            stats: {
+                tests: 0,
+                passes: 0,
+                failures: 0,
+                pending: 0,
+                suites: 0,
+                duration: 0,
+                testsRegistered: 0,
+                skipped: 0,
+                hasSkipped: false,
+            },
+            results: [],
+            meta: reports[0].meta,
+        }
+    );
 
     if ( merged.stats.tests > 0 )
     {
@@ -100,7 +104,7 @@ const run = async () =>
 
     try
     {
-        console.log( chalk.yellow( '🔄 Searching for mochawesome reports...' ) );
+        console.log( chalk.yellow( "🔄 Searching for mochawesome reports..." ) );
         reportFiles = await findReportFiles();
     } catch ( err )
     {
@@ -109,39 +113,28 @@ const run = async () =>
     }
 
     const outputDir = path.dirname( reportFiles[0] );
-    const mergedReportPath = path.join( outputDir, 'merged-mochawesome.json' );
+    const mergedReportPath = path.join( outputDir, "merged-mochawesome.json" );
 
     try
     {
-        console.log( chalk.yellow( '📦 Merging all mochawesome reports...' ) );
+        console.log( chalk.yellow( "📦 Merging all mochawesome reports..." ) );
         const mergedReport = mergeAllReports( reportFiles );
         fs.writeFileSync( mergedReportPath, JSON.stringify( mergedReport, null, 2 ) );
         console.log( chalk.green( `✅ Merged report saved to: ${ mergedReportPath }` ) );
     } catch ( err )
     {
-        console.error( chalk.red( '❌ Failed to merge mochawesome reports.' ) );
+        console.error( chalk.red( "❌ Failed to merge mochawesome reports." ) );
         console.error( err.message );
         process.exit( 1 );
     }
 
-    let report;
-    try
-    {
-        const raw = fs.readFileSync( mergedReportPath, 'utf8' );
-        report = JSON.parse( raw );
-    } catch ( err )
-    {
-        console.error( chalk.red( '❌ Failed to parse merged report.' ) );
-        console.error( err.message );
-        process.exit( 1 );
-    }
+    const failedTests = extractUniqueFailedTests( mergedReportPath );
+    const allTests = JSON.parse( fs.readFileSync( mergedReportPath ) ).results.flatMap( ( suite ) =>
+        extractTests( suite, suite.file )
+    );
+    const passedTests = allTests.filter( ( t ) => t.state === "passed" );
 
-    const allTests = report.results.flatMap( suite => extractTests( suite, suite.file ) );
     console.log( chalk.blue( `📋 Found ${ allTests.length } total test(s)` ) );
-
-    const passedTests = allTests.filter( t => t.state === 'passed' );
-    const failedTests = allTests.filter( t => t.state === 'failed' );
-
     console.log( chalk.green( `✅ Passed: ${ passedTests.length }` ) );
     console.log( chalk.red( `❌ Failed: ${ failedTests.length }` ) );
 
@@ -155,7 +148,7 @@ const run = async () =>
     {
         const testsByProjectId = {};
 
-        [...passedTests, ...updatedFailedTests].forEach( test =>
+        [...passedTests, ...updatedFailedTests].forEach( ( test ) =>
         {
             const projectId = test.projectId || process.env.TESTRAIL_PROJECT_ID;
             if ( !projectId ) return;
@@ -165,10 +158,10 @@ const run = async () =>
                 testsByProjectId[projectId] = { passed: [], failed: [] };
             }
 
-            if ( test.state === 'passed' )
+            if ( test.state === "passed" )
             {
                 testsByProjectId[projectId].passed.push( test );
-            } else if ( test.state === 'failed' )
+            } else if ( test.state === "failed" )
             {
                 testsByProjectId[projectId].failed.push( test );
             }
@@ -176,10 +169,14 @@ const run = async () =>
 
         for ( const projectId of Object.keys( testsByProjectId ) )
         {
-            const numericProjectId = projectId.replace( /^P/i, '' ); // Strip "P"
+            const numericProjectId = projectId.replace( /^P/i, "" ); // Strip "P"
             const { passed, failed } = testsByProjectId[projectId];
 
-            console.log( chalk.cyan( `🚀 Reporting ${ passed.length } passed and ${ failed.length } failed test(s) for ProjectID: ${ projectId }` ) );
+            console.log(
+                chalk.cyan(
+                    `🚀 Reporting ${ passed.length } passed and ${ failed.length } failed test(s) for ProjectID: ${ projectId }`
+                )
+            );
             await reportToTestRail( passed, failed, numericProjectId );
         }
     }
