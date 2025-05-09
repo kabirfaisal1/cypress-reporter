@@ -8,13 +8,11 @@ const AUTH = {
   password: TESTRAIL_PASSWORD,
 };
 
-// Extracts TestRail Case ID from test title
 function extractCaseId(testName) {
-  const match = testName.match(/\[?C(\d+)\]?/i);
+  const match = testName?.match(/\[?C(\d+)\]?/i);
   return match ? parseInt(match[1], 10) : null;
 }
 
-// Extracts TestRail Suite ID from any test name (e.g., [S269])
 function extractSuiteId(tests) {
   for (const test of tests) {
     const match = test.name?.match(/\[S(\d+)\]/i);
@@ -45,7 +43,6 @@ function extractRunNameFromTests(tests) {
   return `Automated Cypress Run - (${now})`;
 }
 
-// Creates a TestRail run with dynamic run name
 async function createTestRun(
   projectId,
   caseIds = [],
@@ -73,7 +70,6 @@ async function createTestRun(
   return res.data.id;
 }
 
-// Main export
 exports.reportToTestRail = async (passed = [], failed = [], projectId) => {
   if (
     !TESTRAIL_DOMAIN ||
@@ -88,7 +84,17 @@ exports.reportToTestRail = async (passed = [], failed = [], projectId) => {
   const allTests = [...passed, ...failed];
 
   const caseIds = Array.from(
-    new Set(allTests.map((test) => extractCaseId(test.name)).filter(Boolean))
+    new Set(
+      allTests
+        .map((test) => {
+          if (!test.name) {
+            console.warn("⚠️ Missing test.name:", test);
+            return null;
+          }
+          return extractCaseId(test.name);
+        })
+        .filter(Boolean)
+    )
   );
 
   if (caseIds.length === 0) {
@@ -106,7 +112,6 @@ exports.reportToTestRail = async (passed = [], failed = [], projectId) => {
   );
 
   const runId = await createTestRun(projectId, caseIds, suiteId, runName);
-
   console.log(`🚀 Created TestRail Run ID: ${runId}`);
 
   const results = allTests
