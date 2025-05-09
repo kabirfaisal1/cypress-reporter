@@ -16,24 +16,22 @@ function extractCaseId ( testName )
   return match ? parseInt( match[1], 10 ) : null;
 }
 
-// ✅ Extracts TestRail Suite ID from any test name (e.g., [S269]) safely
-function extractSuiteId ( tests )
+// ✅ Extracts TestRail Suite ID from title (e.g., [S269]) or returns default
+function extractSuiteId ( tests, defaultSuiteId = 1 )
 {
   for ( const test of tests )
   {
-    if ( typeof test.name === "string" )
+    const title = test.name || test.fullTitle || '';
+    const match = title.match( /\[S(\d+)\]/i );
+    if ( match && match[1] )
     {
-      const match = test.name.match( /\[S(\d+)\]/i );
-      if ( match && match[1] )
-      {
-        return parseInt( match[1], 10 );
-      }
+      return parseInt( match[1], 10 );
     }
   }
-  return null;
+  return defaultSuiteId;
 }
 
-// ✅ Generates run name based on test file path
+// ✅ Generates run name from file structure
 function extractRunNameFromTests ( tests )
 {
   const now = new Date().toLocaleString();
@@ -58,19 +56,15 @@ function extractRunNameFromTests ( tests )
   return `Automated Cypress Run - (${ now })`;
 }
 
-// ✅ Creates a TestRail run with dynamic run name
-async function createTestRun ( projectId, caseIds = [], suiteId = null, runName = null )
+// ✅ Always includes suite_id
+async function createTestRun ( projectId, caseIds = [], suiteId, runName = null )
 {
   const payload = {
     name: runName || `Automated Cypress Run - ${ new Date().toLocaleString() }`,
     include_all: false,
     case_ids: caseIds,
+    suite_id: suiteId
   };
-
-  if ( suiteId )
-  {
-    payload.suite_id = suiteId;
-  }
 
   console.log( `🧩 Creating Test Run with payload:`, payload );
 
@@ -116,12 +110,11 @@ exports.reportToTestRail = async ( passed = [], failed = [], projectId ) =>
     return;
   }
 
-  const suiteId = extractSuiteId( allTests );
+  const suiteId = extractSuiteId( allTests ); // Always returns number (default = 1)
   const runName = extractRunNameFromTests( allTests );
 
   console.log(
-    `🧩 Creating TestRail Run for Project ${ projectId } with case IDs: ${ caseIds.join( ", " ) }${ suiteId ? ` and Suite ID: ${ suiteId }` : ""
-    }`
+    `🧩 Creating TestRail Run for Project ${ projectId } with case IDs: ${ caseIds.join( ", " ) } and Suite ID: ${ suiteId }`
   );
 
   const runId = await createTestRun( projectId, caseIds, suiteId, runName );
@@ -148,7 +141,5 @@ exports.reportToTestRail = async ( passed = [], failed = [], projectId ) =>
     { auth: AUTH }
   );
 
-  console.log(
-    `✅ Reported ${ results.length } results to TestRail for Project ID ${ projectId }`
-  );
+  console.log( `✅ Reported ${ results.length } results to TestRail for Project ID ${ projectId }` );
 };

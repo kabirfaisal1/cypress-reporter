@@ -152,7 +152,7 @@ function formatDuration ( seconds )
 
 function generateDashboardHTML ( passed, failed, testRail = null, chartPath = null )
 {
-    const htmlTemplatePath = path.join( process.cwd(), 'templates', 'dashboard.html' );
+    const htmlTemplatePath = path.join( __dirname, '..', 'templates', 'dashboard.html' );
 
     if ( !fs.existsSync( htmlTemplatePath ) )
     {

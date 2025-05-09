@@ -1,4 +1,9 @@
-const { extractProjectId } = require( './extractProjectId' ); // If needed
+function extractProjectIdFromTitle ( title )
+{
+    if ( typeof title !== 'string' ) return null;
+    const match = title.match( /\[P(\d+)\]/i );
+    return match ? `P${ match[1] }` : null;
+}
 
 function extractTests ( suite, filePath )
 {
@@ -8,7 +13,8 @@ function extractTests ( suite, filePath )
     {
         for ( const test of suite.tests )
         {
-            const testName = test.title || test.fullTitle || null;
+            const title = test.title || test.fullTitle || '';
+            const testName = title || null;
 
             tests.push( {
                 name: testName,
@@ -18,7 +24,7 @@ function extractTests ( suite, filePath )
                 file: filePath || suite.file || '',
                 state: test.state,
                 jira: test.jira || 'N/A',
-                projectId: extractProjectId( test.fullTitle || test.title || '' ),
+                projectId: extractProjectIdFromTitle( title ),
             } );
         }
     }
