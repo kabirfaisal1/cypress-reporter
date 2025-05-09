@@ -9,7 +9,7 @@ const fg = require( "fast-glob" );
 const { reportToJira } = require( "./reporters/jira" );
 const { reportToTestRail } = require( "./reporters/testrail" );
 const { uploadTestLogToConfluence } = require( "./reporters/confluence" );
-const { extractUniqueFailedTests } = require( "./utils/extractFailedTests" );
+const { extractUniqueFailedTests } = require( "./utils/extractUniqueFailedTests" );
 const { extractTests } = require( "./utils/extractTests" );
 
 const argv = minimist( process.argv.slice( 2 ) );
