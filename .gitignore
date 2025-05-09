@@ -13,7 +13,7 @@
 
 # testing
 /coverage
-# cypress/reports
+cypress/reports
 cypress/screenshots
 cypress/videos
 
