@@ -8,7 +8,7 @@ const AUTH = {
   password: TESTRAIL_PASSWORD,
 };
 
-// ✅ Extracts TestRail Case ID from test title safely
+// ✅ Extracts TestRail Case ID from test title
 function extractCaseId ( testName )
 {
   if ( typeof testName !== "string" ) return null;
@@ -16,22 +16,22 @@ function extractCaseId ( testName )
   return match ? parseInt( match[1], 10 ) : null;
 }
 
-// ✅ Extracts TestRail Suite ID from [Sxxx] in fullTitle or returns default
-function extractSuiteId ( tests, defaultSuiteId = 1 )
+// ✅ Extracts TestRail Suite ID from fullTitle (e.g., [S269])
+function extractSuiteId ( tests )
 {
   for ( const test of tests )
   {
-    const fullTitle = test.fullTitle || '';
-    const suiteMatch = fullTitle.match( /\[S(\d+)\]/i );
-    if ( suiteMatch && suiteMatch[1] )
+    const fullTitle = test.fullTitle || test.name || "";
+    const match = fullTitle.match( /\[S(\d+)\]/i );
+    if ( match && match[1] )
     {
-      return parseInt( suiteMatch[1], 10 );
+      return parseInt( match[1], 10 );
     }
   }
-  return defaultSuiteId;
+  return null; // Return null if not found
 }
 
-// ✅ Generates run name from file structure
+// ✅ Generates a run name based on file path
 function extractRunNameFromTests ( tests )
 {
   const now = new Date().toLocaleString();
@@ -56,17 +56,24 @@ function extractRunNameFromTests ( tests )
   return `Automated Cypress Run - (${ now })`;
 }
 
-// ✅ Always includes suite_id
-async function createTestRun ( projectId, caseIds = [], suiteId, runName = null )
+// ✅ Creates a TestRail run, conditionally includes suite_id
+async function createTestRun ( projectId, caseIds = [], suiteId = null, runName = null )
 {
   const payload = {
     name: runName || `Automated Cypress Run - ${ new Date().toLocaleString() }`,
     include_all: false,
     case_ids: caseIds,
-    suite_id: suiteId
   };
 
-  console.log( `🧩 Creating Test Run with payload:`, payload );
+  if ( typeof suiteId === "number" && suiteId > 0 )
+  {
+    payload.suite_id = suiteId;
+  } else
+  {
+    console.warn( "⚠️ suite_id is missing or invalid. Not including in payload." );
+  }
+
+  console.log( "🧩 Creating Test Run with payload:", payload );
 
   const res = await axios.post(
     `${ TESTRAIL_DOMAIN }/index.php?/api/v2/add_run/${ projectId }`,
@@ -77,7 +84,7 @@ async function createTestRun ( projectId, caseIds = [], suiteId, runName = null 
   return res.data.id;
 }
 
-// ✅ Main export
+// ✅ Main export function
 exports.reportToTestRail = async ( passed = [], failed = [], projectId ) =>
 {
   if ( !TESTRAIL_DOMAIN || !TESTRAIL_USERNAME || !TESTRAIL_PASSWORD || !projectId )
@@ -110,15 +117,15 @@ exports.reportToTestRail = async ( passed = [], failed = [], projectId ) =>
     return;
   }
 
-  const suiteId = extractSuiteId( allTests, 1 ); // default suiteId = 1
+  const suiteId = extractSuiteId( allTests ); // may be null if not found
   const runName = extractRunNameFromTests( allTests );
 
   console.log(
-    `🧩 Creating TestRail Run for Project ${ projectId } with case IDs: ${ caseIds.join( ", " ) } and Suite ID: ${ suiteId }`
+    `🧩 Creating TestRail Run for Project ${ projectId } with case IDs: ${ caseIds.join( ", " ) }${ suiteId ? ` and Suite ID: ${ suiteId }` : ""
+    }`
   );
 
   const runId = await createTestRun( projectId, caseIds, suiteId, runName );
-
   console.log( `🚀 Created TestRail Run ID: ${ runId }` );
 
   const results = allTests
