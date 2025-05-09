@@ -28,7 +28,7 @@ function extractSuiteId ( tests )
       return parseInt( match[1], 10 );
     }
   }
-  return null; // Return null if not found
+  return null; // safest default
 }
 
 // ✅ Generates a run name based on file path
