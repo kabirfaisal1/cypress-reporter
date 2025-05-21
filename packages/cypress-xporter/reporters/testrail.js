@@ -32,7 +32,6 @@ function extractProjectAndSuite ( fullTitle )
   if ( pMatch ) projectId = parseInt( pMatch[1], 10 );
   if ( sMatch ) suiteId = parseInt( sMatch[1], 10 );
 
-  console.log( `📌 Extracted Project ID ${ projectId }, Suite ID ${ suiteId } from "${ fullTitle }"` );
   return { projectId, suiteId };
 }
 
