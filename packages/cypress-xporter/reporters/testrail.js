@@ -1,7 +1,5 @@
 require( 'dotenv' ).config();
 const axios = require( 'axios' );
-const fs = require( 'fs' );
-const path = require( 'path' );
 
 const {
   TESTRAIL_DOMAIN,
@@ -15,73 +13,79 @@ const AUTH = {
   password: TESTRAIL_PASSWORD
 };
 
-// ✅ Extract TestRail Case ID from [C####]
-function extractCaseId ( testName )
+// Extract TestRail Case ID from [C####]
+function extractCaseId ( fullTitle )
 {
-  if ( !testName ) return null;
-  const match = testName.match( /\[?C(\d+)\]?/i );
+  const match = fullTitle.match( /\[C(\d+)\]/i );
   return match ? parseInt( match[1], 10 ) : null;
 }
 
-// ✅ Extract Suite ID from [S####]
-function extractSuiteIdFromTestNames ( tests = [] )
+// Extract Project and Suite IDs from [P####] and [S####]
+function extractProjectAndSuite ( fullTitle )
 {
-  for ( const test of tests )
-  {
-    const title = test.fullTitle || test.name || '';
-    const match = title.match( /\[S(\d+)\]/i );
-    if ( match && match[1] )
-    {
-      console.log( `📌 Suite ID "${ match[1] }" extracted from test title: "${ title }"` );
-      return parseInt( match[1], 10 );
-    }
-  }
-  return 1;
+  let projectId = TESTRAIL_PROJECT_ID ? parseInt( TESTRAIL_PROJECT_ID, 10 ) : null;
+  let suiteId = 1;
+
+  const pMatch = fullTitle.match( /\[P(\d+)\]/i );
+  const sMatch = fullTitle.match( /\[S(\d+)\]/i );
+
+  if ( pMatch ) projectId = parseInt( pMatch[1], 10 );
+  if ( sMatch ) suiteId = parseInt( sMatch[1], 10 );
+
+  console.log( `📌 Extracted Project ID ${ projectId }, Suite ID ${ suiteId } from "${ fullTitle }"` );
+  return { projectId, suiteId };
 }
 
-// ✅ Extract Project ID from [P####] or .env fallback
-function extractProjectIdFromTestNames ( tests = [] )
-{
-  for ( const test of tests )
-  {
-    const title = test.fullTitle || test.name || '';
-    const match = title.match( /\[P(\d+)\]/i );
-    if ( match && match[1] )
-    {
-      console.log( `📌 Project ID "${ match[1] }" extracted from test title: "${ title }"` );
-      return parseInt( match[1], 10 );
-    }
-  }
-  return TESTRAIL_PROJECT_ID || null;
-}
-
-// ✅ Build a readable Run Name using cypress/e2e/<group>/<subgroup>
+// Build a readable run name from the test file path
 function extractRunNameFromTests ( tests = [] )
 {
   const now = new Date().toLocaleString();
-
   for ( const test of tests )
   {
-    const file = test.file?.replace( /\\/g, "/" ) || "";
-    const match = file.toLowerCase().split( "cypress/e2e/" )[1];
-
+    const filePath = test.file?.replace( /\\/g, '/' ) || '';
+    const match = filePath.toLowerCase().split( 'cypress/e2e/' )[1];
     if ( match )
     {
-      const parts = match.split( "/" );
-      if ( parts.length >= 2 )
-      {
-        return `${ parts[0].toUpperCase() }-${ parts[1].toUpperCase() } Automated Run (${ now })`;
-      } else if ( parts.length === 1 )
-      {
-        return `${ parts[0].toUpperCase() } Automated Run (${ now })`;
-      }
+      const parts = match.split( '/' );
+      const group = parts[0].toUpperCase();
+      const subgroup = parts[1]?.toUpperCase();
+      return subgroup ? `${ group }-${ subgroup } Automated Run (${ now })` : `${ group } Automated Run (${ now })`;
     }
   }
-
   return `Automated Cypress Run (${ now })`;
 }
 
-// ✅ Create the TestRail run
+// Fetch valid TestRail case IDs for a given project and suite
+async function getValidCaseIds ( projectId, suiteId, caseIds )
+{
+  try
+  {
+    const res = await axios.get(
+      `${ TESTRAIL_DOMAIN }/index.php?/api/v2/get_cases/${ projectId }&suite_id=${ suiteId }`,
+      { auth: AUTH }
+    );
+    let cases = [];
+    if ( Array.isArray( res.data ) )
+    {
+      cases = res.data;
+    } else if ( res.data && Array.isArray( res.data.cases ) )
+    {
+      cases = res.data.cases;
+    } else
+    {
+      console.error( '❌ Unexpected response shape for get_cases:', res.data );
+      return [];
+    }
+    const validSet = new Set( cases.map( c => c.id ) );
+    return caseIds.filter( id => validSet.has( id ) );
+  } catch ( err )
+  {
+    console.error( '❌ Failed to fetch TestRail cases:', err?.response?.data || err.message );
+    return [];
+  }
+}
+
+// Create a TestRail run
 async function createTestRun ( projectId, caseIds = [], suiteId = 1, runName = null )
 {
   const payload = {
@@ -91,7 +95,7 @@ async function createTestRun ( projectId, caseIds = [], suiteId = 1, runName = n
     case_ids: caseIds
   };
 
-  console.log( `📤 Creating TestRail Run` );
+  console.log( '📤 Creating TestRail Run' );
   console.log( `   ➤ Project ID: ${ projectId }` );
   console.log( `   ➤ Suite ID: ${ suiteId }` );
   console.log( `   ➤ Run Name: ${ payload.name }` );
@@ -113,85 +117,88 @@ async function createTestRun ( projectId, caseIds = [], suiteId = 1, runName = n
     return res.data.id;
   } catch ( err )
   {
-    console.error( '❌ TestRail Run creation failed:', err?.response?.data || err.message || err );
+    console.error( '❌ TestRail Run creation failed:', err?.response?.data || err.message );
     return null;
   }
 }
 
-// ✅ Main Reporter
 exports.reportToTestRail = async ( passed = [], failed = [] ) =>
 {
   if ( !TESTRAIL_DOMAIN || !TESTRAIL_USERNAME || !TESTRAIL_PASSWORD )
   {
-    console.log( '⚠ TestRail not fully configured.' );
+    console.warn( '⚠ TestRail not fully configured. Skipping.' );
     return;
   }
 
   const allTests = [...passed, ...failed];
-
-  const caseIds = Array.from(
-    new Set(
-      allTests
-        .map( test => extractCaseId( test?.name || test?.fullTitle ) )
-        .filter( Boolean )
-    )
-  );
-
-  console.log( `🔍 Found ${ caseIds.length } unique TestRail Case IDs:`, caseIds );
-
-  if ( caseIds.length === 0 )
+  const entries = allTests.map( test =>
   {
-    console.log( '⚠ No valid case IDs found.' );
-    return;
+    const fullTitle = test.fullTitle || test.name || '';
+    const caseId = extractCaseId( fullTitle );
+    if ( !caseId ) return null;
+    const { projectId, suiteId } = extractProjectAndSuite( fullTitle );
+    const state = test.state;
+    const comment = test.error || ( state === 'passed' ? 'Test passed ✅' : '' );
+    return { projectId, suiteId, caseId, state, comment, file: test.file, test };
+  } ).filter( Boolean );
+
+  // Group by project-suite
+  const groups = {};
+  for ( const e of entries )
+  {
+    const key = `${ e.projectId }-${ e.suiteId }`;
+    if ( !groups[key] ) groups[key] = { projectId: e.projectId, suiteId: e.suiteId, entries: [] };
+    groups[key].entries.push( e );
   }
 
-  const suiteId = extractSuiteIdFromTestNames( allTests );
-  const projectId = extractProjectIdFromTestNames( allTests );
-  const runName = extractRunNameFromTests( allTests );
-
-  if ( !projectId )
+  for ( const key of Object.keys( groups ) )
   {
-    console.log( '❌ Project ID could not be determined from test titles or .env' );
-    return;
-  }
+    const { projectId, suiteId, entries } = groups[key];
+    const caseIds = Array.from( new Set( entries.map( e => e.caseId ) ) );
+    console.log( `🔍 Found ${ caseIds.length } unique TestRail Case IDs for P${ projectId }/S${ suiteId }:`, caseIds );
 
-  const runId = await createTestRun( projectId, caseIds, suiteId, runName );
-
-  if ( !runId )
-  {
-    console.log( '⚠ Skipping result upload due to failed run creation.' );
-    return;
-  }
-
-  console.log( `📦 Preparing to report ${ passed.length } passed and ${ failed.length } failed test(s).` );
-
-  const results = allTests
-    .map( test =>
+    const validCaseIds = await getValidCaseIds( projectId, suiteId, caseIds );
+    const invalid = caseIds.filter( id => !validCaseIds.includes( id ) );
+    if ( invalid.length ) console.warn( '⚠ Omitting unrecognized TestRail IDs:', invalid );
+    if ( !validCaseIds.length )
     {
-      const caseId = extractCaseId( test.name || test.fullTitle );
-      if ( !caseId )
-      {
-        console.warn( `⚠ Skipping test without valid case ID: ${ test.name || test.fullTitle }` );
-        return null;
-      }
-      return {
-        case_id: caseId,
-        status_id: test.state === 'passed' ? 1 : 5,
-        comment: test.error || 'Test passed ✅'
-      };
-    } )
-    .filter( Boolean );
+      console.warn( `⚠ No valid cases for P${ projectId }/S${ suiteId }. Skipping run.` );
+      continue;
+    }
 
-  try
-  {
-    await axios.post(
-      `${ TESTRAIL_DOMAIN }/index.php?/api/v2/add_results_for_cases/${ runId }`,
-      { results },
-      { auth: AUTH }
-    );
-    console.log( `✅ Reported ${ results.length } results to TestRail for RunID ${ runId }, ProjectID ${ projectId }` );
-  } catch ( err )
-  {
-    console.error( '❌ Error reporting results to TestRail:', err?.response?.data || err.message || err );
+    const runName = extractRunNameFromTests( entries.map( e => e.test ) );
+    const runId = await createTestRun( projectId, validCaseIds, suiteId, runName );
+    if ( !runId )
+    {
+      console.warn( '⚠ Skipping result upload due to failed run creation.' );
+      continue;
+    }
+
+    // Only report results for valid cases
+    const entriesForResults = entries.filter( e => validCaseIds.includes( e.caseId ) );
+    if ( !entriesForResults.length )
+    {
+      console.warn( '⚠ No test results to report for RunID', runId );
+      continue;
+    }
+
+    const results = entriesForResults.map( e => ( {
+      case_id: e.caseId,
+      status_id: e.state === 'passed' ? 1 : 5,
+      comment: e.comment
+    } ) );
+
+    try
+    {
+      await axios.post(
+        `${ TESTRAIL_DOMAIN }/index.php?/api/v2/add_results_for_cases/${ runId }`,
+        { results },
+        { auth: AUTH }
+      );
+      console.log( `✅ Reported ${ results.length } results to TestRail RunID ${ runId }, ProjectID ${ projectId }` );
+    } catch ( err )
+    {
+      console.error( '❌ Error reporting results to TestRail:', err?.response?.data || err.message );
+    }
   }
 };

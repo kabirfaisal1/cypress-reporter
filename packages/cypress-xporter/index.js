@@ -69,7 +69,14 @@ function mergeAllReports ( reportFiles )
             acc.stats.testsRegistered += curr.stats.testsRegistered;
             acc.stats.skipped = ( acc.stats.skipped || 0 ) + ( curr.stats.skipped || 0 );
             acc.stats.hasSkipped = acc.stats.hasSkipped || curr.stats.hasSkipped;
-            acc.results.push( ...curr.results );
+
+            // — Drop any non-object entries (e.g. `false`, `null`) —
+            if ( Array.isArray( curr.results ) )
+            {
+                const valid = curr.results.filter( ( r ) => r && typeof r === "object" );
+                acc.results.push( ...valid );
+            }
+
             return acc;
         },
         {
@@ -128,10 +135,10 @@ const run = async () =>
         process.exit( 1 );
     }
 
+    // Now that results are filtered, extractUniqueFailedTests will never see a `false`!
     const failedTests = extractUniqueFailedTests( mergedReportPath );
-    const allTests = JSON.parse( fs.readFileSync( mergedReportPath ) ).results.flatMap( ( suite ) =>
-        extractTests( suite, suite.file )
-    );
+    const allTests = JSON.parse( fs.readFileSync( mergedReportPath ) )
+        .results.flatMap( ( suite ) => extractTests( suite, suite.file ) );
     const passedTests = allTests.filter( ( t ) => t.state === "passed" );
 
     console.log( chalk.blue( `📋 Found ${ allTests.length } total test(s)` ) );
@@ -147,36 +154,21 @@ const run = async () =>
     if ( useTestRail )
     {
         const testsByProjectId = {};
-
         [...passedTests, ...updatedFailedTests].forEach( ( test ) =>
         {
-            const title = test.fullTitle || test.name || '';
+            const title = test.fullTitle || test.name || "";
             const match = title.match( /\[P(\d+)\]/i );
             const projectId = match?.[1] || process.env.TESTRAIL_PROJECT_ID;
-
             if ( !projectId ) return;
 
             test.projectId = projectId;
-
-            if ( !testsByProjectId[projectId] )
-            {
-                testsByProjectId[projectId] = { passed: [], failed: [] };
-            }
-
-            if ( test.state === "passed" )
-            {
-                testsByProjectId[projectId].passed.push( test );
-            } else if ( test.state === "failed" )
-            {
-                testsByProjectId[projectId].failed.push( test );
-            }
+            testsByProjectId[projectId] ??= { passed: [], failed: [] };
+            testsByProjectId[projectId][test.state === "passed" ? "passed" : "failed"].push( test );
         } );
-        
+
         for ( const projectId of Object.keys( testsByProjectId ) )
         {
-            const numericProjectId = projectId.replace( /^P/i, "" ); // Strip "P"
             const { passed, failed } = testsByProjectId[projectId];
-
             console.log(
                 chalk.cyan(
                     `🚀 Reporting ${ passed.length } passed and ${ failed.length } failed test(s) for ProjectID: ${ projectId }`
