@@ -131,6 +131,8 @@ Cypress Xporter will:
 3. Create Jira tickets for failed tests (if `--jira` is passed)
 4. Log results to TestRail (if `--testrail` is passed)
 5. Generate a dashboard and upload to Confluence (if `--confluence` is passed)
+    > **Note:**  
+    > To successfully publish dashboards to Confluence, ensure that the **Confluence HTML Macro** is enabled in your Confluence instance. Without this macro, embedded HTML dashboards may not render correctly on your Confluence pages.
 
 
 
@@ -216,31 +218,33 @@ npx cypress-xporter --jira --testrail --confluence
 
 ## 🛠️ Version
 
-### ^2.2.0
+### ^2.4.0
 
-1. Parses Cypress mochawesome reports.
-2. Extracts ProjectID and Case IDs from test titles.
-3. For each unique ProjectID:
-  - Queries all Suites.
-  - Finds the matching Suite containing all Case IDs.
-4. Creates a TestRail Run with the correct Suite and Case IDs.
-5. Posts test results to the newly created Test Run.
-6. Dynamic Run Name Based on File Path
-    - Now accepts runName as a parameter.
-      - If 2+ folders: Folder1-Folder2 Automated Run with `<date>` :: `i.g: cypress/e2e/Shopping/Smoke`
-      - If 1 folder: Folder1 Automated Run with `<date>` :: `i.g: cypress/e2e/Smoke`
-      - If none: Automated Cypress Run - `<date>`
+1. Parses Cypress mochawesome reports.  
+2. Extracts ProjectID and Case IDs from test titles.  
+3. For each unique ProjectID:  
+   - Queries all Suites.  
+   - Finds the matching Suite containing all Case IDs.  
+4. Creates a TestRail Run with the correct Suite and Case IDs.  
+5. Posts test results to the newly created Test Run.  
+6. Automatically closes the Test Run after posting results.  
+7. Dynamic Run Name Based on File Path  
+   - Now accepts `runName` as a parameter.  
+     - If 2+ folders: **Folder1-Folder2 Automated Run** with `<date>` :: _e.g._ `cypress/e2e/Shopping/Smoke`  
+     - If 1 folder: **Folder1 Automated Run** with `<date>` :: _e.g._ `cypress/e2e/Smoke`  
+     - If none: **Automated Cypress Run - `<date>`**
 
+<br>
 
+| **Before**                                         | **After**                                                       |
+|----------------------------------------------------|------------------------------------------------------------------|
+| ❌ Could only work with static `.env` ProjectID     | ✅ Dynamic ProjectID works from `[P2]`                           |
+| ❌ 400 Error: `case_ids` unrecognized if wrong suite used | ✅ Dynamically finds the correct `suite_id` `[S1]`         |
+| ❌ Poor debug logs when things fail                 | ✅ Clean, visible logs for ProjectID, SuiteID, CaseIDs          |
+| ❌ Unscalable for multiple projects                 | ✅ Now supports multiple Projects and Suites automatically       |
+| ❌ Needed manual hardcoding                         | ✅ 100% automatic detection                                      |
+| ❌ Manual step needed to close test run             | ✅ Automatically closes TestRail run after results are posted    |
 
-| **Before**                              | **After**                                   |
-|-----------------------------------------|---------------------------------------------|
-| ❌ Could only work with static `.env` ProjectID | ✅ Dynamic ProjectID works from `[P2]` |
-| ❌ 400 Error: `case_ids` unrecognized if wrong suite used | ✅ Dynamically finds the correct `suite_id` `[SID]` |
-| ❌ Poor debug logs when things fail      | ✅ Clean, visible logs for ProjectID, SuiteID, CaseIDs |
-| ❌ Unscalable for multiple projects      | ✅ Now supports multiple Projects and Suites automatically |
-| ❌ Needed manual hardcoding             | ✅ 100% automatic detection          
-       |
 
 ## 📄 License
 
