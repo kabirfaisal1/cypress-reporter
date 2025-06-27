@@ -5,12 +5,12 @@ const {
   TESTRAIL_DOMAIN,
   TESTRAIL_USERNAME,
   TESTRAIL_PASSWORD,
-  TESTRAIL_PROJECT_ID
+  TESTRAIL_PROJECT_ID,
 } = process.env;
 
 const AUTH = {
   username: TESTRAIL_USERNAME,
-  password: TESTRAIL_PASSWORD
+  password: TESTRAIL_PASSWORD,
 };
 
 // Extract [C####]
@@ -114,7 +114,7 @@ async function createTestRun ( projectId, caseIds = [], suiteId = 1, runName = n
     name: runName || `Automated Cypress Run - ${ new Date().toLocaleString() }`,
     suite_id: suiteId,
     include_all: false,
-    case_ids: caseIds
+    case_ids: caseIds,
   };
 
   console.log( '📤 Creating TestRail Run' );
@@ -144,6 +144,23 @@ async function createTestRun ( projectId, caseIds = [], suiteId = 1, runName = n
   }
 }
 
+// Close a run
+async function closeTestRun ( runId )
+{
+  try
+  {
+    await axios.post(
+      `${ TESTRAIL_DOMAIN }/index.php?/api/v2/close_run/${ runId }`,
+      {},
+      { auth: AUTH }
+    );
+    console.log( `🔒 Closed TestRail RunID ${ runId }` );
+  } catch ( err )
+  {
+    console.error( `❌ Failed to close TestRail run ${ runId }:`, err.response?.data || err.message );
+  }
+}
+
 exports.reportToTestRail = async ( passed = [], failed = [] ) =>
 {
   if ( !TESTRAIL_DOMAIN || !TESTRAIL_USERNAME || !TESTRAIL_PASSWORD )
@@ -159,7 +176,15 @@ exports.reportToTestRail = async ( passed = [], failed = [] ) =>
     const cid = extractCaseId( full );
     if ( !cid ) return null;
     const { projectId, suiteId } = extractProjectAndSuite( full );
-    return { projectId, suiteId, caseId: cid, state: t.state, comment: t.error || ( t.state === 'passed' ? 'Test passed ✅' : '' ), file: t.file, raw: t };
+    return {
+      projectId,
+      suiteId,
+      caseId: cid,
+      state: t.state,
+      comment: t.error || ( t.state === 'passed' ? 'Test passed ✅' : '' ),
+      file: t.file,
+      raw: t,
+    };
   } ).filter( Boolean );
 
   // group by P-S
@@ -200,7 +225,7 @@ exports.reportToTestRail = async ( passed = [], failed = [] ) =>
     const toReport = entries.filter( e => valid.includes( e.caseId ) ).map( e => ( {
       case_id: e.caseId,
       status_id: e.state === 'passed' ? 1 : 5,
-      comment: e.comment
+      comment: e.comment,
     } ) );
 
     try
@@ -211,6 +236,10 @@ exports.reportToTestRail = async ( passed = [], failed = [] ) =>
         { auth: AUTH }
       );
       console.log( `✅ Reported ${ toReport.length } results to TestRail RunID ${ runId }, ProjectID ${ projectId }` );
+
+      // 🟢 Close the run after reporting
+      await closeTestRun( runId );
+
     } catch ( err )
     {
       console.error( '❌ Error reporting results to TestRail:', err.response?.data || err.message );
