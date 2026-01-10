@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 require("dotenv").config();
+
 const fs = require("fs");
 const path = require("path");
 const chalk = require("chalk");
@@ -17,8 +18,8 @@ const useJira = argv.jira || false;
 const useConfluence = argv.confluence || false;
 const useTestRail = argv.testrail || false;
 
-// NEW: adhoc run id argument
-const adhocRunIdArg = argv.adhoc || argv.adhocRunId || argv.ADHOC_TESTRUNID || null;
+// ✅ ADHOC run id can come from CLI or .env
+const adhocRunIdArg = argv.adhoc || argv.adhocRunId || process.env.ADHOC_TESTRUNID || null;
 if (adhocRunIdArg) {
   process.env.ADHOC_TESTRUNID = String(adhocRunIdArg);
 }
@@ -69,6 +70,7 @@ function mergeAllReports(reportFiles) {
       acc.stats.skipped = (acc.stats.skipped || 0) + (curr.stats.skipped || 0);
       acc.stats.hasSkipped = acc.stats.hasSkipped || curr.stats.hasSkipped;
 
+      // ✅ keep only valid result objects
       if (Array.isArray(curr.results)) {
         const valid = curr.results.filter((r) => r && typeof r === "object");
         acc.results.push(...valid);
@@ -89,7 +91,7 @@ function mergeAllReports(reportFiles) {
         hasSkipped: false,
       },
       results: [],
-      meta: reports[0].meta,
+      meta: reports[0]?.meta,
     }
   );
 
@@ -127,8 +129,10 @@ const run = async () => {
   }
 
   const failedTests = extractUniqueFailedTests(mergedReportPath);
+
   const allTests = JSON.parse(fs.readFileSync(mergedReportPath))
     .results.flatMap((suite) => extractTests(suite, suite.file));
+
   const passedTests = allTests.filter((t) => t.state === "passed");
 
   console.log(chalk.blue(`📋 Found ${allTests.length} total test(s)`));
@@ -136,42 +140,37 @@ const run = async () => {
   console.log(chalk.red(`❌ Failed: ${failedTests.length}`));
 
   let updatedFailedTests = failedTests;
+
   if (useJira) {
     updatedFailedTests = await reportToJira(failedTests);
   }
 
+  /**
+   * ✅ TestRail reporting
+   *
+   * IMPORTANT FIX (prevents duplicate runs):
+   * - DO NOT loop project-by-project here.
+   * - Call reportToTestRail() exactly once in NORMAL mode.
+   * - In ADHOC mode, call adhocTestResults() only (no run creation, no closing).
+   */
   if (useTestRail) {
-    // ✅ If adhoc run id is provided, report to that run ONLY
-    if (process.env.ADHOC_TESTRUNID) {
+    const adhocRunId = process.env.ADHOC_TESTRUNID;
+
+    if (adhocRunId) {
       console.log(
         chalk.magenta(
-          `🧩 Using ADHOC_TESTRUNID=${process.env.ADHOC_TESTRUNID} (posting results only for matching cases in that run)`
+          `🧩 ADHOC mode enabled. Posting results ONLY to existing TestRail RunID=${adhocRunId} (no run creation, no closing).`
         )
       );
-      await adhocTestResults(passedTests, updatedFailedTests, process.env.ADHOC_TESTRUNID);
+      await adhocTestResults(passedTests, updatedFailedTests, adhocRunId);
     } else {
-      // Otherwise use normal “create run per suite/project” logic
-      const testsByProjectId = {};
-      [...passedTests, ...updatedFailedTests].forEach((test) => {
-        const title = test.fullTitle || test.name || "";
-        const match = title.match(/\[P(\d+)\]/i);
-        const projectId = match?.[1] || process.env.TESTRAIL_PROJECT_ID;
-        if (!projectId) return;
-
-        test.projectId = projectId;
-        testsByProjectId[projectId] ??= { passed: [], failed: [] };
-        testsByProjectId[projectId][test.state === "passed" ? "passed" : "failed"].push(test);
-      });
-
-      for (const projectId of Object.keys(testsByProjectId)) {
-        const { passed, failed } = testsByProjectId[projectId];
-        console.log(
-          chalk.cyan(
-            `🚀 Reporting ${passed.length} passed and ${failed.length} failed test(s) for ProjectID: ${projectId}`
-          )
-        );
-        await reportToTestRail(passed, failed);
-      }
+      console.log(
+        chalk.cyan(
+          `🚀 Reporting ${passedTests.length} passed and ${updatedFailedTests.length} failed test(s) to TestRail (normal mode: create run(s) + close them).`
+        )
+      );
+      // ✅ CALL ONCE (testrail.js groups by Project/Suite internally)
+      await reportToTestRail(passedTests, updatedFailedTests);
     }
   }
 

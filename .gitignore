@@ -16,7 +16,7 @@
 cypress/reports
 cypress/screenshots
 cypress/videos
-
+packages/cypress-xporter/reports
 # next.js
 /.next/
 /out/
