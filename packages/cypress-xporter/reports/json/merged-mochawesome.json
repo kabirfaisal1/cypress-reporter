@@ -1,0 +1,846 @@
+{
+  "stats": {
+    "tests": 21,
+    "passes": 8,
+    "failures": 13,
+    "pending": 0,
+    "suites": 7,
+    "duration": 15885,
+    "testsRegistered": 25,
+    "skipped": 4,
+    "hasSkipped": true,
+    "passPercent": 38.095238095238095,
+    "pendingPercent": 0
+  },
+  "results": [
+    {
+      "uuid": "437622ec-8c93-473a-94ed-2905047acce5",
+      "title": "",
+      "fullFile": "cypress\\E2E\\SERVICES\\SMOKE\\patient\\patientInformation.cy.ts",
+      "file": "cypress\\E2E\\SERVICES\\SMOKE\\patient\\patientInformation.cy.ts",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "20b13f44-1139-447e-b613-00101294758b",
+          "title": "[P31][S269] Patients API Test Suite",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "[C15848] Search PatientIds and get Information",
+              "fullTitle": "[P31][S269] Patients API Test Suite [C15848] Search PatientIds and get Information",
+              "timedOut": null,
+              "duration": 200,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": "{\n  \"title\": \"cypress-mochawesome-reporter-screenshots\",\n  \"value\": [\n    [\n      \"\\\\patient\\\\patientInformation.cy.ts\\\\[P31][S269] Patients API Test Suite -- [C15848] Search PatientIds and get Information (failed).png\"\n    ],\n    [\n      \"\\\\patient\\\\patientInformation.cy.ts\\\\[P31][S269] Patients API Test Suite -- [C15848] Search PatientIds and get Information (failed) (attempt 2).png\"\n    ]\n  ]\n}",
+              "code": "const testPayload = {\n    patientID: profileData.PATIENT_ID,\n    method: 'GET',\n    expectedStatus: 200,\n};\ncy.performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_INFORMATION, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, testPayload).then(response => {\n    cy.validateApiSchema(response, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientsInformationResponseSnapshot);\n});",
+              "err": {
+                "message": "AssertionError: \n\nTest steps were:\n\n1. Resolved Endpoint: /fusion-services-patient/api/v1/patients/2079615844550410/information\n2. Response status: 200\n\nPayload[0] is missing 3 expected key(s):\n• defaultDoctorId\n• referringDoctorId\n• primaryCareDoctorId: expected [ Array(3) ] to have a length of 0 but got 3",
+                "estack": "AssertionError: Payload[0] is missing 3 expected key(s):\n• defaultDoctorId\n• referringDoctorId\n• primaryCareDoctorId: expected [ Array(3) ] to have a length of 0 but got 3\n    at eval (webpack:///./cypress/support/commands/globalAPISnapsshots.ts:156:33)\nat Array.forEach (<anonymous>)\n    at Context.eval (webpack:///./cypress/support/commands/globalAPISnapsshots.ts:142:8)\n    at wrapped (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:145673:43)",
+                "diff": null
+              },
+              "uuid": "1bd79320-78d7-47cd-8c91-f3d9efec6198",
+              "parentUUID": "20b13f44-1139-447e-b613-00101294758b",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": [
+            "1bd79320-78d7-47cd-8c91-f3d9efec6198"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 200,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    },
+    {
+      "uuid": "1c0441d6-1e82-4993-8ba3-9831df3d0949",
+      "title": "",
+      "fullFile": "cypress\\E2E\\SERVICES\\SMOKE\\patient\\patientsIdSearchLocation.cy.ts",
+      "file": "cypress\\E2E\\SERVICES\\SMOKE\\patient\\patientsIdSearchLocation.cy.ts",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "999979a6-9ec1-4673-8d90-ca2b65888722",
+          "title": "[P31][S269] Patients API Test Suite",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "[C15845] Search PatientIds by Location",
+              "fullTitle": "[P31][S269] Patients API Test Suite [C15845] Search PatientIds by Location",
+              "timedOut": null,
+              "duration": 733,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": "{\n  \"title\": \"cypress-mochawesome-reporter-screenshots\",\n  \"value\": [\n    [\n      \"\\\\patient\\\\patientsIdSearchLocation.cy.ts\\\\[P31][S269] Patients API Test Suite -- [C15845] Search PatientIds by Location (failed).png\"\n    ],\n    [\n      \"\\\\patient\\\\patientsIdSearchLocation.cy.ts\\\\[P31][S269] Patients API Test Suite -- [C15845] Search PatientIds by Location -- before each hook (failed) (attempt 2).png\"\n    ]\n  ]\n}",
+              "code": "const payload = {\n    method: 'POST',\n    requestKeys: [requestKeys.locationIds, requestKeys.locationDetails],\n    requestValues: [\n        obsData.LOCATIONID,\n        [\n            {\n                [requestKeys.locationDetailChildren.level]: obsData.HDIDLEVEL,\n                [requestKeys.locationDetailChildren.value]: obsData.OBSVALUE,\n            },\n        ],\n    ],\n    expectedStatus: 200,\n};\nreturn cy\n    .performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.patientsSearch, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, payload)\n    .then(response => {\n    cy.validateLocationResponseBody(response.body);\n});",
+              "err": {
+                "message": "CypressError: \n\nTest steps were:\n\n1. Querying patient observations for Section/Block/Cell/Bed\n2. Querying patient observations for Section/Block/Cell/Bed\n3. Running your selected query against\n\ncentricityps database:\n\n |--[ \n    SELECT TOP (10)\n      t1.[PID]           AS PID,\n      t2.[LocationId]    AS LOCATIONID,\n      t1.[HDID]          AS HDID,\n      t1.[OBSTYPE]       AS OBSTYPE,\n      t1.[OBSVALUE]      AS OBSVALUE\n    FROM [centricityps_qa].[dbo].[OBS] AS t1\n    JOIN [centricityps_qa].[dbo].[PatientProfile] AS t2\n      ON t1.[PID] = t2.[PID]\n    WHERE t1.[CHANGE] = 2\n      AND t1.[HDID] IN (81745,81746,81747,81748)\n    ORDER BY t1.[PID] DESC\n   ]--|\n\n`cy.task('queryDb')` failed with the following error:\n\n> Invalid object name 'centricityps_qa.dbo.OBS'.\n\nhttps://on.cypress.io/api/task\n\nBecause this error occurred during a `before each` hook we are skipping the remaining tests in the current suite: `[P31][S269] Patients API Te...`",
+                "estack": "CypressError: `cy.task('queryDb')` failed with the following error:\n\n> Invalid object name 'centricityps_qa.dbo.OBS'.\n\nhttps://on.cypress.io/api/task\n    at <unknown> (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:138065:70)\n    at tryCatcher (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:1777:23)\n    at Promise._settlePromiseFromHandler (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:1489:31)\n    at Promise._settlePromise (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:1546:18)\n    at Promise._settlePromise0 (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:1591:10)\n    at Promise._settlePromises (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:1667:18)\n    at _drainQueueStep (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:2377:12)\n    at _drainQueue (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:2370:9)\n    at Async._drainQueues (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:2386:5)\n    at Async.drainQueues (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:2256:14)\nFrom Your Spec Code:\n    at Context.eval (webpack:///./cypress/support/commands/globalCommands.ts:212:12)\n    at wrapped (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:145673:43)\n\nFrom Node.js Internals:\nRequestError: Invalid object name 'centricityps_qa.dbo.OBS'.\n    at handleError (C:\\Users\\kabir.faisal\\source\\e2e-monorepo\\node_modules\\mssql\\lib\\tedious\\request.js:384:15)\n    at Connection.emit (node:events:519:28)\n    at emit (C:\\Users\\kabir.faisal\\source\\e2e-monorepo\\node_modules\\tedious\\src\\connection.ts:1927:18)\n    at onErrorMessage (C:\\Users\\kabir.faisal\\source\\e2e-monorepo\\node_modules\\tedious\\src\\token\\handler.ts:386:21)\n    at token (C:\\Users\\kabir.faisal\\source\\e2e-monorepo\\node_modules\\tedious\\src\\token\\token-stream-parser.ts:23:55)\n    at Readable.emit (node:events:519:28)\n    at addChunk (node:internal/streams/readable:559:12)\n    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)\n    at Readable.push (node:internal/streams/readable:391:5)\n    at nextAsync (node:internal/streams/from:194:22)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)",
+                "diff": null
+              },
+              "uuid": "95792232-0b39-4508-959a-8104e8e952c0",
+              "parentUUID": "999979a6-9ec1-4673-8d90-ca2b65888722",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "[C15846] Get Active only Patients by Location",
+              "fullTitle": "[P31][S269] Patients API Test Suite [C15846] Get Active only Patients by Location",
+              "timedOut": null,
+              "duration": 0,
+              "state": "skipped",
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const payload = {\n    method: 'POST',\n    includeInactive: false,\n    requestKeys: [requestKeys.locationIds, requestKeys.locationDetails],\n    requestValues: [\n        obsData.LOCATIONID,\n        [\n            {\n                [requestKeys.locationDetailChildren.level]: obsData.HDIDLEVEL,\n                [requestKeys.locationDetailChildren.value]: obsData.OBSVALUE,\n            },\n        ],\n    ],\n    expectedStatus: 200,\n};\nreturn cy\n    .performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_IDs_LOCATION, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, payload)\n    .then(response => {\n    cy.validateLocationResponseBody(response.body);\n});",
+              "err": {},
+              "uuid": "59c991c4-f0bb-4cfe-b604-4c297e6db4a4",
+              "parentUUID": "999979a6-9ec1-4673-8d90-ca2b65888722",
+              "isHook": false,
+              "skipped": true
+            },
+            {
+              "title": "[C15847] Get InActive only Patients by Location",
+              "fullTitle": "[P31][S269] Patients API Test Suite [C15847] Get InActive only Patients by Location",
+              "timedOut": null,
+              "duration": 0,
+              "state": "skipped",
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const payload = {\n    method: 'POST',\n    includeInactive: true,\n    requestKeys: [requestKeys.locationIds, requestKeys.locationDetails],\n    requestValues: [\n        obsData.LOCATIONID,\n        [\n            {\n                [requestKeys.locationDetailChildren.level]: obsData.HDIDLEVEL,\n                [requestKeys.locationDetailChildren.value]: obsData.OBSVALUE,\n            },\n        ],\n    ],\n    expectedStatus: 200,\n};\nreturn cy\n    .performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_IDs_LOCATION, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, payload)\n    .then(response => {\n    cy.validateLocationResponseBody(response.body);\n});",
+              "err": {},
+              "uuid": "843dc1ae-8055-4109-af2b-818fdc085e46",
+              "parentUUID": "999979a6-9ec1-4673-8d90-ca2b65888722",
+              "isHook": false,
+              "skipped": true
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": [
+            "95792232-0b39-4508-959a-8104e8e952c0"
+          ],
+          "pending": [],
+          "skipped": [
+            "59c991c4-f0bb-4cfe-b604-4c297e6db4a4",
+            "843dc1ae-8055-4109-af2b-818fdc085e46"
+          ],
+          "duration": 733,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    },
+    {
+      "uuid": "f983713b-37c5-4386-b117-3f30fd8f0e31",
+      "title": "",
+      "fullFile": "cypress\\E2E\\SERVICES\\SMOKE\\patient\\patientsIdSearchLocationDetails.cy.ts",
+      "file": "cypress\\E2E\\SERVICES\\SMOKE\\patient\\patientsIdSearchLocationDetails.cy.ts",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "29e0e57f-ff5d-4ffc-acd8-51feddf46bb7",
+          "title": "[P31][S269] Patients API Test Suite",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "[C6754] Search PatientIds by LocationDetails (two filters, include inactive by default)",
+              "fullTitle": "[P31][S269] Patients API Test Suite [C6754] Search PatientIds by LocationDetails (two filters, include inactive by default)",
+              "timedOut": null,
+              "duration": 750,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": "{\n  \"title\": \"cypress-mochawesome-reporter-screenshots\",\n  \"value\": [\n    [\n      \"\\\\patient\\\\patientsIdSearchLocationDetails.cy.ts\\\\[P31][S269] Patients API Test Suite -- [C6754] Search PatientIds by LocationDetails (two filters, include inactive by default) (failed).png\"\n    ],\n    [\n      \"\\\\patient\\\\patientsIdSearchLocationDetails.cy.ts\\\\[P31][S269] Patients API Test Suite -- [C6754] Search PatientIds by LocationDetails (two filters, include inactive by default) -- before each hook (failed) (attempt 2).png\"\n    ]\n  ]\n}",
+              "code": "const locationChildrenDataA = {\n    level: obsData[1].HDIDLEVEL,\n    value: obsData[1].OBSVALUE,\n};\nconst locationChildrenDataB = {\n    level: obsData[0].HDIDLEVEL,\n    value: obsData[0].OBSVALUE,\n};\ncy.performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_IDs_LOCATION_DETAILS, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, {\n    method: 'POST',\n    rawBody: [\n        {\n            [requestKeys.locationDetailChildren.level]: locationChildrenDataA.level,\n            [requestKeys.locationDetailChildren.value]: locationChildrenDataA.value,\n        },\n        {\n            [requestKeys.locationDetailChildren.level]: locationChildrenDataB.level,\n            [requestKeys.locationDetailChildren.value]: locationChildrenDataB.value,\n        },\n    ],\n    expectedStatus: 200,\n}).then(response => {\n    cy.validateLocationResponseBody(response.body);\n});",
+              "err": {
+                "message": "CypressError: \n\nTest steps were:\n\n1. Querying patient observations for Section/Block/Cell/Bed\n2. Querying patient observations for Section/Block/Cell/Bed\n3. Running your selected query against\n\ncentricityps database:\n\n |--[ \n    SELECT TOP (10)\n      t1.[PID]           AS PID,\n      t2.[LocationId]    AS LOCATIONID,\n      t1.[HDID]          AS HDID,\n      t1.[OBSTYPE]       AS OBSTYPE,\n      t1.[OBSVALUE]      AS OBSVALUE\n    FROM [centricityps_qa].[dbo].[OBS] AS t1\n    JOIN [centricityps_qa].[dbo].[PatientProfile] AS t2\n      ON t1.[PID] = t2.[PID]\n    WHERE t1.[CHANGE] = 2\n      AND t1.[HDID] IN (81745,81746,81747,81748)\n    ORDER BY t1.[PID] DESC\n   ]--|\n\n`cy.task('queryDb')` failed with the following error:\n\n> Invalid object name 'centricityps_qa.dbo.OBS'.\n\nhttps://on.cypress.io/api/task\n\nBecause this error occurred during a `before each` hook we are skipping the remaining tests in the current suite: `[P31][S269] Patients API Te...`",
+                "estack": "CypressError: `cy.task('queryDb')` failed with the following error:\n\n> Invalid object name 'centricityps_qa.dbo.OBS'.\n\nhttps://on.cypress.io/api/task\n    at <unknown> (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:138065:70)\n    at tryCatcher (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:1777:23)\n    at Promise._settlePromiseFromHandler (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:1489:31)\n    at Promise._settlePromise (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:1546:18)\n    at Promise._settlePromise0 (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:1591:10)\n    at Promise._settlePromises (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:1667:18)\n    at _drainQueueStep (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:2377:12)\n    at _drainQueue (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:2370:9)\n    at Async._drainQueues (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:2386:5)\n    at Async.drainQueues (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:2256:14)\nFrom Your Spec Code:\n    at Context.eval (webpack:///./cypress/support/commands/globalCommands.ts:212:12)\n    at wrapped (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:145673:43)\n\nFrom Node.js Internals:\nRequestError: Invalid object name 'centricityps_qa.dbo.OBS'.\n    at handleError (C:\\Users\\kabir.faisal\\source\\e2e-monorepo\\node_modules\\mssql\\lib\\tedious\\request.js:384:15)\n    at Connection.emit (node:events:519:28)\n    at emit (C:\\Users\\kabir.faisal\\source\\e2e-monorepo\\node_modules\\tedious\\src\\connection.ts:1927:18)\n    at onErrorMessage (C:\\Users\\kabir.faisal\\source\\e2e-monorepo\\node_modules\\tedious\\src\\token\\handler.ts:386:21)\n    at token (C:\\Users\\kabir.faisal\\source\\e2e-monorepo\\node_modules\\tedious\\src\\token\\token-stream-parser.ts:23:55)\n    at Readable.emit (node:events:519:28)\n    at addChunk (node:internal/streams/readable:559:12)\n    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)\n    at Readable.push (node:internal/streams/readable:391:5)\n    at nextAsync (node:internal/streams/from:194:22)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)",
+                "diff": null
+              },
+              "uuid": "3b36a0d2-5694-4574-815d-9b6298d1daaa",
+              "parentUUID": "29e0e57f-ff5d-4ffc-acd8-51feddf46bb7",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "[C15844] Get Active only Patients by LocationDetails",
+              "fullTitle": "[P31][S269] Patients API Test Suite [C15844] Get Active only Patients by LocationDetails",
+              "timedOut": null,
+              "duration": 0,
+              "state": "skipped",
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const locationChildrenData = {\n    level: obsData[1].HDIDLEVEL,\n    value: obsData[1].OBSVALUE,\n};\ncy.performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_IDs_LOCATION_DETAILS, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, {\n    method: 'POST',\n    includeInactive: false, // active only (per your current flag semantics)\n    rawBody: [\n        {\n            [requestKeys.locationDetailChildren.level]: locationChildrenData.level,\n            [requestKeys.locationDetailChildren.value]: locationChildrenData.value,\n        },\n    ],\n    expectedStatus: 200,\n}).then(response => {\n    cy.validateLocationResponseBody(response.body, [\n        obsData[0].PID,\n        obsData[1].PID,\n    ]);\n});",
+              "err": {},
+              "uuid": "95525650-e8cc-4398-878c-a4bda682745f",
+              "parentUUID": "29e0e57f-ff5d-4ffc-acd8-51feddf46bb7",
+              "isHook": false,
+              "skipped": true
+            },
+            {
+              "title": "[C15843] Include Inactive Patients by LocationDetails",
+              "fullTitle": "[P31][S269] Patients API Test Suite [C15843] Include Inactive Patients by LocationDetails",
+              "timedOut": null,
+              "duration": 0,
+              "state": "skipped",
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const locationChildrenData = {\n    level: obsData[3].HDIDLEVEL,\n    value: obsData[3].OBSVALUE,\n};\ncy.performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_IDs_LOCATION_DETAILS, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, {\n    method: 'POST',\n    includeInactive: true, // include inactive (NOT inactive-only, unless your API supports that)\n    rawBody: [\n        {\n            [requestKeys.locationDetailChildren.level]: locationChildrenData.level,\n            [requestKeys.locationDetailChildren.value]: locationChildrenData.value,\n        },\n    ],\n    expectedStatus: 200,\n}).then(response => {\n    cy.validateLocationResponseBody(response.body, obsData[3].PID);\n});",
+              "err": {},
+              "uuid": "d2addcf5-f2b9-48ad-9792-e918306c2e84",
+              "parentUUID": "29e0e57f-ff5d-4ffc-acd8-51feddf46bb7",
+              "isHook": false,
+              "skipped": true
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": [
+            "3b36a0d2-5694-4574-815d-9b6298d1daaa"
+          ],
+          "pending": [],
+          "skipped": [
+            "95525650-e8cc-4398-878c-a4bda682745f",
+            "d2addcf5-f2b9-48ad-9792-e918306c2e84"
+          ],
+          "duration": 750,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    },
+    {
+      "uuid": "ebdc4be8-66a7-4433-bf56-a6b675365f64",
+      "title": "",
+      "fullFile": "cypress\\E2E\\SERVICES\\SMOKE\\patient\\patientsIdsQueryBodypayload.cy.ts",
+      "file": "cypress\\E2E\\SERVICES\\SMOKE\\patient\\patientsIdsQueryBodypayload.cy.ts",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "1fb87a0c-9376-481b-abce-2ddf447fada7",
+          "title": "[P31][S269] Patients API Test Suite",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "[C5455] Search for single PATIENT_ID and matched LOCATION_ID",
+              "fullTitle": "[P31][S269] Patients API Test Suite [C5455] Search for single PATIENT_ID and matched LOCATION_ID",
+              "timedOut": null,
+              "duration": 201,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": "{\n  \"title\": \"cypress-mochawesome-reporter-screenshots\",\n  \"value\": [\n    [\n      \"\\\\patient\\\\patientsIdsQueryBodypayload.cy.ts\\\\[P31][S269] Patients API Test Suite -- [C5455] Search for single PATIENT_ID and matched LOCATION_ID (failed).png\"\n    ],\n    [\n      \"\\\\patient\\\\patientsIdsQueryBodypayload.cy.ts\\\\[P31][S269] Patients API Test Suite -- [C5455] Search for single PATIENT_ID and matched LOCATION_ID (failed) (attempt 2).png\"\n    ]\n  ]\n}",
+              "code": "const testPayload = {\n    method: 'Post',\n    requestKeys: [requestKey.patientIds, requestKey.locationIds],\n    requestValues: [\n        [profileData.singlePatientId],\n        [profileData.singleLocationId],\n    ],\n    expectedStatus: 200,\n    expectedResponsePatientsID: profileData.singlePatientId,\n    expectedResponseKeys: _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.patientResponseSnapshot,\n    expectedLocationId: profileData.singleLocationId,\n};\ncy.performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_IDS, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, testPayload).then(response => {\n    cy.validatePatientsBody(response, testPayload);\n});",
+              "err": {
+                "message": "AssertionError: \n\nTest steps were:\n\n1. Resolved Endpoint: /fusion-services-patient/api/v1/patients/ids\n2. Creating Request body from requestKeys/requestValues\n\nexpected 405 to equal 200",
+                "estack": "AssertionError: expected 405 to equal 200\n    at Context.eval (webpack:///./cypress/support/commands/projectCommands/servicesCommands.ts:135:31)\n    at getRet (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:122341:20)\n    at tryCatcher (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:1777:23)\n    at Promise.attempt.Promise.try (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:4285:29)\n    at Context.thenFn (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:122352:66)\n    at Context.then (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:122603:21)",
+                "diff": "- 405\n+ 200\n"
+              },
+              "uuid": "70772f6a-8937-4e17-ae79-af44f87436ed",
+              "parentUUID": "1fb87a0c-9376-481b-abce-2ddf447fada7",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "[C5456] Search for Multi PATIENT_ID and matched LOCATION_ID",
+              "fullTitle": "[P31][S269] Patients API Test Suite [C5456] Search for Multi PATIENT_ID and matched LOCATION_ID",
+              "timedOut": null,
+              "duration": 197,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": "{\n  \"title\": \"cypress-mochawesome-reporter-screenshots\",\n  \"value\": [\n    [\n      \"\\\\patient\\\\patientsIdsQueryBodypayload.cy.ts\\\\[P31][S269] Patients API Test Suite -- [C5456] Search for Multi PATIENT_ID and matched LOCATION_ID (failed).png\"\n    ],\n    [\n      \"\\\\patient\\\\patientsIdsQueryBodypayload.cy.ts\\\\[P31][S269] Patients API Test Suite -- [C5456] Search for Multi PATIENT_ID and matched LOCATION_ID (failed) (attempt 2).png\"\n    ]\n  ]\n}",
+              "code": "const testPayload = {\n    method: 'Post',\n    requestKeys: [requestKey.patientIds, requestKey.locationIds],\n    requestValues: [\n        Array.isArray(profileData.multiPatientId)\n            ? profileData.multiPatientId\n            : [profileData.multiPatientId],\n        Array.isArray(profileData.multiLocationId)\n            ? profileData.multiLocationId\n            : [profileData.multiLocationId],\n    ],\n    expectedStatus: 200,\n    expectedResponsePatientsID: profileData.multiPatientId,\n    expectedResponseKeys: _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.patientResponseSnapshot,\n    expectedLocationId: profileData.multiLocationId,\n};\ncy.performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_IDS, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, testPayload).then(response => {\n    cy.validatePatientsBody(response, testPayload);\n});",
+              "err": {
+                "message": "AssertionError: \n\nTest steps were:\n\n1. Resolved Endpoint: /fusion-services-patient/api/v1/patients/ids\n2. Creating Request body from requestKeys/requestValues\n\nexpected 405 to equal 200",
+                "estack": "AssertionError: expected 405 to equal 200\n    at Context.eval (webpack:///./cypress/support/commands/projectCommands/servicesCommands.ts:135:31)\n    at getRet (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:122341:20)\n    at tryCatcher (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:1777:23)\n    at Promise.attempt.Promise.try (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:4285:29)\n    at Context.thenFn (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:122352:66)\n    at Context.then (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:122603:21)",
+                "diff": "- 405\n+ 200\n"
+              },
+              "uuid": "126d2be4-f9a4-49dd-9e88-23d8d52e01f5",
+              "parentUUID": "1fb87a0c-9376-481b-abce-2ddf447fada7",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "[C5457] Search for single PATIENT_ID and unMatched LOCATION_ID",
+              "fullTitle": "[P31][S269] Patients API Test Suite [C5457] Search for single PATIENT_ID and unMatched LOCATION_ID",
+              "timedOut": null,
+              "duration": 191,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": "{\n  \"title\": \"cypress-mochawesome-reporter-screenshots\",\n  \"value\": [\n    [\n      \"\\\\patient\\\\patientsIdsQueryBodypayload.cy.ts\\\\[P31][S269] Patients API Test Suite -- [C5457] Search for single PATIENT_ID and unMatched LOCATION_ID (failed).png\"\n    ],\n    [\n      \"\\\\patient\\\\patientsIdsQueryBodypayload.cy.ts\\\\[P31][S269] Patients API Test Suite -- [C5457] Search for single PATIENT_ID and unMatched LOCATION_ID (failed) (attempt 2).png\"\n    ]\n  ]\n}",
+              "code": "const testPayload = {\n    method: 'Post',\n    requestKeys: [requestKey.patientIds, requestKey.locationIds],\n    requestValues: [\n        [profileData.singlePatientId],\n        [profileData.incorrectSingleLocationId],\n    ],\n    expectedStatus: 200,\n};\ncy.performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_IDS, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, testPayload).then(response => {\n    expect(response.body).to.be.an('array').that.is.empty;\n});",
+              "err": {
+                "message": "AssertionError: \n\nTest steps were:\n\n1. Resolved Endpoint: /fusion-services-patient/api/v1/patients/ids\n2. Creating Request body from requestKeys/requestValues\n\nexpected 405 to equal 200",
+                "estack": "AssertionError: expected 405 to equal 200\n    at Context.eval (webpack:///./cypress/support/commands/projectCommands/servicesCommands.ts:135:31)\n    at getRet (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:122341:20)\n    at tryCatcher (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:1777:23)\n    at Promise.attempt.Promise.try (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:4285:29)\n    at Context.thenFn (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:122352:66)\n    at Context.then (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:122603:21)",
+                "diff": "- 405\n+ 200\n"
+              },
+              "uuid": "42eabe7a-65c7-4bfc-bbe4-56e6ee3976f1",
+              "parentUUID": "1fb87a0c-9376-481b-abce-2ddf447fada7",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "[C5458] Search for PATIENT without passing the p.ID",
+              "fullTitle": "[P31][S269] Patients API Test Suite [C5458] Search for PATIENT without passing the p.ID",
+              "timedOut": null,
+              "duration": 201,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": "{\n  \"title\": \"cypress-mochawesome-reporter-screenshots\",\n  \"value\": [\n    [\n      \"\\\\patient\\\\patientsIdsQueryBodypayload.cy.ts\\\\[P31][S269] Patients API Test Suite -- [C5458] Search for PATIENT without passing the p.ID (failed).png\"\n    ],\n    [\n      \"\\\\patient\\\\patientsIdsQueryBodypayload.cy.ts\\\\[P31][S269] Patients API Test Suite -- [C5458] Search for PATIENT without passing the p.ID (failed) (attempt 2).png\"\n    ]\n  ]\n}",
+              "code": "const testPayload = {\n    method: 'Post',\n    requestKeys: [requestKey.locationIds],\n    requestValues: [[profileData.singleLocationId]],\n    expectedStatus: 200,\n    expectedLocationId: profileData.singleLocationId,\n};\ncy.performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_IDS, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, testPayload).then(response => {\n    cy.validatePatientsBody(response, testPayload);\n    expect(response.body).to.be.an('array').and.is.not.empty;\n    expect(response.body.length).to.be.greaterThan(1);\n});",
+              "err": {
+                "message": "AssertionError: \n\nTest steps were:\n\n1. Resolved Endpoint: /fusion-services-patient/api/v1/patients/ids\n2. Creating Request body from requestKeys/requestValues\n\nexpected 405 to equal 200",
+                "estack": "AssertionError: expected 405 to equal 200\n    at Context.eval (webpack:///./cypress/support/commands/projectCommands/servicesCommands.ts:135:31)\n    at getRet (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:122341:20)\n    at tryCatcher (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:1777:23)\n    at Promise.attempt.Promise.try (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:4285:29)\n    at Context.thenFn (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:122352:66)\n    at Context.then (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:122603:21)",
+                "diff": "- 405\n+ 200\n"
+              },
+              "uuid": "afb66588-194a-48cf-8b2e-ceaa1b983683",
+              "parentUUID": "1fb87a0c-9376-481b-abce-2ddf447fada7",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "[C5459] Search for single PATIENT_ID with not supported key",
+              "fullTitle": "[P31][S269] Patients API Test Suite [C5459] Search for single PATIENT_ID with not supported key",
+              "timedOut": null,
+              "duration": 207,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": "{\n  \"title\": \"cypress-mochawesome-reporter-screenshots\",\n  \"value\": [\n    [\n      \"\\\\patient\\\\patientsIdsQueryBodypayload.cy.ts\\\\[P31][S269] Patients API Test Suite -- [C5459] Search for single PATIENT_ID with not supported key (failed).png\"\n    ],\n    [\n      \"\\\\patient\\\\patientsIdsQueryBodypayload.cy.ts\\\\[P31][S269] Patients API Test Suite -- [C5459] Search for single PATIENT_ID with not supported key (failed) (attempt 2).png\"\n    ]\n  ]\n}",
+              "code": "const testPayload = {\n    method: 'Post',\n    requestKeys: [requestKey.patientIds, requestKey.externalId],\n    requestValues: [\n        [profileData.singlePatientId],\n        [profileData.incorrectSingleLocationId],\n    ],\n    expectedStatus: 200,\n};\ncy.performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_IDS, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, testPayload).then(response => {\n    expect(response.status).to.eq(testPayload.expectedStatus);\n});",
+              "err": {
+                "message": "AssertionError: \n\nTest steps were:\n\n1. Resolved Endpoint: /fusion-services-patient/api/v1/patients/ids\n2. Creating Request body from requestKeys/requestValues\n\nexpected 405 to equal 200",
+                "estack": "AssertionError: expected 405 to equal 200\n    at Context.eval (webpack:///./cypress/support/commands/projectCommands/servicesCommands.ts:135:31)\n    at getRet (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:122341:20)\n    at tryCatcher (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:1777:23)\n    at Promise.attempt.Promise.try (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:4285:29)\n    at Context.thenFn (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:122352:66)\n    at Context.then (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:122603:21)",
+                "diff": "- 405\n+ 200\n"
+              },
+              "uuid": "7aaa274f-79fb-4fdd-bd06-a56653bf0445",
+              "parentUUID": "1fb87a0c-9376-481b-abce-2ddf447fada7",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": [
+            "70772f6a-8937-4e17-ae79-af44f87436ed",
+            "126d2be4-f9a4-49dd-9e88-23d8d52e01f5",
+            "42eabe7a-65c7-4bfc-bbe4-56e6ee3976f1",
+            "afb66588-194a-48cf-8b2e-ceaa1b983683",
+            "7aaa274f-79fb-4fdd-bd06-a56653bf0445"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 997,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    },
+    {
+      "uuid": "53540676-79e9-4084-b7e4-8757e10bb96e",
+      "title": "",
+      "fullFile": "cypress\\E2E\\SERVICES\\SMOKE\\patient\\patientsQueryURIParams.cy.ts",
+      "file": "cypress\\E2E\\SERVICES\\SMOKE\\patient\\patientsQueryURIParams.cy.ts",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "41f217b6-0baf-482a-a41d-0e5fa74c65ff",
+          "title": "[P31][S269] Patients API Test Suite",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "[C5451] Search by single paramKey URI request",
+              "fullTitle": "[P31][S269] Patients API Test Suite [C5451] Search by single paramKey URI request",
+              "timedOut": null,
+              "duration": 640,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const testPayload = {\n    patientID: profileData.PATIENT_ID,\n    method: 'GET',\n    expectedStatus: 200,\n    expectedResponsePatientsID: profileData.PATIENT_ID,\n};\ncy.performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_ID_URI, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, testPayload).then(response => {\n    cy.validateApiSchema(response, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientResponseSnapshot);\n    cy.validatePatientsBody(response, testPayload);\n});",
+              "err": {},
+              "uuid": "4d32230d-9ac1-4373-8b2a-a25f34354595",
+              "parentUUID": "41f217b6-0baf-482a-a41d-0e5fa74c65ff",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "[C5452] Search by single paramKey URI request and LocationID",
+              "fullTitle": "[P31][S269] Patients API Test Suite [C5452] Search by single paramKey URI request and LocationID",
+              "timedOut": null,
+              "duration": 72,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const testPayload = {\n    patientID: profileData.PATIENT_ID,\n    method: 'GET',\n    requestKeys: [requestKey.locationIds],\n    requestValues: [profileData.LOCATION_ID],\n    expectedStatus: 200,\n    expectedLocationId: profileData.LOCATION_ID,\n};\ncy.performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_ID_URI, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, testPayload).then(response => {\n    cy.validateApiSchema(response, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientResponseSnapshot);\n    cy.validatePatientsBody(response, testPayload);\n});",
+              "err": {},
+              "uuid": "02c3225b-01fd-458d-9a17-9c67539ca320",
+              "parentUUID": "41f217b6-0baf-482a-a41d-0e5fa74c65ff",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "[C5453] Search by single paramKey URI without an ID",
+              "fullTitle": "[P31][S269] Patients API Test Suite [C5453] Search by single paramKey URI without an ID",
+              "timedOut": null,
+              "duration": 68,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const testPayload = {\n    method: 'GET',\n    expectedStatus: 400,\n};\ncy.performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_ID_URI, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, testPayload).then(response => {\n    cy.validatePatientsBody(response, testPayload);\n});",
+              "err": {},
+              "uuid": "66f80219-1eec-4e6e-b778-f8340cb70c4d",
+              "parentUUID": "41f217b6-0baf-482a-a41d-0e5fa74c65ff",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "[C5454] Search by patient with invalid ID",
+              "fullTitle": "[P31][S269] Patients API Test Suite [C5454] Search by patient with invalid ID",
+              "timedOut": null,
+              "duration": 68,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const testPayload = {\n    patientID: 1,\n    method: 'GET',\n    expectedStatus: 404,\n    expectedError: 'There is no patient with ID 1.',\n};\ncy.performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_ID_URI, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, testPayload).then(response => {\n    cy.validatePatientsBody(response, testPayload);\n});",
+              "err": {},
+              "uuid": "270efe2c-3fde-4193-ab1a-6b7ba2dfd600",
+              "parentUUID": "41f217b6-0baf-482a-a41d-0e5fa74c65ff",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "4d32230d-9ac1-4373-8b2a-a25f34354595",
+            "02c3225b-01fd-458d-9a17-9c67539ca320",
+            "66f80219-1eec-4e6e-b778-f8340cb70c4d",
+            "270efe2c-3fde-4193-ab1a-6b7ba2dfd600"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 848,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    },
+    {
+      "uuid": "9d9ee6bf-c6e8-445d-9d0f-4807e323bfc1",
+      "title": "",
+      "fullFile": "cypress\\E2E\\SERVICES\\SMOKE\\patient\\patientsSearchQueryBodypayload.cy.ts",
+      "file": "cypress\\E2E\\SERVICES\\SMOKE\\patient\\patientsSearchQueryBodypayload.cy.ts",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "4be54cd3-3fa5-481f-be63-fa3f645ccd53",
+          "title": "[P31][S269] Patients Search API Test Suite",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "[C5460] Search PhoneNumber and limit",
+              "fullTitle": "[P31][S269] Patients Search API Test Suite [C5460] Search PhoneNumber and limit",
+              "timedOut": null,
+              "duration": 225,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": "{\n  \"title\": \"cypress-mochawesome-reporter-screenshots\",\n  \"value\": [\n    [\n      \"\\\\patient\\\\patientsSearchQueryBodypayload.cy.ts\\\\[P31][S269] Patients Search API Test Suite -- [C5460] Search PhoneNumber and limit (failed).png\"\n    ],\n    [\n      \"\\\\patient\\\\patientsSearchQueryBodypayload.cy.ts\\\\[P31][S269] Patients Search API Test Suite -- [C5460] Search PhoneNumber and limit (failed) (attempt 2).png\"\n    ]\n  ]\n}",
+              "code": "const testPayload = {\n    method: 'Post',\n    requestKeys: [requestKey.limit, requestKey.phoneNumber],\n    requestValues: [SEARCH_LIMIT, profileData.PHONE_NUMBER],\n    expectedStatus: 200,\n    expectedPhone: profileData.PHONE_NUMBER,\n};\ncy.performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_SEARCH, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, testPayload).then(response => {\n    cy.validateApiSchema(response, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientResponseSnapshot);\n    cy.validatePatientsBody(response, testPayload);\n});",
+              "err": {
+                "message": "AssertionError: \n\nTest steps were:\n\n1. Resolved Endpoint: /fusion-services-patient/api/v1/patients/search\n2. Creating Request body from requestKeys/requestValues\n3. Response status: 200\n\nPayload[0] is missing 30 expected key(s):\n• id\n• designation\n• externalId\n• medicalRecordNumber\n• firstName\n• middleName\n• lastName\n• aliasName\n• socialSecurityNumber\n• dateOfBirth\n• dateOfDeath\n• primaryPhoneNumber\n• email\n• prefix\n• suffix\n• isSensitiveChart\n• sex\n• status\n• location.locationId\n• location.locationDetails\n• location.locationDetails.level\n• location.locationDetails.value\n• externalIdentifiers\n• externalIdentifiers.value\n• externalIdentifiers.typeId\n• externalIdentifiers.typeDescription\n• createdOnUTC\n• updatedOnUTC\n• createdBy\n• updatedBy: expected [ Array(30) ] to have a length of 0 but got 30",
+                "estack": "AssertionError: Payload[0] is missing 30 expected key(s):\n• id\n• designation\n• externalId\n• medicalRecordNumber\n• firstName\n• middleName\n• lastName\n• aliasName\n• socialSecurityNumber\n• dateOfBirth\n• dateOfDeath\n• primaryPhoneNumber\n• email\n• prefix\n• suffix\n• isSensitiveChart\n• sex\n• status\n• location.locationId\n• location.locationDetails\n• location.locationDetails.level\n• location.locationDetails.value\n• externalIdentifiers\n• externalIdentifiers.value\n• externalIdentifiers.typeId\n• externalIdentifiers.typeDescription\n• createdOnUTC\n• updatedOnUTC\n• createdBy\n• updatedBy: expected [ Array(30) ] to have a length of 0 but got 30\n    at eval (webpack:///./cypress/support/commands/globalAPISnapsshots.ts:156:33)\nat Array.forEach (<anonymous>)\n    at Context.eval (webpack:///./cypress/support/commands/globalAPISnapsshots.ts:142:8)\n    at wrapped (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:145673:43)",
+                "diff": null
+              },
+              "uuid": "3775b623-ee50-4ae4-a4e6-55804b4c3767",
+              "parentUUID": "4be54cd3-3fa5-481f-be63-fa3f645ccd53",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "[C5461] Search PhoneNumber and without limit",
+              "fullTitle": "[P31][S269] Patients Search API Test Suite [C5461] Search PhoneNumber and without limit",
+              "timedOut": null,
+              "duration": 76,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const testPayload = {\n    method: 'Post',\n    requestKeys: [requestKey.phoneNumber],\n    requestValues: [profileData.PHONE_NUMBER],\n    expectedStatus: 400,\n};\ncy.performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_SEARCH, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, testPayload).then(response => {\n    expect(response.status).to.eq(testPayload.expectedStatus);\n});",
+              "err": {},
+              "uuid": "a2d3d7d6-f1fd-41d7-afa3-64182aab92bc",
+              "parentUUID": "4be54cd3-3fa5-481f-be63-fa3f645ccd53",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "[C5462] Search LastName, limit and LOCATION_ID",
+              "fullTitle": "[P31][S269] Patients Search API Test Suite [C5462] Search LastName, limit and LOCATION_ID",
+              "timedOut": null,
+              "duration": 205,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": "{\n  \"title\": \"cypress-mochawesome-reporter-screenshots\",\n  \"value\": [\n    [\n      \"\\\\patient\\\\patientsSearchQueryBodypayload.cy.ts\\\\[P31][S269] Patients Search API Test Suite -- [C5462] Search LastName, limit and LOCATION_ID (failed).png\"\n    ],\n    [\n      \"\\\\patient\\\\patientsSearchQueryBodypayload.cy.ts\\\\[P31][S269] Patients Search API Test Suite -- [C5462] Search LastName, limit and LOCATION_ID (failed) (attempt 2).png\"\n    ]\n  ]\n}",
+              "code": "const testPayload = {\n    method: 'Post',\n    requestKeys: [\n        requestKey.lastName,\n        requestKey.limit,\n        requestKey.locationIds,\n    ],\n    requestValues: [\n        profileData.PATIENT_LASTNAME,\n        SEARCH_LIMIT,\n        [profileData.LOCATION_ID],\n    ],\n    expectedStatus: 200,\n    expectedLocationId: profileData.LOCATION_ID,\n    expectedLastName: profileData.PATIENT_LASTNAME,\n    expectedPhone: profileData.PHONE_NUMBER,\n};\ncy.performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_SEARCH, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, testPayload).then(response => {\n    cy.validateApiSchema(response, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientResponseSnapshot);\n    cy.validatePatientsBody(response, testPayload);\n});",
+              "err": {
+                "message": "AssertionError: \n\nTest steps were:\n\n1. Resolved Endpoint: /fusion-services-patient/api/v1/patients/search\n2. Creating Request body from requestKeys/requestValues\n3. Response status: 200\n\nPayload[0] is missing 30 expected key(s):\n• id\n• designation\n• externalId\n• medicalRecordNumber\n• firstName\n• middleName\n• lastName\n• aliasName\n• socialSecurityNumber\n• dateOfBirth\n• dateOfDeath\n• primaryPhoneNumber\n• email\n• prefix\n• suffix\n• isSensitiveChart\n• sex\n• status\n• location.locationId\n• location.locationDetails\n• location.locationDetails.level\n• location.locationDetails.value\n• externalIdentifiers\n• externalIdentifiers.value\n• externalIdentifiers.typeId\n• externalIdentifiers.typeDescription\n• createdOnUTC\n• updatedOnUTC\n• createdBy\n• updatedBy: expected [ Array(30) ] to have a length of 0 but got 30",
+                "estack": "AssertionError: Payload[0] is missing 30 expected key(s):\n• id\n• designation\n• externalId\n• medicalRecordNumber\n• firstName\n• middleName\n• lastName\n• aliasName\n• socialSecurityNumber\n• dateOfBirth\n• dateOfDeath\n• primaryPhoneNumber\n• email\n• prefix\n• suffix\n• isSensitiveChart\n• sex\n• status\n• location.locationId\n• location.locationDetails\n• location.locationDetails.level\n• location.locationDetails.value\n• externalIdentifiers\n• externalIdentifiers.value\n• externalIdentifiers.typeId\n• externalIdentifiers.typeDescription\n• createdOnUTC\n• updatedOnUTC\n• createdBy\n• updatedBy: expected [ Array(30) ] to have a length of 0 but got 30\n    at eval (webpack:///./cypress/support/commands/globalAPISnapsshots.ts:156:33)\nat Array.forEach (<anonymous>)\n    at Context.eval (webpack:///./cypress/support/commands/globalAPISnapsshots.ts:142:8)\n    at wrapped (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:145673:43)",
+                "diff": null
+              },
+              "uuid": "fc8d61bb-4ff7-4846-af5b-c154e48530ca",
+              "parentUUID": "4be54cd3-3fa5-481f-be63-fa3f645ccd53",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "[C5463] Search DOB, limit and location",
+              "fullTitle": "[P31][S269] Patients Search API Test Suite [C5463] Search DOB, limit and location",
+              "timedOut": null,
+              "duration": 207,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": "{\n  \"title\": \"cypress-mochawesome-reporter-screenshots\",\n  \"value\": [\n    [\n      \"\\\\patient\\\\patientsSearchQueryBodypayload.cy.ts\\\\[P31][S269] Patients Search API Test Suite -- [C5463] Search DOB, limit and location (failed).png\"\n    ],\n    [\n      \"\\\\patient\\\\patientsSearchQueryBodypayload.cy.ts\\\\[P31][S269] Patients Search API Test Suite -- [C5463] Search DOB, limit and location (failed) (attempt 2).png\"\n    ]\n  ]\n}",
+              "code": "const testPayload = {\n    method: 'Post',\n    requestKeys: [\n        requestKey.dateOfBirthStart,\n        requestKey.limit,\n        requestKey.locationIds,\n    ],\n    requestValues: [\n        profileData.PATIENT_DOB,\n        SEARCH_LIMIT,\n        [profileData.LOCATION_ID],\n    ],\n    expectedStatus: 200,\n    expectedLocationId: profileData.LOCATION_ID,\n};\ncy.performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_SEARCH, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, testPayload).then(response => {\n    cy.validateApiSchema(response, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientResponseSnapshot);\n    cy.validatePatientsBody(response, testPayload);\n});",
+              "err": {
+                "message": "AssertionError: \n\nTest steps were:\n\n1. Resolved Endpoint: /fusion-services-patient/api/v1/patients/search\n2. Creating Request body from requestKeys/requestValues\n3. Response status: 200\n\nPayload[0] is missing 30 expected key(s):\n• id\n• designation\n• externalId\n• medicalRecordNumber\n• firstName\n• middleName\n• lastName\n• aliasName\n• socialSecurityNumber\n• dateOfBirth\n• dateOfDeath\n• primaryPhoneNumber\n• email\n• prefix\n• suffix\n• isSensitiveChart\n• sex\n• status\n• location.locationId\n• location.locationDetails\n• location.locationDetails.level\n• location.locationDetails.value\n• externalIdentifiers\n• externalIdentifiers.value\n• externalIdentifiers.typeId\n• externalIdentifiers.typeDescription\n• createdOnUTC\n• updatedOnUTC\n• createdBy\n• updatedBy: expected [ Array(30) ] to have a length of 0 but got 30",
+                "estack": "AssertionError: Payload[0] is missing 30 expected key(s):\n• id\n• designation\n• externalId\n• medicalRecordNumber\n• firstName\n• middleName\n• lastName\n• aliasName\n• socialSecurityNumber\n• dateOfBirth\n• dateOfDeath\n• primaryPhoneNumber\n• email\n• prefix\n• suffix\n• isSensitiveChart\n• sex\n• status\n• location.locationId\n• location.locationDetails\n• location.locationDetails.level\n• location.locationDetails.value\n• externalIdentifiers\n• externalIdentifiers.value\n• externalIdentifiers.typeId\n• externalIdentifiers.typeDescription\n• createdOnUTC\n• updatedOnUTC\n• createdBy\n• updatedBy: expected [ Array(30) ] to have a length of 0 but got 30\n    at eval (webpack:///./cypress/support/commands/globalAPISnapsshots.ts:156:33)\nat Array.forEach (<anonymous>)\n    at Context.eval (webpack:///./cypress/support/commands/globalAPISnapsshots.ts:142:8)\n    at wrapped (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:145673:43)",
+                "diff": null
+              },
+              "uuid": "64f81dd5-a6bb-48a8-ba17-5a9ec68dc025",
+              "parentUUID": "4be54cd3-3fa5-481f-be63-fa3f645ccd53",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "[C5464] Search externalIdentifiers and limit",
+              "fullTitle": "[P31][S269] Patients Search API Test Suite [C5464] Search externalIdentifiers and limit",
+              "timedOut": null,
+              "duration": 205,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": "{\n  \"title\": \"cypress-mochawesome-reporter-screenshots\",\n  \"value\": [\n    [\n      \"\\\\patient\\\\patientsSearchQueryBodypayload.cy.ts\\\\[P31][S269] Patients Search API Test Suite -- [C5464] Search externalIdentifiers and limit (failed).png\"\n    ],\n    [\n      \"\\\\patient\\\\patientsSearchQueryBodypayload.cy.ts\\\\[P31][S269] Patients Search API Test Suite -- [C5464] Search externalIdentifiers and limit (failed) (attempt 2).png\"\n    ]\n  ]\n}",
+              "code": "const testPayload = {\n    method: 'Post',\n    requestKeys: [requestKey.externalIdentifiers, requestKey.limit],\n    requestValues: [\n        [{ externalIdentifiersChildren: { typeId: '10', value: 'test' } }],\n        SEARCH_LIMIT,\n    ],\n    expectedStatus: 200,\n};\ncy.performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_SEARCH, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, testPayload).then(response => {\n    cy.validateApiSchema(response, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientResponseSnapshot);\n    cy.validatePatientsBody(response, testPayload);\n});",
+              "err": {
+                "message": "AssertionError: \n\nTest steps were:\n\n1. Resolved Endpoint: /fusion-services-patient/api/v1/patients/search\n2. Creating Request body from requestKeys/requestValues\n3. Response status: 200\n\nPayload[0] is missing 30 expected key(s):\n• id\n• designation\n• externalId\n• medicalRecordNumber\n• firstName\n• middleName\n• lastName\n• aliasName\n• socialSecurityNumber\n• dateOfBirth\n• dateOfDeath\n• primaryPhoneNumber\n• email\n• prefix\n• suffix\n• isSensitiveChart\n• sex\n• status\n• location.locationId\n• location.locationDetails\n• location.locationDetails.level\n• location.locationDetails.value\n• externalIdentifiers\n• externalIdentifiers.value\n• externalIdentifiers.typeId\n• externalIdentifiers.typeDescription\n• createdOnUTC\n• updatedOnUTC\n• createdBy\n• updatedBy: expected [ Array(30) ] to have a length of 0 but got 30",
+                "estack": "AssertionError: Payload[0] is missing 30 expected key(s):\n• id\n• designation\n• externalId\n• medicalRecordNumber\n• firstName\n• middleName\n• lastName\n• aliasName\n• socialSecurityNumber\n• dateOfBirth\n• dateOfDeath\n• primaryPhoneNumber\n• email\n• prefix\n• suffix\n• isSensitiveChart\n• sex\n• status\n• location.locationId\n• location.locationDetails\n• location.locationDetails.level\n• location.locationDetails.value\n• externalIdentifiers\n• externalIdentifiers.value\n• externalIdentifiers.typeId\n• externalIdentifiers.typeDescription\n• createdOnUTC\n• updatedOnUTC\n• createdBy\n• updatedBy: expected [ Array(30) ] to have a length of 0 but got 30\n    at eval (webpack:///./cypress/support/commands/globalAPISnapsshots.ts:156:33)\nat Array.forEach (<anonymous>)\n    at Context.eval (webpack:///./cypress/support/commands/globalAPISnapsshots.ts:142:8)\n    at wrapped (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:145673:43)",
+                "diff": null
+              },
+              "uuid": "2a51b3f1-3031-4bd9-84ae-5143ec6d1f63",
+              "parentUUID": "4be54cd3-3fa5-481f-be63-fa3f645ccd53",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "[C5465] Search Only Inactive Patients and limit 999",
+              "fullTitle": "[P31][S269] Patients Search API Test Suite [C5465] Search Only Inactive Patients and limit 999",
+              "timedOut": null,
+              "duration": 359,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": "{\n  \"title\": \"cypress-mochawesome-reporter-screenshots\",\n  \"value\": [\n    [\n      \"\\\\patient\\\\patientsSearchQueryBodypayload.cy.ts\\\\[P31][S269] Patients Search API Test Suite -- [C5465] Search Only Inactive Patients and limit 999 (failed).png\"\n    ],\n    [\n      \"\\\\patient\\\\patientsSearchQueryBodypayload.cy.ts\\\\[P31][S269] Patients Search API Test Suite -- [C5465] Search Only Inactive Patients and limit 999 (failed) (attempt 2).png\"\n    ]\n  ]\n}",
+              "code": "const testPayload = {\n    method: 'Post',\n    requestKeys: [requestKey.includeInactive, requestKey.limit],\n    requestValues: [true, 999],\n    expectedStatus: 200,\n};\ncy.performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_SEARCH, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, testPayload).then(response => {\n    cy.validateApiSchema(response, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientResponseSnapshot);\n    expect(response.status).to.eq(testPayload.expectedStatus);\n});",
+              "err": {
+                "message": "AssertionError: \n\nTest steps were:\n\n1. Resolved Endpoint: /fusion-services-patient/api/v1/patients/search\n2. Creating Request body from requestKeys/requestValues\n3. Response status: 200\n\nPayload[0] is missing 30 expected key(s):\n• id\n• designation\n• externalId\n• medicalRecordNumber\n• firstName\n• middleName\n• lastName\n• aliasName\n• socialSecurityNumber\n• dateOfBirth\n• dateOfDeath\n• primaryPhoneNumber\n• email\n• prefix\n• suffix\n• isSensitiveChart\n• sex\n• status\n• location.locationId\n• location.locationDetails\n• location.locationDetails.level\n• location.locationDetails.value\n• externalIdentifiers\n• externalIdentifiers.value\n• externalIdentifiers.typeId\n• externalIdentifiers.typeDescription\n• createdOnUTC\n• updatedOnUTC\n• createdBy\n• updatedBy: expected [ Array(30) ] to have a length of 0 but got 30",
+                "estack": "AssertionError: Payload[0] is missing 30 expected key(s):\n• id\n• designation\n• externalId\n• medicalRecordNumber\n• firstName\n• middleName\n• lastName\n• aliasName\n• socialSecurityNumber\n• dateOfBirth\n• dateOfDeath\n• primaryPhoneNumber\n• email\n• prefix\n• suffix\n• isSensitiveChart\n• sex\n• status\n• location.locationId\n• location.locationDetails\n• location.locationDetails.level\n• location.locationDetails.value\n• externalIdentifiers\n• externalIdentifiers.value\n• externalIdentifiers.typeId\n• externalIdentifiers.typeDescription\n• createdOnUTC\n• updatedOnUTC\n• createdBy\n• updatedBy: expected [ Array(30) ] to have a length of 0 but got 30\n    at eval (webpack:///./cypress/support/commands/globalAPISnapsshots.ts:156:33)\nat Array.forEach (<anonymous>)\n    at Context.eval (webpack:///./cypress/support/commands/globalAPISnapsshots.ts:142:8)\n    at wrapped (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:145673:43)",
+                "diff": null
+              },
+              "uuid": "10bd3f60-765a-49b0-b1da-b99bd90fb8be",
+              "parentUUID": "4be54cd3-3fa5-481f-be63-fa3f645ccd53",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "[C5467] Search Patients MEDICAL RECORD NUMBER and limit",
+              "fullTitle": "[P31][S269] Patients Search API Test Suite [C5467] Search Patients MEDICAL RECORD NUMBER and limit",
+              "timedOut": null,
+              "duration": 156,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const testPayload = {\n    method: 'Post',\n    requestKeys: [requestKey.medicalRecordNumber, requestKey.limit],\n    requestValues: [profileData.MEDICAL_RECORD_NUMBER, 5],\n    expectedStatus: 200,\n    expectMedicalRecordNumber: profileData.MEDICAL_RECORD_NUMBER,\n};\ncy.performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_SEARCH, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, testPayload).then(response => {\n    expect(response.status).to.eq(testPayload.expectedStatus);\n});",
+              "err": {},
+              "uuid": "1be8617a-15c3-4a12-a1b6-34e33fd465a3",
+              "parentUUID": "4be54cd3-3fa5-481f-be63-fa3f645ccd53",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "a2d3d7d6-f1fd-41d7-afa3-64182aab92bc",
+            "1be8617a-15c3-4a12-a1b6-34e33fd465a3"
+          ],
+          "failures": [
+            "3775b623-ee50-4ae4-a4e6-55804b4c3767",
+            "fc8d61bb-4ff7-4846-af5b-c154e48530ca",
+            "64f81dd5-a6bb-48a8-ba17-5a9ec68dc025",
+            "2a51b3f1-3031-4bd9-84ae-5143ec6d1f63",
+            "10bd3f60-765a-49b0-b1da-b99bd90fb8be"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 1433,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    },
+    {
+      "uuid": "a98fffd1-a0e1-42e7-b50d-192db73da337",
+      "title": "",
+      "fullFile": "cypress\\E2E\\SERVICES\\SMOKE\\patintAttributes\\patientsAttributeMedLists.cy.ts",
+      "file": "cypress\\E2E\\SERVICES\\SMOKE\\patintAttributes\\patientsAttributeMedLists.cy.ts",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "53cab765-8417-42f4-ab7f-66f210cb0d3f",
+          "title": "[P31][S269] Patients Attribute API Test Suite",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "[C5628] Full list of patient-attributes (smoke)",
+              "fullTitle": "[P31][S269] Patients Attribute API Test Suite [C5628] Full list of patient-attributes (smoke)",
+              "timedOut": null,
+              "duration": 121,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('@madList').then(list => {\n    expect(list).to.be.an('array').and.not.empty;\n});",
+              "err": {},
+              "uuid": "3917ef11-b071-44aa-9b6d-42178a962ea0",
+              "parentUUID": "53cab765-8417-42f4-ab7f-66f210cb0d3f",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "[C5629] Validate all individual attributeNames and values",
+              "fullTitle": "[P31][S269] Patients Attribute API Test Suite [C5629] Validate all individual attributeNames and values",
+              "timedOut": null,
+              "duration": 4069,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('@madList').then(list => {\n    expect(list.length).to.be.greaterThan(0);\n    list.forEach(testCase => {\n        const testPayload = {\n            method: 'GET',\n            attributesName: testCase.attributesName,\n            expectedStatus: 200,\n            expectedAttributesName: testCase.attributesName,\n            expectedPatientAttributeId: testCase.patientAttributeId,\n            expectedAttributeIdDescription: testCase.attributeIdDescription,\n        };\n        cy.performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_ATTRIBUTE_NAME, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, testPayload).then(response => {\n            cy.validateApiSchema(response, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientsAttributeResponseSnapshot);\n            cy.validatePatientsAttribute(response, testPayload);\n        });\n    });\n});",
+              "err": {},
+              "uuid": "7b02a8c8-48f5-424f-ab4f-1883ac7a69b6",
+              "parentUUID": "53cab765-8417-42f4-ab7f-66f210cb0d3f",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "3917ef11-b071-44aa-9b6d-42178a962ea0",
+            "7b02a8c8-48f5-424f-ab4f-1883ac7a69b6"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 4190,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress\\reports\\.jsons",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.3.2"
+    }
+  }
+}

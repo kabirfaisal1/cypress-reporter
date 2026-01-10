@@ -1,0 +1,148 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 0,
+    "pending": 0,
+    "failures": 1,
+    "start": "2026-01-10T13:40:42.654Z",
+    "end": "2026-01-10T13:40:44.213Z",
+    "duration": 1559,
+    "testsRegistered": 3,
+    "passPercent": 0,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 2,
+    "hasSkipped": true
+  },
+  "results": [
+    {
+      "uuid": "1c0441d6-1e82-4993-8ba3-9831df3d0949",
+      "title": "",
+      "fullFile": "cypress\\E2E\\SERVICES\\SMOKE\\patient\\patientsIdSearchLocation.cy.ts",
+      "file": "cypress\\E2E\\SERVICES\\SMOKE\\patient\\patientsIdSearchLocation.cy.ts",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "999979a6-9ec1-4673-8d90-ca2b65888722",
+          "title": "[P31][S269] Patients API Test Suite",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "[C15845] Search PatientIds by Location",
+              "fullTitle": "[P31][S269] Patients API Test Suite [C15845] Search PatientIds by Location",
+              "timedOut": null,
+              "duration": 733,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": "{\n  \"title\": \"cypress-mochawesome-reporter-screenshots\",\n  \"value\": [\n    [\n      \"\\\\patient\\\\patientsIdSearchLocation.cy.ts\\\\[P31][S269] Patients API Test Suite -- [C15845] Search PatientIds by Location (failed).png\"\n    ],\n    [\n      \"\\\\patient\\\\patientsIdSearchLocation.cy.ts\\\\[P31][S269] Patients API Test Suite -- [C15845] Search PatientIds by Location -- before each hook (failed) (attempt 2).png\"\n    ]\n  ]\n}",
+              "code": "const payload = {\n    method: 'POST',\n    requestKeys: [requestKeys.locationIds, requestKeys.locationDetails],\n    requestValues: [\n        obsData.LOCATIONID,\n        [\n            {\n                [requestKeys.locationDetailChildren.level]: obsData.HDIDLEVEL,\n                [requestKeys.locationDetailChildren.value]: obsData.OBSVALUE,\n            },\n        ],\n    ],\n    expectedStatus: 200,\n};\nreturn cy\n    .performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.patientsSearch, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, payload)\n    .then(response => {\n    cy.validateLocationResponseBody(response.body);\n});",
+              "err": {
+                "message": "CypressError: \n\nTest steps were:\n\n1. Querying patient observations for Section/Block/Cell/Bed\n2. Querying patient observations for Section/Block/Cell/Bed\n3. Running your selected query against\n\ncentricityps database:\n\n |--[ \n    SELECT TOP (10)\n      t1.[PID]           AS PID,\n      t2.[LocationId]    AS LOCATIONID,\n      t1.[HDID]          AS HDID,\n      t1.[OBSTYPE]       AS OBSTYPE,\n      t1.[OBSVALUE]      AS OBSVALUE\n    FROM [centricityps_qa].[dbo].[OBS] AS t1\n    JOIN [centricityps_qa].[dbo].[PatientProfile] AS t2\n      ON t1.[PID] = t2.[PID]\n    WHERE t1.[CHANGE] = 2\n      AND t1.[HDID] IN (81745,81746,81747,81748)\n    ORDER BY t1.[PID] DESC\n   ]--|\n\n`cy.task('queryDb')` failed with the following error:\n\n> Invalid object name 'centricityps_qa.dbo.OBS'.\n\nhttps://on.cypress.io/api/task\n\nBecause this error occurred during a `before each` hook we are skipping the remaining tests in the current suite: `[P31][S269] Patients API Te...`",
+                "estack": "CypressError: `cy.task('queryDb')` failed with the following error:\n\n> Invalid object name 'centricityps_qa.dbo.OBS'.\n\nhttps://on.cypress.io/api/task\n    at <unknown> (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:138065:70)\n    at tryCatcher (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:1777:23)\n    at Promise._settlePromiseFromHandler (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:1489:31)\n    at Promise._settlePromise (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:1546:18)\n    at Promise._settlePromise0 (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:1591:10)\n    at Promise._settlePromises (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:1667:18)\n    at _drainQueueStep (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:2377:12)\n    at _drainQueue (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:2370:9)\n    at Async._drainQueues (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:2386:5)\n    at Async.drainQueues (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:2256:14)\nFrom Your Spec Code:\n    at Context.eval (webpack:///./cypress/support/commands/globalCommands.ts:212:12)\n    at wrapped (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:145673:43)\n\nFrom Node.js Internals:\nRequestError: Invalid object name 'centricityps_qa.dbo.OBS'.\n    at handleError (C:\\Users\\kabir.faisal\\source\\e2e-monorepo\\node_modules\\mssql\\lib\\tedious\\request.js:384:15)\n    at Connection.emit (node:events:519:28)\n    at emit (C:\\Users\\kabir.faisal\\source\\e2e-monorepo\\node_modules\\tedious\\src\\connection.ts:1927:18)\n    at onErrorMessage (C:\\Users\\kabir.faisal\\source\\e2e-monorepo\\node_modules\\tedious\\src\\token\\handler.ts:386:21)\n    at token (C:\\Users\\kabir.faisal\\source\\e2e-monorepo\\node_modules\\tedious\\src\\token\\token-stream-parser.ts:23:55)\n    at Readable.emit (node:events:519:28)\n    at addChunk (node:internal/streams/readable:559:12)\n    at readableAddChunkPushObjectMode (node:internal/streams/readable:536:3)\n    at Readable.push (node:internal/streams/readable:391:5)\n    at nextAsync (node:internal/streams/from:194:22)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)",
+                "diff": null
+              },
+              "uuid": "95792232-0b39-4508-959a-8104e8e952c0",
+              "parentUUID": "999979a6-9ec1-4673-8d90-ca2b65888722",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "[C15846] Get Active only Patients by Location",
+              "fullTitle": "[P31][S269] Patients API Test Suite [C15846] Get Active only Patients by Location",
+              "timedOut": null,
+              "duration": 0,
+              "state": "skipped",
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const payload = {\n    method: 'POST',\n    includeInactive: false,\n    requestKeys: [requestKeys.locationIds, requestKeys.locationDetails],\n    requestValues: [\n        obsData.LOCATIONID,\n        [\n            {\n                [requestKeys.locationDetailChildren.level]: obsData.HDIDLEVEL,\n                [requestKeys.locationDetailChildren.value]: obsData.OBSVALUE,\n            },\n        ],\n    ],\n    expectedStatus: 200,\n};\nreturn cy\n    .performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_IDs_LOCATION, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, payload)\n    .then(response => {\n    cy.validateLocationResponseBody(response.body);\n});",
+              "err": {},
+              "uuid": "59c991c4-f0bb-4cfe-b604-4c297e6db4a4",
+              "parentUUID": "999979a6-9ec1-4673-8d90-ca2b65888722",
+              "isHook": false,
+              "skipped": true
+            },
+            {
+              "title": "[C15847] Get InActive only Patients by Location",
+              "fullTitle": "[P31][S269] Patients API Test Suite [C15847] Get InActive only Patients by Location",
+              "timedOut": null,
+              "duration": 0,
+              "state": "skipped",
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const payload = {\n    method: 'POST',\n    includeInactive: true,\n    requestKeys: [requestKeys.locationIds, requestKeys.locationDetails],\n    requestValues: [\n        obsData.LOCATIONID,\n        [\n            {\n                [requestKeys.locationDetailChildren.level]: obsData.HDIDLEVEL,\n                [requestKeys.locationDetailChildren.value]: obsData.OBSVALUE,\n            },\n        ],\n    ],\n    expectedStatus: 200,\n};\nreturn cy\n    .performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_IDs_LOCATION, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, payload)\n    .then(response => {\n    cy.validateLocationResponseBody(response.body);\n});",
+              "err": {},
+              "uuid": "843dc1ae-8055-4109-af2b-818fdc085e46",
+              "parentUUID": "999979a6-9ec1-4673-8d90-ca2b65888722",
+              "isHook": false,
+              "skipped": true
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": [
+            "95792232-0b39-4508-959a-8104e8e952c0"
+          ],
+          "pending": [],
+          "skipped": [
+            "59c991c4-f0bb-4cfe-b604-4c297e6db4a4",
+            "843dc1ae-8055-4109-af2b-818fdc085e46"
+          ],
+          "duration": 733,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress\\reports\\.jsons",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.3.2"
+    }
+  }
+}

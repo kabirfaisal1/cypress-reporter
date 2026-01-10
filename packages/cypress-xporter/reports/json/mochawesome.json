@@ -1,0 +1,109 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 0,
+    "pending": 0,
+    "failures": 1,
+    "start": "2026-01-10T13:40:39.654Z",
+    "end": "2026-01-10T13:40:41.090Z",
+    "duration": 1436,
+    "testsRegistered": 1,
+    "passPercent": 0,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "437622ec-8c93-473a-94ed-2905047acce5",
+      "title": "",
+      "fullFile": "cypress\\E2E\\SERVICES\\SMOKE\\patient\\patientInformation.cy.ts",
+      "file": "cypress\\E2E\\SERVICES\\SMOKE\\patient\\patientInformation.cy.ts",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "20b13f44-1139-447e-b613-00101294758b",
+          "title": "[P31][S269] Patients API Test Suite",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "[C15848] Search PatientIds and get Information",
+              "fullTitle": "[P31][S269] Patients API Test Suite [C15848] Search PatientIds and get Information",
+              "timedOut": null,
+              "duration": 200,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": "{\n  \"title\": \"cypress-mochawesome-reporter-screenshots\",\n  \"value\": [\n    [\n      \"\\\\patient\\\\patientInformation.cy.ts\\\\[P31][S269] Patients API Test Suite -- [C15848] Search PatientIds and get Information (failed).png\"\n    ],\n    [\n      \"\\\\patient\\\\patientInformation.cy.ts\\\\[P31][S269] Patients API Test Suite -- [C15848] Search PatientIds and get Information (failed) (attempt 2).png\"\n    ]\n  ]\n}",
+              "code": "const testPayload = {\n    patientID: profileData.PATIENT_ID,\n    method: 'GET',\n    expectedStatus: 200,\n};\ncy.performPatientServiceAPIRequest(_support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientAPIURIResource.PATIENTS_INFORMATION, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.ApiVersion.v1, testPayload).then(response => {\n    cy.validateApiSchema(response, _support_apiSnapshot_index__WEBPACK_IMPORTED_MODULE_0__.PatientsInformationResponseSnapshot);\n});",
+              "err": {
+                "message": "AssertionError: \n\nTest steps were:\n\n1. Resolved Endpoint: /fusion-services-patient/api/v1/patients/2079615844550410/information\n2. Response status: 200\n\nPayload[0] is missing 3 expected key(s):\n• defaultDoctorId\n• referringDoctorId\n• primaryCareDoctorId: expected [ Array(3) ] to have a length of 0 but got 3",
+                "estack": "AssertionError: Payload[0] is missing 3 expected key(s):\n• defaultDoctorId\n• referringDoctorId\n• primaryCareDoctorId: expected [ Array(3) ] to have a length of 0 but got 3\n    at eval (webpack:///./cypress/support/commands/globalAPISnapsshots.ts:156:33)\nat Array.forEach (<anonymous>)\n    at Context.eval (webpack:///./cypress/support/commands/globalAPISnapsshots.ts:142:8)\n    at wrapped (https://it-ua.it.fusionmgt.com/__cypress/runner/cypress_runner.js:145673:43)",
+                "diff": null
+              },
+              "uuid": "1bd79320-78d7-47cd-8c91-f3d9efec6198",
+              "parentUUID": "20b13f44-1139-447e-b613-00101294758b",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": [
+            "1bd79320-78d7-47cd-8c91-f3d9efec6198"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 200,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress\\reports\\.jsons",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.3.2"
+    }
+  }
+}
