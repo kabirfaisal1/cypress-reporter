@@ -18,7 +18,7 @@ const useJira = argv.jira || false;
 const useConfluence = argv.confluence || false;
 const useTestRail = argv.testrail || false;
 
-// ✅ ADHOC run id can come from CLI or .env
+// ADHOC run id can come from CLI or .env
 const adhocRunIdArg = argv.adhoc || argv.adhocRunId || process.env.ADHOC_TESTRUNID || null;
 if (adhocRunIdArg) {
   process.env.ADHOC_TESTRUNID = String(adhocRunIdArg);
@@ -70,7 +70,7 @@ function mergeAllReports(reportFiles) {
       acc.stats.skipped = (acc.stats.skipped || 0) + (curr.stats.skipped || 0);
       acc.stats.hasSkipped = acc.stats.hasSkipped || curr.stats.hasSkipped;
 
-      // ✅ keep only valid result objects
+      // keep only valid result objects
       if (Array.isArray(curr.results)) {
         const valid = curr.results.filter((r) => r && typeof r === "object");
         acc.results.push(...valid);
@@ -169,7 +169,7 @@ const run = async () => {
           `🚀 Reporting ${passedTests.length} passed and ${updatedFailedTests.length} failed test(s) to TestRail (normal mode: create run(s) + close them).`
         )
       );
-      // ✅ CALL ONCE (testrail.js groups by Project/Suite internally)
+      // CALL ONCE (testrail.js groups by Project/Suite internally)
       await reportToTestRail(passedTests, updatedFailedTests);
     }
   }

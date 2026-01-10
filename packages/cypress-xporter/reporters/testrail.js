@@ -14,7 +14,7 @@ const AUTH = {
   password: TESTRAIL_PASSWORD
 };
 
-// ✅ Prevent duplicate run creation per (projectId-suiteId) within the same execution
+// Prevent duplicate run creation per (projectId-suiteId) within the same execution
 // key => runId
 const createdRunsByGroupKey = new Map();
 
@@ -52,7 +52,7 @@ function extractRunNameFromTests(tests = []) {
       const group = parts[0].toUpperCase();
       const subgroup = parts[1]?.toUpperCase();
 
-      // ✅ Original naming (no XPORTER tag)
+      // Original naming (no XPORTER tag)
       return subgroup
         ? `${group}-${subgroup} Automated Run (${now})`
         : `${group} Automated Run (${now})`;
@@ -87,7 +87,7 @@ async function getValidCaseIds(projectId, suiteId, caseIds) {
 }
 
 async function createTestRun(projectId, caseIds = [], suiteId = 1, runName = null, groupKey = null) {
-  // ✅ If we already created a run for this project/suite in THIS execution, reuse it
+  // If we already created a run for this project/suite in THIS execution, reuse it
   if (groupKey && createdRunsByGroupKey.has(groupKey)) {
     const existingRunId = createdRunsByGroupKey.get(groupKey);
     console.log(`🟡 Reusing already-created TestRail RunID ${existingRunId} for ${groupKey} (prevents duplicate run).`);
