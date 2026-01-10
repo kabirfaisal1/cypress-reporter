@@ -1,6 +1,6 @@
 {
   "name": "cypress-xporter-monorepo",
-  "version": "2.0.8",
+  "version": "2.5.0",
   "description": "CLI to report Cypress test results to Jira, TestRail, and Confluence",
   "main": "index.js",
   "bin": {
@@ -17,7 +17,7 @@
   },
   "scripts": {
     "run-reporter": "node packages/cypress-xporter/index.js",
-    "run-all-tools": "node packages/cypress-xporter/index.js --jira --confluence",
+    "run-all-tools": "node packages/cypress-xporter/index.js --jira --confluence --testrail",
     "run-jira-testrail": "node packages/cypress-xporter/index.js  --jira --testrail",
     "run-confluence-testrail": "node packages/cypress-xporter/index.js  --testrail --confluence",
     "run-testrail": "node packages/cypress-xporter/index.js  --testrail"

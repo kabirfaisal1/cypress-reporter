@@ -157,7 +157,7 @@ Or via npm script (defined in root `package.json`):
 npm run run-all-tools
 npm run run-jira-testrail
 npm run run-testrail
-npm run run-testrail --adhocRunId 1339 # OR --adhoc 1339
+npm run run-testrail --adhocRunId [id] # OR --adhoc 1339
 ```
 
 ---

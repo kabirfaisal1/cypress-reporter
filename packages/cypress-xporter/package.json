@@ -1,6 +1,6 @@
 {
   "name": "cypress-xporter",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "CLI tool to sync Cypress test results with Jira, TestRail, and Confluence.",
   "main": "index.js",
   "bin": {
@@ -20,7 +20,8 @@
     "run-all-tools": "node ./index.js --jira --testrail --confluence",
     "run-jira-testrail": "node ./index.js --jira --testrail",
     "run-confluence-testrail": "node ./index.js --testrail --confluence",
-    "run-testrail": "node ./index.js --testrail"
+    "run-testrail": "node ./index.js --testrail",
+    "run-AdHoc-run": "node ./index.js --testrail --adhocRunId 1339"
   },
   "keywords": [
     "cypress",
