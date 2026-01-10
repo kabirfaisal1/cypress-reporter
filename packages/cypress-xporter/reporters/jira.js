@@ -23,45 +23,71 @@ function normalizeTitleForComparison ( text )
 }
 
 // 🧠 Fallback search to compare summaries manually
-async function issueAlreadyExists ( testTitle )
-{
-  const normalizedTitle = normalizeTitleForComparison( testTitle );
+// 🧠 Fallback search to compare summaries manually
+async function issueAlreadyExists(testTitle) {
+  const normalizedTitle = normalizeTitleForComparison(testTitle);
 
-  try
-  {
-    console.info( `🔍 Fetching all Jira bugs in project ${ JIRA_PROJECT_KEY }...` );
-    const res = await axios.get( `${ JIRA_BASE_URL }/rest/api/3/search`, {
-      params: {
-        jql: `project = "${ JIRA_PROJECT_KEY }" AND issuetype = Bug`,
-        fields: "summary,status",
-        maxResults: 1000,
-      },
-      auth: AUTH,
-      headers: { Accept: "application/json" },
-    } );
+  // Safety: avoid double slashes if base url ends with "/"
+  const base = String(JIRA_BASE_URL || "").replace(/\/+$/, "");
 
-    for ( const issue of res.data.issues || [] )
-    {
-      const issueSummary = normalizeTitleForComparison( issue.fields?.summary || "" );
+  // ✅ New endpoint (replaces /rest/api/3/search)
+  const url = `${base}/rest/api/3/search/jql`;
+
+  try {
+    console.info(`🔍 Fetching all Jira bugs in project ${JIRA_PROJECT_KEY}...`);
+
+    let startAt = 0;
+    const maxResults = 100; // keep it sane; loop for pagination
+    let allIssues = [];
+
+    while (true) {
+      const res = await axios.get(url, {
+        params: {
+          jql: `project = "${JIRA_PROJECT_KEY}" AND issuetype = Bug`,
+          fields: "summary,status",
+          startAt,
+          maxResults,
+        },
+        auth: AUTH,
+        headers: { Accept: "application/json" },
+      });
+
+      const issues = res.data?.issues || [];
+      allIssues.push(...issues);
+
+      if (issues.length < maxResults) break; // no more pages
+      startAt += maxResults;
+      if (startAt > 5000) break; // hard guard to prevent runaway in huge projects
+    }
+
+    for (const issue of allIssues) {
+      const issueSummary = normalizeTitleForComparison(issue.fields?.summary || "");
       const status = issue.fields?.status?.name?.toLowerCase() || "";
 
       if (
-        issueSummary.includes( normalizedTitle ) &&
-        !["done", "closed", "won't fix", "wontfix"].includes( status )
-      )
-      {
-        console.log( `⚠️ Skipping duplicate: found ${ issue.key }` );
+        issueSummary.includes(normalizedTitle) &&
+        !["done", "closed", "won't fix", "wontfix"].includes(status)
+      ) {
+        console.log(`⚠️ Skipping duplicate: found ${issue.key}`);
         return true;
       }
     }
 
     return false;
-  } catch ( err )
-  {
-    console.warn( `⚠️ Failed to fetch Jira issues: ${ err.response?.status } ${ err.response?.statusText }` );
+  } catch (err) {
+    console.warn(
+      `⚠️ Failed to fetch Jira issues: ${err.response?.status} ${err.response?.statusText}`
+    );
+
+    // Helpful debug (optional): Jira often returns a message body
+    if (err.response?.data) {
+      console.warn("Jira response:", JSON.stringify(err.response.data, null, 2));
+    }
+
     return false;
   }
 }
+
 
 function createADFDescription ( test, screenshotUrl )
 {

@@ -157,6 +157,7 @@ Or via npm script (defined in root `package.json`):
 npm run run-all-tools
 npm run run-jira-testrail
 npm run run-testrail
+npm run run-testrail --adhocRunId 1339 # OR --adhoc 1339
 ```
 
 ---
@@ -202,48 +203,49 @@ npx cypress-xporter --jira --testrail --confluence
 
 ---
 
-## 📷 Screenshots
-### CLI Execution
-![CLI TestExecution](https://res.cloudinary.com/dzsguot60/image/upload/v1742835324/cypress-Xporter/Screenshot_2025-03-24_at_12.54.22_PM_zdl24c.png)
-
-### Test Results Dashboard
-![Test Results Dashboard](https://res.cloudinary.com/dzsguot60/image/upload/v1742834937/cypress-Xporter/Screenshot_2025-03-24_at_12.44.25_PM_kdvrt1.png)
-
-### Jira Bug Ticket Example
-![Jira Bug Ticket Example](https://res.cloudinary.com/dzsguot60/image/upload/v1745765732/Screenshot_2025-04-27_at_10.52.59_AM_auzmpl.png) 
-
-### Confluence Test Summary
-![Confluence Test Summary](https://res.cloudinary.com/dzsguot60/image/upload/v1745765750/Screenshot_2025-04-27_at_10.51.14_AM_qj4fvd.png)
-
-
 ## 🛠️ Version
 
-### ^2.4.0
+### ^2.5.0
+ <details>
+  1. Ad-Hoc TestRail Run Handling with new CLI behavior introduced
 
-1. Parses Cypress mochawesome reports.  
-2. Extracts ProjectID and Case IDs from test titles.  
-3. For each unique ProjectID:  
-   - Queries all Suites.  
-   - Finds the matching Suite containing all Case IDs.  
-4. Creates a TestRail Run with the correct Suite and Case IDs.  
-5. Posts test results to the newly created Test Run.  
-6. Automatically closes the Test Run after posting results.  
-7. Dynamic Run Name Based on File Path  
-   - Now accepts `runName` as a parameter.  
-     - If 2+ folders: **Folder1-Folder2 Automated Run** with `<date>` :: _e.g._ `cypress/e2e/Shopping/Smoke`  
-     - If 1 folder: **Folder1 Automated Run** with `<date>` :: _e.g._ `cypress/e2e/Smoke`  
-     - If none: **Automated Cypress Run - `<date>`**
+    ```bash
+        npm run run-testrail --adhocRunId 1339 
+        # OR 
+         npm run run-testrail --adhoc 1339
+    ```
 
+   
+
+> **ℹ️ Note:**  
+The CLI will NOT create a new TestRail Run. Instead, it will only update the specified existing Ad-Hoc Test Run.
+  #### Mutual exclusivity enforced
+  - The `--adhocRunId` / `--adhoc` flags cannot be used together with automatic run creation logic.  
+  - Passing both Ad-Hoc flags and auto-run flags will result in a failure or ignored parameters (depending on configuration).  
+  - **Case Filtering Behavior:**  
+  - Only Cypress test cases that exist in the mochawesome report and are already associated with the specified Ad-Hoc Test Run will be updated.  
+  - Missing or unmatched Case IDs will be skipped (no auto-add).  
+    </details>
 <br>
 
-| **Before**                                         | **After**                                                       |
-|----------------------------------------------------|------------------------------------------------------------------|
-| ❌ Could only work with static `.env` ProjectID     | ✅ Dynamic ProjectID works from `[P2]`                           |
-| ❌ 400 Error: `case_ids` unrecognized if wrong suite used | ✅ Dynamically finds the correct `suite_id` `[S1]`         |
-| ❌ Poor debug logs when things fail                 | ✅ Clean, visible logs for ProjectID, SuiteID, CaseIDs          |
-| ❌ Unscalable for multiple projects                 | ✅ Now supports multiple Projects and Suites automatically       |
-| ❌ Needed manual hardcoding                         | ✅ 100% automatic detection                                      |
-| ❌ Manual step needed to close test run             | ✅ Automatically closes TestRail run after results are posted    |
+### ^2.4.0
+ <details>
+
+  1. Parses Cypress mochawesome reports.  
+  2. Extracts ProjectID and Case IDs from test titles.  
+  3. For each unique ProjectID:  
+    - Queries all Suites.  
+    - Finds the matching Suite containing all Case IDs.  
+  4. Creates a TestRail Run with the correct Suite and Case IDs.  
+  5. Posts test results to the newly created Test Run.  
+  6. Automatically closes the Test Run after posting results.  
+  7. Dynamic Run Name Based on File Path  
+    - Now accepts `runName` as a parameter.  
+      - If 2+ folders: **Folder1-Folder2 Automated Run** with `<date>` :: _e.g._ `cypress/e2e/Shopping/Smoke`  
+      - If 1 folder: **Folder1 Automated Run** with `<date>` :: _e.g._ `cypress/e2e/Smoke`  
+      - If none: **Automated Cypress Run - `<date>`**
+</details>
+<br>
 
 
 ## 📄 License
