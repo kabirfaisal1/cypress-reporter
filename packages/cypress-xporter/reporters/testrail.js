@@ -135,7 +135,7 @@ async function tryGetCasesFast(projectId, suiteId) {
 }
 
 /**
- * ✅ The validator you actually need:
+ *  The validator you actually need:
  * - For the case IDs you want to report, ensure they exist and belong to THIS suite.
  * - Uses get_case/{id} which you confirmed works in Postman (e.g. 5718).
  */
@@ -173,7 +173,7 @@ async function getValidCaseIds(projectId, suiteId, caseIds) {
 
   // Log validation summary
   console.log(`✅ Valid cases for P${projectId}/S${suiteId}: ${valid.length}/${caseIds.length}`);
-  if (invalid.length) console.warn('⚠ Omitting unrecognized/mismatched TestRail IDs:', invalid);
+  if (invalid.length) console.warn('⚠ excludeing unrecognized/mismatched TestRail IDs:', invalid);
 
   return valid;
 }
