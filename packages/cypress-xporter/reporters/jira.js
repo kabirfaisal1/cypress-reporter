@@ -22,19 +22,18 @@ function normalizeTitleForComparison ( text )
     .trim();
 }
 
-// 🧠 Fallback search to compare summaries manually
-// 🧠 Fallback search to compare summaries manually
+//  Fallback search to compare summaries manually
 async function issueAlreadyExists(testTitle) {
   const normalizedTitle = normalizeTitleForComparison(testTitle);
 
   // Safety: avoid double slashes if base url ends with "/"
   const base = String(JIRA_BASE_URL || "").replace(/\/+$/, "");
 
-  // ✅ New endpoint (replaces /rest/api/3/search)
+  // New endpoint (replaces /rest/api/3/search)
   const url = `${base}/rest/api/3/search/jql`;
 
   try {
-    console.info(`🔍 Fetching all Jira bugs in project ${JIRA_PROJECT_KEY}...`);
+    // console.info(`🔍 Fetching all Jira bugs in project ${JIRA_PROJECT_KEY}...`);
 
     let startAt = 0;
     const maxResults = 100; // keep it sane; loop for pagination
@@ -180,7 +179,7 @@ async function attachLogsToIssue ( issueKey, logString )
         "X-Atlassian-Token": "no-check",
       },
     } );
-    console.log( `📎 Attached log file to Jira issue: ${ issueKey }` );
+    // console.log( `📎 Attached log file to Jira issue: ${ issueKey }` );
   } catch ( err )
   {
     console.error( `❌ Failed to attach log file to ${ issueKey }` );

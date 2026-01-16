@@ -15,8 +15,10 @@ const AUTH = {
 };
 
 // Prevent duplicate run creation per (projectId-suiteId) within the same execution
-// key => runId
 const createdRunsByGroupKey = new Map();
+
+// Cache: get_case lookups (caseId -> case object | null)
+const caseByIdCache = new Map();
 
 // -------------------------
 // Helpers
@@ -46,13 +48,14 @@ function extractRunNameFromTests(tests = []) {
 
   for (const test of tests) {
     const filePath = test.file?.replace(/\\/g, '/') || '';
-    const match = filePath.toLowerCase().split('cypress/e2e/')[1];
+    const lower = filePath.toLowerCase();
+    const match = lower.split('cypress/e2e/')[1];
+
     if (match) {
       const parts = match.split('/');
-      const group = parts[0].toUpperCase();
-      const subgroup = parts[1]?.toUpperCase();
+      const group = (parts[0] || '').toUpperCase();
+      const subgroup = (parts[1] || '').toUpperCase();
 
-      // Original naming (no XPORTER tag)
       return subgroup
         ? `${group}-${subgroup} Automated Run (${now})`
         : `${group} Automated Run (${now})`;
@@ -62,32 +65,120 @@ function extractRunNameFromTests(tests = []) {
   return `Automated Cypress Run (${now})`;
 }
 
-async function getValidCaseIds(projectId, suiteId, caseIds) {
+/**
+ * GET /get_case/{case_id}
+ * Reliable validator for a specific case id.
+ */
+async function getCaseById(caseId) {
+  if (caseByIdCache.has(caseId)) return caseByIdCache.get(caseId);
+
   try {
     const res = await axios.get(
-      `${TESTRAIL_DOMAIN}/index.php?/api/v2/get_cases/${projectId}&suite_id=${suiteId}`,
+      `${TESTRAIL_DOMAIN}/index.php?/api/v2/get_case/${caseId}`,
       { auth: AUTH }
     );
-
-    let cases = [];
-    if (Array.isArray(res.data)) cases = res.data;
-    else if (res.data && Array.isArray(res.data.cases)) cases = res.data.cases;
-    else if (res.data && res.data.id) cases = [res.data];
-    else {
-      console.error('❌ Unexpected response shape for get_cases:', res.data);
-      return [];
-    }
-
-    const validSet = new Set(cases.map(c => c.id));
-    return caseIds.filter(id => validSet.has(id));
+    caseByIdCache.set(caseId, res.data);
+    return res.data;
   } catch (err) {
-    console.error('❌ Failed to fetch TestRail cases:', err?.response?.data || err.message);
-    return [];
+    // 404, permission, etc.
+    caseByIdCache.set(caseId, null);
+    return null;
   }
 }
 
+/**
+ * Fast-path (optional): try get_cases first.
+ * BUT: In some environments it stops at 250 and doesn't page correctly.
+ * We'll use it if it returns a strong signal, otherwise we fallback to get_case/{id}.
+ */
+async function tryGetCasesFast(projectId, suiteId) {
+  try {
+    // Just request first page (limit=250). Some servers ignore paging anyway.
+    const limit = 250;
+    const url =
+      `${TESTRAIL_DOMAIN}/index.php?/api/v2/get_cases/${projectId}` +
+      `&suite_id=${suiteId}&limit=${limit}&offset=0`;
+
+    const res = await axios.get(url, { auth: AUTH });
+
+    const casesArr = Array.isArray(res.data)
+      ? res.data
+      : Array.isArray(res.data?.cases)
+        ? res.data.cases
+        : [];
+
+    if (!Array.isArray(casesArr)) return null;
+
+    const size = res.data?.size; // total cases (if TestRail returns it)
+    const got = casesArr.length;
+
+    // Helpful debug:
+    if (typeof size === 'number') {
+      console.log(`ℹ️ get_cases P${projectId}/S${suiteId}: returned ${got} (size=${size})`);
+    } else {
+      console.log(`ℹ️ get_cases P${projectId}/S${suiteId}: returned ${got} (size=unknown)`);
+    }
+
+    const set = new Set(casesArr.map(c => c.id));
+
+    // If the API tells us total size <= got, this page is effectively complete.
+    if (typeof size === 'number' && size <= got) return set;
+
+    // If got is tiny, probably filtered/permissions; not trustworthy for validation.
+    if (got < 50) return null;
+
+    // Otherwise: return as “partial hint set” (we still fallback per-id for misses)
+    return set;
+  } catch (err) {
+    return null;
+  }
+}
+
+/**
+ *  The validator you actually need:
+ * - For the case IDs you want to report, ensure they exist and belong to THIS suite.
+ * - Uses get_case/{id} which you confirmed works in Postman (e.g. 5718).
+ */
+async function getValidCaseIds(projectId, suiteId, caseIds) {
+  // optional fast set (may be partial)
+  const fastSet = await tryGetCasesFast(projectId, suiteId);
+
+  const valid = [];
+  const invalid = [];
+
+  // Validate only what you need (usually small list)
+  for (const id of caseIds) {
+    // If fastSet says it’s valid, accept immediately
+    if (fastSet && fastSet.has(id)) {
+      valid.push(id);
+      continue;
+    }
+
+    // Fallback: get_case/{id}
+    const c = await getCaseById(id);
+    if (!c) {
+      invalid.push(id);
+      continue;
+    }
+
+    // Must match suite
+    if (c.suite_id === suiteId) {
+      valid.push(id);
+    } else {
+      // exists, but in different suite
+      invalid.push(id);
+      console.warn(`⚠ Case C${id} exists but suite_id=${c.suite_id} (expected S${suiteId}). Dropping.`);
+    }
+  }
+
+  // Log validation summary
+  console.log(`✅ Valid cases for P${projectId}/S${suiteId}: ${valid.length}/${caseIds.length}`);
+  if (invalid.length) console.warn('⚠ excludeing unrecognized/mismatched TestRail IDs:', invalid);
+
+  return valid;
+}
+
 async function createTestRun(projectId, caseIds = [], suiteId = 1, runName = null, groupKey = null) {
-  // If we already created a run for this project/suite in THIS execution, reuse it
   if (groupKey && createdRunsByGroupKey.has(groupKey)) {
     const existingRunId = createdRunsByGroupKey.get(groupKey);
     console.log(`🟡 Reusing already-created TestRail RunID ${existingRunId} for ${groupKey} (prevents duplicate run).`);
@@ -119,10 +210,9 @@ async function createTestRun(projectId, caseIds = [], suiteId = 1, runName = nul
       { auth: AUTH }
     );
 
-    const runId = res.data.id;
-    if (groupKey) createdRunsByGroupKey.set(groupKey, runId);
-
-    return runId;
+    const runId = res.data?.id;
+    if (runId && groupKey) createdRunsByGroupKey.set(groupKey, runId);
+    return runId || null;
   } catch (err) {
     console.error('❌ TestRail Run creation failed:', err?.response?.data || err.message);
     return null;
@@ -173,11 +263,12 @@ async function adhocTestResults(passed = [], failed = [], adhocRunIdArg = null) 
   console.log(`🧩 ADHOC Run Mode: RunID=${adhocRunId}`);
   console.log(`🔍 Mochawesome unique case IDs (${mochawesomeCaseIds.length}):`, mochawesomeCaseIds);
 
-  if (mochawesomeCaseIds.length === 0) {
+  if (!mochawesomeCaseIds.length) {
     console.warn('⚠ No valid [C####] case IDs found in mochawesome results. Nothing to report.');
     return;
   }
 
+  // Pull all tests in the run (paged)
   const runTests = [];
   let offset = 0;
   const limit = 250;
@@ -205,13 +296,9 @@ async function adhocTestResults(passed = [], failed = [], adhocRunIdArg = null) 
     const got = testsArr.length;
     if (!got) break;
 
-    if (typeof size === 'number') {
-      offset += got;
-      if (offset >= size) break;
-    } else {
-      if (got < limit) break;
-      offset += limit;
-    }
+    offset += got;
+    if (typeof size === 'number' && offset >= size) break;
+    if (got < limit) break;
   }
 
   console.log(`📥 ADHOC get_tests fetched ${runTests.length} test(s) from RunID ${adhocRunId}`);
@@ -219,9 +306,7 @@ async function adhocTestResults(passed = [], failed = [], adhocRunIdArg = null) 
   const runCaseIdSet = new Set(runTests.map(t => t.testRunCaseID));
   const caseIdToTestId = new Map();
   for (const t of runTests) {
-    if (!caseIdToTestId.has(t.testRunCaseID)) {
-      caseIdToTestId.set(t.testRunCaseID, t.testRunID);
-    }
+    if (!caseIdToTestId.has(t.testRunCaseID)) caseIdToTestId.set(t.testRunCaseID, t.testRunID);
   }
 
   const matchedCaseIds = mochawesomeCaseIds.filter(cid => runCaseIdSet.has(cid));
@@ -254,6 +339,7 @@ async function adhocTestResults(passed = [], failed = [], adhocRunIdArg = null) 
     });
   }
 
+  // Deduplicate by case_id
   const seen = new Map();
   for (const r of results) seen.set(r.case_id, r);
   const deduped = Array.from(seen.values());
@@ -296,7 +382,6 @@ exports.reportToTestRail = async (passed = [], failed = []) => {
         caseId: cid,
         state: t.state,
         comment: t.error || (t.state === 'passed' ? 'Test passed ✅' : ''),
-        file: t.file,
         raw: t
       };
     })
@@ -312,11 +397,12 @@ exports.reportToTestRail = async (passed = [], failed = []) => {
   for (const groupKey of Object.keys(groups)) {
     const { projectId, suiteId, entries } = groups[groupKey];
     const caseIds = Array.from(new Set(entries.map(e => e.caseId)));
+
     console.log(`🔍 Found ${caseIds.length} unique TestRail Case IDs for P${projectId}/S${suiteId}:`, caseIds);
 
+    // ✅ Key change: validates by get_case/{id} fallback, so no false drops
     const valid = await getValidCaseIds(projectId, suiteId, caseIds);
-    const invalid = caseIds.filter(id => !valid.includes(id));
-    if (invalid.length) console.warn('⚠ Omitting unrecognized TestRail IDs:', invalid);
+
     if (!valid.length) {
       console.warn(`⚠ No valid cases for P${projectId}/S${suiteId}. Skipping run.`);
       continue;
