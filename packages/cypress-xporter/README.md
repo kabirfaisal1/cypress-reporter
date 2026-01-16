@@ -149,16 +149,14 @@ npx cypress-xporter --jira --testrail
 
 # Only push to Confluence
 npx cypress-xporter --confluence
+
+# Only push to TestRail
+npx cypress-xporter --jira --testrail
+
+# Only push to TestRail to a specidic testrun
+npx cypress-xporter --testrail --adhocRunId [id] # OR --adhoc 1339
 ```
 
-Or via npm script (defined in root `package.json`):
-
-```bash
-npm run run-all-tools
-npm run run-jira-testrail
-npm run run-testrail
-npm run run-testrail --adhocRunId [id] # OR --adhoc 1339
-```
 
 ---
 
@@ -210,9 +208,11 @@ npx cypress-xporter --jira --testrail --confluence
   1. Ad-Hoc TestRail Run Handling with new CLI behavior introduced
 
     ```bash
-        npm run run-testrail --adhocRunId 1339 
+        npx cypress-xporter --testrail --adhocRunId 1339 
+        
         # OR 
-         npm run run-testrail --adhoc 1339
+
+        npx cypress-xporter --testrail --adhoc [id] 
     ```
 
    

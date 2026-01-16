@@ -62,23 +62,57 @@ function extractRunNameFromTests(tests = []) {
   return `Automated Cypress Run (${now})`;
 }
 
+/**
+ * ✅ PAGINATED get_cases
+ * Fixes missing/“unrecognized” IDs when your suite has > 250 cases.
+ */
 async function getValidCaseIds(projectId, suiteId, caseIds) {
   try {
-    const res = await axios.get(
-      `${TESTRAIL_DOMAIN}/index.php?/api/v2/get_cases/${projectId}&suite_id=${suiteId}`,
-      { auth: AUTH }
-    );
+    const validSet = new Set();
+    let offset = 0;
+    const limit = 250;
 
-    let cases = [];
-    if (Array.isArray(res.data)) cases = res.data;
-    else if (res.data && Array.isArray(res.data.cases)) cases = res.data.cases;
-    else if (res.data && res.data.id) cases = [res.data];
-    else {
-      console.error('❌ Unexpected response shape for get_cases:', res.data);
-      return [];
+    while (true) {
+      const url =
+        `${TESTRAIL_DOMAIN}/index.php?/api/v2/get_cases/${projectId}` +
+        `&suite_id=${suiteId}&limit=${limit}&offset=${offset}`;
+
+      const res = await axios.get(url, { auth: AUTH });
+
+      // TestRail usually returns: { offset, limit, size, _links, cases: [] }
+      // but some setups might return arrays or slightly different shapes.
+      const casesArr = Array.isArray(res.data)
+        ? res.data
+        : (res.data?.cases || []);
+
+      if (!Array.isArray(casesArr)) {
+        console.error('❌ Unexpected response shape for get_cases:', res.data);
+        break;
+      }
+
+      // Add ids from this page
+      for (const c of casesArr) {
+        if (c && typeof c.id === 'number') validSet.add(c.id);
+      }
+
+      // Stop conditions
+      const size = res.data?.size;
+      const got = casesArr.length;
+
+      if (!got) break;
+
+      if (typeof size === 'number') {
+        offset += got;
+        if (offset >= size) break;
+      } else {
+        // fallback: stop when last page smaller than limit
+        if (got < limit) break;
+        offset += limit;
+      }
     }
 
-    const validSet = new Set(cases.map(c => c.id));
+    console.log(`✅ Loaded ${validSet.size} TestRail case(s) for P${projectId}/S${suiteId}`);
+
     return caseIds.filter(id => validSet.has(id));
   } catch (err) {
     console.error('❌ Failed to fetch TestRail cases:', err?.response?.data || err.message);
