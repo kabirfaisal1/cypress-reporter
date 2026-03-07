@@ -5,6 +5,13 @@ function extractProjectIdFromTitle ( title )
     return match ? `P${ match[1] }` : null;
 }
 
+function extractCaseIdsFromTitle ( title )
+{
+    if ( typeof title !== 'string' ) return [];
+    const matches = [...title.matchAll( /\[?C(\d+)\]?/gi )];
+    return matches.map( m => parseInt( m[1], 10 ) );
+}
+
 function extractTests ( suite, filePath )
 {
     const tests = [];
@@ -25,6 +32,7 @@ function extractTests ( suite, filePath )
                 state: test.state,
                 jira: test.jira || 'N/A',
                 projectId: extractProjectIdFromTitle( title ),
+                caseIds: extractCaseIdsFromTitle( title ),
             } );
         }
     }

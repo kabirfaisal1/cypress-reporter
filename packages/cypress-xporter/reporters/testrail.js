@@ -24,10 +24,16 @@ const caseByIdCache = new Map();
 // Helpers
 // -------------------------
 
+function extractCaseIds(fullTitle) {
+  if (!fullTitle) return [];
+  const matches = [...fullTitle.matchAll(/\[?C(\d+)\]?/gi)];
+  return matches.map(m => parseInt(m[1], 10));
+}
+
+// Backwards-compatible single-id helper (returns first match or null)
 function extractCaseId(fullTitle) {
-  if (!fullTitle) return null;
-  const match = fullTitle.match(/\[?C(\d+)\]?/i);
-  return match ? parseInt(match[1], 10) : null;
+  const ids = extractCaseIds(fullTitle);
+  return ids.length ? ids[0] : null;
 }
 
 function extractProjectAndSuite(fullTitle) {
@@ -255,8 +261,7 @@ async function adhocTestResults(passed = [], failed = [], adhocRunIdArg = null) 
   const mochawesomeCaseIds = Array.from(
     new Set(
       allTests
-        .map(t => extractCaseId(t.title || t.name || t.fullTitle || ''))
-        .filter(Boolean)
+        .flatMap(t => extractCaseIds(t.title || t.name || t.fullTitle || ''))
     )
   );
 
@@ -322,21 +327,24 @@ async function adhocTestResults(passed = [], failed = [], adhocRunIdArg = null) 
 
   const results = [];
   for (const test of allTests) {
-    const caseId = extractCaseId(test.title || test.name || test.fullTitle || '');
-    if (!caseId) continue;
-    if (!runCaseIdSet.has(caseId)) continue;
+    const caseIds = extractCaseIds(test.title || test.name || test.fullTitle || '');
+    if (!caseIds.length) continue;
 
-    const testRunID = caseIdToTestId.get(caseId);
+    for (const caseId of caseIds) {
+      if (!runCaseIdSet.has(caseId)) continue;
 
-    results.push({
-      case_id: caseId,
-      status_id: test.state === 'passed' ? 1 : 5,
-      comment:
-        test.error ||
-        (test.state === 'passed'
-          ? `Test passed ✅ (RunTestID ${testRunID})`
-          : `Failed ❌ (RunTestID ${testRunID})`)
-    });
+      const testRunID = caseIdToTestId.get(caseId);
+
+      results.push({
+        case_id: caseId,
+        status_id: test.state === 'passed' ? 1 : 5,
+        comment:
+          test.error ||
+          (test.state === 'passed'
+            ? `Test passed ✅ (RunTestID ${testRunID})`
+            : `Failed ❌ (RunTestID ${testRunID})`)
+      });
+    }
   }
 
   // Deduplicate by case_id
@@ -370,22 +378,21 @@ exports.reportToTestRail = async (passed = [], failed = []) => {
   }
 
   const all = [...passed, ...failed]
-    .map(t => {
+    .flatMap(t => {
       const full = t.fullTitle || t.name || '';
-      const cid = extractCaseId(full);
-      if (!cid) return null;
+      const cids = extractCaseIds(full);
+      if (!cids.length) return [];
 
       const { projectId, suiteId } = extractProjectAndSuite(full);
-      return {
+      return cids.map(cid => ({
         projectId,
         suiteId,
         caseId: cid,
         state: t.state,
         comment: t.error || (t.state === 'passed' ? 'Test passed ✅' : ''),
         raw: t
-      };
-    })
-    .filter(Boolean);
+      }));
+    });
 
   const groups = {};
   for (const e of all) {

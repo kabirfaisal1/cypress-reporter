@@ -1,5 +1,12 @@
 const fs = require( "fs" );
 
+function extractCaseIdsFromTitle ( title )
+{
+    if ( typeof title !== 'string' ) return [];
+    const matches = [...title.matchAll( /\[?C(\d+)\]?/gi )];
+    return matches.map( m => parseInt( m[1], 10 ) );
+}
+
 function extractUniqueFailedTests ( reportPath )
 {
     const report = JSON.parse( fs.readFileSync( reportPath ) );
@@ -21,6 +28,7 @@ function extractUniqueFailedTests ( reportPath )
                             file: file,
                             state: "failed",
                             error: test.err ? test.err.message || test.err.estack : "Test failed",
+                            caseIds: extractCaseIdsFromTitle( test.title || test.fullTitle || '' ),
                         } );
                     }
                 }
