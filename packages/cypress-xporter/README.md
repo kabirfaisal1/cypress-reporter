@@ -203,6 +203,20 @@ npx cypress-xporter --jira --testrail --confluence
 
 ## 🛠️ Version
 
+### ^2.5.4
+ <details>
+
+  1. **Fix: TestRail paging stopped after the first page** ([#12](https://github.com/kabirfaisal1/cypress-reporter/issues/12))
+    - TestRail's `size` field is the row count of the *current page*, not the total. The CLI treated it as the total and stopped after any full 250-row page, so tests/cases past row 250 were silently skipped and never reported.
+    - `get_tests` (Ad-Hoc runs) and `get_cases` (suite validation) now fetch **every** page, stopping only on a short page or when TestRail reports no next page. Unpaged responses from older TestRail servers are still supported.
+    - A malformed `get_tests` response now logs an error and aborts instead of reporting against a partial list.
+  2. **Dependency security updates** (`npm audit`: 4 → 0)
+    - `form-data` → 4.0.6 (critical: predictable multipart boundary, CRLF injection)
+    - `axios` → 1.20.0 (prototype-pollution, Proxy-Authorization leak on redirect, DoS advisories)
+    - `follow-redirects` → 1.16.0, `picomatch` → 2.3.2, `dotenv` → 16.6.1
+    </details>
+<br>
+
 ### ^2.5.0
  <details>
   1. Ad-Hoc TestRail Run Handling with new CLI behavior introduced
@@ -251,4 +265,4 @@ The CLI will NOT create a new TestRail Run. Instead, it will only update the spe
 ## 📄 License
 
 MIT © [Kabir Faisal](https://kabirfaisal1.github.io/myReactProtfolio/#/) | [Linkedin](https://www.linkedin.com/in/kabirfaisal89/) | 
-[Discord](https://discord.gg/MFh6gYZB)
+[Discord](https://discord.gg/wHJY3tCFF)

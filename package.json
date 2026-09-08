@@ -1,6 +1,6 @@
 {
   "name": "cypress-xporter-monorepo",
-  "version": "2.5.3",
+  "version": "2.5.4",
   "description": "CLI to report Cypress test results to Jira, TestRail, and Confluence",
   "main": "index.js",
   "bin": {
@@ -33,13 +33,12 @@
   "author": "Kabir Faisal",
   "license": "MIT",
   "dependencies": {
-    "axios": "^1.6.7",
+    "axios": "^1.20.0",
     "chalk": "^5.3.0",
     "cypress-mochawesome-reporter": "^3.8.2",
-   
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.6.1",
     "fast-glob": "^3.3.3",
-    "form-data": "^4.0.0",
+    "form-data": "^4.0.6",
     "minimist": "^1.2.8"
   },
   "devDependencies": {

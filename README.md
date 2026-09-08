@@ -220,4 +220,4 @@ npx cypress-xporter --jira --testrail --confluence
 ## 📄 License
 
 MIT © [Kabir Faisal](https://kabirfaisal1.github.io/myReactProtfolio/#/) | [Linkedin](https://www.linkedin.com/in/kabirfaisal89/) | 
-[Discord](https://discord.gg/MFh6gYZB)
+[Discord](https://discord.gg/wHJY3tCFF)
