@@ -24,6 +24,48 @@ const caseByIdCache = new Map();
 // Helpers
 // -------------------------
 
+/**
+ * Fetch every page of a paginated TestRail v2 list endpoint (get_cases, get_tests, ...).
+ *
+ * TestRail (>= 6.7) responds with:
+ *   { offset, limit, size, _links: { next, prev }, <key>: [ ... ] }
+ *
+ * NOTE: `size` is the row count of THIS page, not the total — so it must never be
+ * used as a stop condition (that bug dropped everything past row 250, see #12).
+ * We stop when the server says there's no next page, or a page comes back short.
+ * Older servers return a bare array with no paging at all.
+ *
+ * @param {string} baseUrl  Endpoint URL without limit/offset (e.g. `.../get_tests/123`).
+ * @param {string} key      Name of the array field in the paged response (`cases`, `tests`).
+ */
+async function fetchAllPages(baseUrl, key, limit = 250) {
+  const items = [];
+  let offset = 0;
+
+  while (true) {
+    const res = await axios.get(`${baseUrl}&limit=${limit}&offset=${offset}`, { auth: AUTH });
+    const data = res.data;
+
+    // Legacy servers: unpaged bare array.
+    if (Array.isArray(data)) return items.concat(data);
+
+    const page = data?.[key];
+    if (!Array.isArray(page)) {
+      throw new Error(`Unexpected ${key} response from TestRail: ${JSON.stringify(data)}`);
+    }
+
+    items.push(...page);
+
+    const got = page.length;
+    if (!got || got < limit) break;
+    if (data._links && data._links.next === null) break; // server says this is the last page
+
+    offset += got;
+  }
+
+  return items;
+}
+
 function extractCaseIds(fullTitle) {
   if (!fullTitle) return [];
   const matches = [...fullTitle.matchAll(/\[?C(\d+)\]?/gi)];
@@ -93,49 +135,20 @@ async function getCaseById(caseId) {
 }
 
 /**
- * Fast-path (optional): try get_cases first.
- * BUT: In some environments it stops at 250 and doesn't page correctly.
- * We'll use it if it returns a strong signal, otherwise we fallback to get_case/{id}.
+ * Fast-path (optional): pull every case ID in the suite via get_cases (all pages).
+ * Any ID not in this set still falls back to get_case/{id}, so a partial or
+ * failed fetch here can never cause a false drop.
  */
 async function tryGetCasesFast(projectId, suiteId) {
   try {
-    // Just request first page (limit=250). Some servers ignore paging anyway.
-    const limit = 250;
-    const url =
-      `${TESTRAIL_DOMAIN}/index.php?/api/v2/get_cases/${projectId}` +
-      `&suite_id=${suiteId}&limit=${limit}&offset=0`;
+    const url = `${TESTRAIL_DOMAIN}/index.php?/api/v2/get_cases/${projectId}&suite_id=${suiteId}`;
+    const cases = await fetchAllPages(url, 'cases');
 
-    const res = await axios.get(url, { auth: AUTH });
+    console.log(`ℹ️ get_cases P${projectId}/S${suiteId}: fetched ${cases.length} case(s)`);
 
-    const casesArr = Array.isArray(res.data)
-      ? res.data
-      : Array.isArray(res.data?.cases)
-        ? res.data.cases
-        : [];
-
-    if (!Array.isArray(casesArr)) return null;
-
-    const size = res.data?.size; // total cases (if TestRail returns it)
-    const got = casesArr.length;
-
-    // Helpful debug:
-    if (typeof size === 'number') {
-      console.log(`ℹ️ get_cases P${projectId}/S${suiteId}: returned ${got} (size=${size})`);
-    } else {
-      console.log(`ℹ️ get_cases P${projectId}/S${suiteId}: returned ${got} (size=unknown)`);
-    }
-
-    const set = new Set(casesArr.map(c => c.id));
-
-    // If the API tells us total size <= got, this page is effectively complete.
-    if (typeof size === 'number' && size <= got) return set;
-
-    // If got is tiny, probably filtered/permissions; not trustworthy for validation.
-    if (got < 50) return null;
-
-    // Otherwise: return as “partial hint set” (we still fallback per-id for misses)
-    return set;
+    return new Set(cases.map(c => c.id));
   } catch (err) {
+    console.warn(`⚠ get_cases P${projectId}/S${suiteId} failed, validating per-id instead:`, err?.response?.data || err.message);
     return null;
   }
 }
@@ -273,37 +286,19 @@ async function adhocTestResults(passed = [], failed = [], adhocRunIdArg = null) 
     return;
   }
 
-  // Pull all tests in the run (paged)
-  const runTests = [];
-  let offset = 0;
-  const limit = 250;
-
-  while (true) {
-    const url = `${TESTRAIL_DOMAIN}/index.php?/api/v2/get_tests/${adhocRunId}&limit=${limit}&offset=${offset}`;
-    const res = await axios.get(url, { auth: AUTH });
-
-    const testsArr = res.data?.tests || [];
-    if (!Array.isArray(testsArr)) {
-      console.error('❌ Unexpected response for get_tests:', res.data);
-      break;
-    }
-
-    for (const t of testsArr) {
-      runTests.push({
-        testRunID: t.id,
-        testRunCaseID: t.case_id,
-        status_id: t.status_id,
-        title: t.title
-      });
-    }
-
-    const size = res.data?.size;
-    const got = testsArr.length;
-    if (!got) break;
-
-    offset += got;
-    if (typeof size === 'number' && offset >= size) break;
-    if (got < limit) break;
+  // Pull all tests in the run (every page)
+  let runTests;
+  try {
+    const tests = await fetchAllPages(`${TESTRAIL_DOMAIN}/index.php?/api/v2/get_tests/${adhocRunId}`, 'tests');
+    runTests = tests.map(t => ({
+      testRunID: t.id,
+      testRunCaseID: t.case_id,
+      status_id: t.status_id,
+      title: t.title
+    }));
+  } catch (err) {
+    console.error(`❌ Failed to fetch tests for ADHOC run ${adhocRunId}:`, err?.response?.data || err.message);
+    return;
   }
 
   console.log(`📥 ADHOC get_tests fetched ${runTests.length} test(s) from RunID ${adhocRunId}`);
