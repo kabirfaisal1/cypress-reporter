@@ -23,11 +23,14 @@ function extractUniqueFailedTests ( reportPath )
                     if ( test.fail )
                     {
                         failedTests.push( {
+                            name: test.title || test.fullTitle || '',
                             title: test.title,
                             fullTitle: test.fullTitle,
                             file: file,
                             state: "failed",
                             error: test.err ? test.err.message || test.err.estack : "Test failed",
+                            // mochawesome stores the test source under `code`
+                            body: typeof test.code === 'string' ? test.code : '',
                             caseIds: extractCaseIdsFromTitle( test.title || test.fullTitle || '' ),
                         } );
                     }
