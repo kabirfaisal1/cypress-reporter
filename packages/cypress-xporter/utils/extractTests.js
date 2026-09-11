@@ -28,6 +28,7 @@ function extractTests ( suite, filePath )
                 fullTitle: test.fullTitle || '',
                 title: test.title || '',
                 error: test.err?.message || '',
+                body: typeof test.code === 'string' ? test.code : '',
                 file: filePath || suite.file || '',
                 state: test.state,
                 jira: test.jira || 'N/A',

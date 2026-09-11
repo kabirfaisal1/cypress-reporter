@@ -129,6 +129,11 @@ Cypress Xporter will:
 1. Search for all `mochawesome*.json` reports across the project
 2. Merge them into a single report
 3. Create Jira tickets for failed tests (if `--jira` is passed)
+    > **Duplicate handling:**  
+    > Before creating a bug, Cypress Xporter scans every Bug in `JIRA_PROJECT_KEY` for one whose summary matches the failed test's title, or shares a TestRail case ID with it (e.g. `[C45689]`). The description is never compared.  
+    > - If a matching bug is still open (Backlog, To Do, On Hold, In Progress, ...), a comment with the latest failure is added to that bug instead of creating a new one.  
+    > - A new bug is created only when there is no match, or every match is in a Done status (Done, Closed, Resolved, Won't Fix, ...).  
+    > - If the existing bugs cannot be loaded from Jira, no bugs are created for that run.
 4. Log results to TestRail (if `--testrail` is passed)
 5. Generate a dashboard and upload to Confluence (if `--confluence` is passed)
     > **Note:**  
@@ -202,6 +207,22 @@ npx cypress-xporter --jira --testrail --confluence
 ---
 
 ## 🛠️ Version
+
+### ^2.5.5
+ <details>
+
+  1. **Fix: Jira bug description always rendered "No body available"** ([#14](https://github.com/kabirfaisal1/cypress-reporter/issues/14))
+    - The failed-test extractor never set `body`, but the Jira reporter read `test.body`. mochawesome stores the test source under `code`, so it is now mapped to `body` and the 🧬 Test Body code block shows the real test source.
+    - The same objects never had a `name`, which the screenshot lookup requires, so screenshots were never attached to Jira bugs. Fixed.
+  2. **Fix: duplicate Jira bugs created while a matching bug was still open** (Backlog, To Do, On Hold, In Progress)
+    - The duplicate check paged `/rest/api/3/search/jql` with `startAt`, which that endpoint ignores, so only the newest 100 bugs were ever compared. Paging now uses `nextPageToken` and scans every bug in the project once per run.
+    - A bug matches when its summary equals the test title (after normalization), or shares a TestRail case ID with it (e.g. `[C45689]`). The description is never compared, so a changed error message does not create a new ticket.
+    - If a matching bug is still open, a comment with the latest failure (timestamp, spec file, error) is added to it and its key is used for TestRail/Confluence instead of `N/A`.
+    - A new bug is created only when there is no match, or every match is Done (Done, Closed, Resolved, Won't Fix, Cancelled).
+    - Two failing tests with the same title in one run now produce one bug plus one comment.
+    - If existing bugs cannot be loaded from Jira, no bugs are created for that run (previously bugs were created blindly).
+    </details>
+<br>
 
 ### ^2.5.4
  <details>
